@@ -55,10 +55,10 @@ export function Topbar() {
           variant="ghost"
           size="sm"
           onClick={toggleAiDrawer}
-          className="h-9 gap-1.5 text-violet-600 hover:text-violet-700 hover:bg-violet-50 hidden sm:flex"
+          className={`h-9 gap-1.5 hidden sm:flex ${activeRole === "student" ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50" : "text-violet-600 hover:text-violet-700 hover:bg-violet-50"}`}
         >
           <Sparkles className="h-4 w-4" />
-          <span className="text-xs font-medium">AI</span>
+          <span className="text-xs font-medium">{activeRole === "student" ? "Study AI" : "School AI"}</span>
         </Button>
 
         <div className="flex items-center gap-2 pl-2 border-l">

@@ -67,7 +67,12 @@ const roleSuggestions: Record<string, string[]> = {
   ],
 };
 
-type ActionType = "message_sent" | "report_generated" | "alert_sent" | "homework_assigned" | "meeting_scheduled" | "task_created";
+type SchoolActionType = "message_sent" | "report_generated" | "alert_sent" | "homework_assigned" | "meeting_scheduled";
+type StudyActionType = "study_plan_created" | "task_created";
+type ActionType = SchoolActionType | StudyActionType;
+
+const SCHOOL_ACTIONS: SchoolActionType[] = ["message_sent", "report_generated", "alert_sent", "homework_assigned", "meeting_scheduled"];
+const STUDY_ACTIONS: StudyActionType[] = ["study_plan_created", "task_created"];
 
 interface AIAction {
   type: ActionType;
@@ -77,14 +82,20 @@ interface AIAction {
   color: string;
 }
 
-const actionConfigs: Record<ActionType, AIAction> = {
+const schoolActionConfigs: Record<SchoolActionType, AIAction> = {
   message_sent: { type: "message_sent", label: "Message Sent", description: "via Tanweer Messaging", icon: Mail, color: "bg-blue-100 text-blue-700" },
   report_generated: { type: "report_generated", label: "Report Generated", description: "Available in downloads", icon: BarChart3, color: "bg-violet-100 text-violet-700" },
   alert_sent: { type: "alert_sent", label: "Alert Dispatched", description: "Notified all recipients", icon: Zap, color: "bg-amber-100 text-amber-700" },
   homework_assigned: { type: "homework_assigned", label: "Homework Assigned", description: "Students notified", icon: FileText, color: "bg-emerald-100 text-emerald-700" },
   meeting_scheduled: { type: "meeting_scheduled", label: "Meeting Scheduled", description: "Invites sent to attendees", icon: Calendar, color: "bg-indigo-100 text-indigo-700" },
-  task_created: { type: "task_created", label: "Task Created", description: "Added to task board", icon: CheckSquare, color: "bg-pink-100 text-pink-700" },
 };
+
+const studyActionConfigs: Record<StudyActionType, AIAction> = {
+  study_plan_created: { type: "study_plan_created", label: "Study Plan Created", description: "Saved to your dashboard", icon: CheckSquare, color: "bg-emerald-100 text-emerald-700" },
+  task_created: { type: "task_created", label: "Task Added", description: "Added to your study board", icon: ClipboardList, color: "bg-amber-100 text-amber-700" },
+};
+
+const actionConfigs: Record<ActionType, AIAction> = { ...schoolActionConfigs, ...studyActionConfigs };
 
 interface AIResponseData {
   text: string;
@@ -208,7 +219,7 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
     const m = msg.toLowerCase();
     if (m.includes("study plan") || m.includes("prepare") || m.includes("math")) return {
       text: "📖 **7-Day Math Mid-Term Study Plan:**\n\n**Day 1-2 (Jun 13-14):** Chapter 4 — Trigonometry\n• Practice 15 problems daily\n• Review unit circle and identities\n\n**Day 3-4 (Jun 15-16):** Chapter 5 — Quadratic Equations\n• Complete the 20-question practice sheet\n• Focus on vertex form and applications\n\n**Day 5 (Jun 17):** Chapter 3 — Polynomials review\n\n**Day 6 (Jun 18):** Past paper simulation (45 mins timed)\n\n**Day 7 (Jun 19):** Review mistakes + light revision only\n\n💡 Dr. Sarah says: focus on timed practice — you struggle under time pressure.\n\nPlan saved to your dashboard!",
-      action: "task_created",
+      action: "study_plan_created",
       actionDetail: "7-Day Math Study Plan created",
     };
     if (m.includes("homework") || m.includes("due")) return {
@@ -233,6 +244,10 @@ export function AIDrawer() {
   const { aiDrawerOpen, setAiDrawerOpen } = useUIStore();
   const { activeRole } = useRoleStore();
   const cfg = roleConfig[activeRole];
+
+  const isStudent = activeRole === "student";
+  const assistantName = isStudent ? "Study Assistant" : "School AI Assistant";
+  const assistantSubtitle = isStudent ? "Homework · Exams · Study Plans" : "Analytics · Attendance · Messaging";
 
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState("");
@@ -274,7 +289,10 @@ export function AIDrawer() {
       };
       setMessages((prev) => [...prev, aiMsg]);
       if (response.action) {
-        setLastAction({ type: response.action, detail: response.actionDetail });
+        const allowedActions = isStudent ? STUDY_ACTIONS : SCHOOL_ACTIONS;
+        if ((allowedActions as ActionType[]).includes(response.action)) {
+          setLastAction({ type: response.action, detail: response.actionDetail });
+        }
       }
       setIsTyping(false);
     }, 1100);
@@ -287,11 +305,11 @@ export function AIDrawer() {
     <div className="fixed inset-y-0 right-0 w-96 bg-card border-l shadow-2xl flex flex-col z-50">
       {/* Header */}
       <div className="flex items-center gap-2 p-4 border-b text-white"
-        style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}>
+        style={{ background: isStudent ? "linear-gradient(135deg, #d97706 0%, #b45309 100%)" : "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}>
         <Sparkles className="h-5 w-5" />
         <div className="flex-1">
-          <p className="font-semibold text-sm">Tanweer AI — {cfg.label}</p>
-          <p className="text-xs text-violet-200">Ask or command · Actions enabled</p>
+          <p className="font-semibold text-sm">{assistantName}</p>
+          <p className={`text-xs ${isStudent ? "text-amber-200" : "text-violet-200"}`}>{assistantSubtitle}</p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setAiDrawerOpen(false)} className="h-8 w-8 text-white hover:bg-white/20">
           <X className="h-4 w-4" />
@@ -379,7 +397,7 @@ export function AIDrawer() {
           </Button>
         </div>
         <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
-          AI can send messages, assign tasks, and generate reports
+          {isStudent ? "AI can create study plans, track homework, and prep for exams" : "AI can send messages, assign tasks, and generate reports"}
         </p>
       </div>
     </div>

@@ -1,10 +1,13 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sparkles, AlertTriangle, TrendingDown, DollarSign, Brain } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/store/useUIStore";
+import { useRoleStore } from "@/store/useRoleStore";
 
 const riskStudents = [
   { name: "Omar Al-Ghamdi", grade: "Grade 11", risk: "Academic + Financial", score: 87, color: "text-red-600" },
@@ -58,6 +61,16 @@ const severityBadge: Record<string, "destructive" | "warning" | "success"> = {
 
 export default function AIInsightsPage() {
   const { toggleAiDrawer } = useUIStore();
+  const { activeRole } = useRoleStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (activeRole === "student") {
+      router.replace("/dashboard");
+    }
+  }, [activeRole, router]);
+
+  if (activeRole === "student") return null;
 
   return (
     <div className="space-y-6">
