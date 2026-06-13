@@ -287,3 +287,109 @@ export function getGradeGroupStats(startGrade: 1 | 5 | 9): GradeGroupStats {
     gradeBreakdown,
   };
 }
+
+export type FeeStatus = "paid" | "partial" | "overdue" | "pending";
+
+export interface PopulationFeeRecord {
+  id: string;
+  studentId: string;
+  studentName: string;
+  grade: number;
+  section: string;
+  feeType: string;
+  amount: number;
+  paidAmount: number;
+  dueDate: string;
+  status: FeeStatus;
+  avatar: string;
+}
+
+const FEE_TYPES = [
+  "Tuition Fee — Semester 1",
+  "Tuition Fee — Semester 2",
+  "Activity Fee",
+  "Lab Fee",
+  "Transport Fee",
+  "Library Fee",
+];
+
+const DUE_DATES = [
+  "Jun 30, 2026", "Jul 15, 2026", "May 31, 2026", "Aug 1, 2026",
+  "Apr 30, 2026", "Jun 15, 2026",
+];
+
+let _feeRecords: PopulationFeeRecord[] | null = null;
+
+export function generateFeeRecords(): PopulationFeeRecord[] {
+  if (_feeRecords) return _feeRecords;
+  const students = getAllStudents();
+  _feeRecords = students.map((s, i) => {
+    const seed = i * 17 + 3;
+    const r1 = seededRandom(seed);
+    const r2 = seededRandom(seed + 1);
+    const r3 = seededRandom(seed + 2);
+    const baseAmount = 8000 + Math.floor(seededRandom(seed + 3) * 14000);
+    const feeType = FEE_TYPES[Math.floor(r1 * FEE_TYPES.length)];
+    const dueDate = DUE_DATES[Math.floor(r2 * DUE_DATES.length)];
+    let status: FeeStatus;
+    let paidAmount: number;
+    if (r3 < 0.55) { status = "paid"; paidAmount = baseAmount; }
+    else if (r3 < 0.73) { status = "partial"; paidAmount = Math.floor(baseAmount * (0.3 + seededRandom(seed + 4) * 0.5)); }
+    else if (r3 < 0.88) { status = "overdue"; paidAmount = 0; }
+    else { status = "pending"; paidAmount = 0; }
+    return {
+      id: `FEE-${s.id}`,
+      studentId: s.id,
+      studentName: s.name,
+      grade: s.grade,
+      section: s.section,
+      feeType,
+      amount: baseAmount,
+      paidAmount,
+      dueDate,
+      status,
+      avatar: s.avatar,
+    };
+  });
+  return _feeRecords;
+}
+
+export type AttendanceStatus = "present" | "absent" | "late" | "excused";
+
+export interface PopulationAttendanceRecord {
+  id: string;
+  studentId: string;
+  studentName: string;
+  grade: number;
+  section: string;
+  status: AttendanceStatus;
+  date: string;
+  avatar: string;
+}
+
+let _attendanceRecords: PopulationAttendanceRecord[] | null = null;
+
+export function generateAttendanceRecords(date = "Jun 13, 2026"): PopulationAttendanceRecord[] {
+  if (_attendanceRecords) return _attendanceRecords;
+  const students = getAllStudents();
+  _attendanceRecords = students.map((s, i) => {
+    const seed = i * 23 + 7;
+    const r = seededRandom(seed);
+    let status: AttendanceStatus;
+    if (r < 0.82) status = "present";
+    else if (r < 0.91) status = "absent";
+    else if (r < 0.96) status = "late";
+    else status = "excused";
+    return {
+      id: `ATT-${s.id}`,
+      studentId: s.id,
+      studentName: s.name,
+      grade: s.grade,
+      section: s.section,
+      status,
+      date,
+      avatar: s.avatar,
+    };
+  });
+  return _attendanceRecords;
+}

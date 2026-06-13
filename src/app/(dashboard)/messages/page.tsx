@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Search, Star, Paperclip, ChevronRight, ArrowLeft,
-  Plus, Inbox, Send, Archive, AlertCircle, Tag,
-  Mail, MailOpen, Reply, Forward, Trash2, Clock,
+  Plus, Inbox, Send, Archive, Tag,
+  Mail, Reply, Forward, Trash2,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,46 +11,95 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { mockThreads, getRoleThreads, mockInboxStats, type Thread, type Message } from "@/lib/mockData/messages";
+import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { mockInboxStats, type Thread, type Message } from "@/lib/mockData/messages";
 import { cn } from "@/lib/utils";
 
 const priorityStyle: Record<string, string> = {
   urgent: "bg-red-100 text-red-700 border-red-200",
-  high: "bg-amber-100 text-amber-700 border-amber-200",
+  high:   "bg-amber-100 text-amber-700 border-amber-200",
   normal: "bg-slate-100 text-slate-600 border-slate-200",
-  low: "bg-slate-50 text-slate-400 border-slate-100",
+  low:    "bg-slate-50 text-slate-400 border-slate-100",
 };
 
 const labelColor: Record<string, string> = {
-  academic: "bg-blue-100 text-blue-700",
-  homework: "bg-violet-100 text-violet-700",
-  finance: "bg-emerald-100 text-emerald-700",
-  meeting: "bg-amber-100 text-amber-700",
+  academic:   "bg-blue-100 text-blue-700",
+  homework:   "bg-violet-100 text-violet-700",
+  finance:    "bg-emerald-100 text-emerald-700",
+  meeting:    "bg-amber-100 text-amber-700",
   attendance: "bg-red-100 text-red-700",
 };
 
+const roleAvatar: Record<string, string> = {
+  admin: "AD", teacher: "TC", vp1: "VP", vp2: "VP", vp3: "VP", parent: "PR", student: "ST",
+};
+
+const roleName: Record<string, string> = {
+  admin: "School Admin", teacher: "Teacher", vp1: "Vice Principal", vp2: "Vice Principal",
+  vp3: "Vice Principal", parent: "Parent", student: "Student",
+};
+
 const folders = [
-  { id: "inbox", label: "Inbox", icon: Inbox, count: 12 },
-  { id: "sent", label: "Sent", icon: Send, count: 0 },
-  { id: "starred", label: "Starred", icon: Star, count: 8 },
-  { id: "archived", label: "Archived", icon: Archive, count: 145 },
+  { id: "inbox",    label: "Inbox",    icon: Inbox,   count: 0 },
+  { id: "sent",     label: "Sent",     icon: Send,    count: 0 },
+  { id: "starred",  label: "Starred",  icon: Star,    count: 0 },
+  { id: "archived", label: "Archived", icon: Archive, count: 0 },
 ];
 
 export default function MessagesPage() {
   const { activeRole } = useRoleStore();
-  const threads = getRoleThreads(activeRole);
+  const { user } = useAuthStore();
+  const { threads, sendReply, createThread, toggleStar } = useDataStore();
+
   const [activeFolder, setActiveFolder] = useState("inbox");
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
   const [search, setSearch] = useState("");
   const [composing, setComposing] = useState(false);
+  const [replyBody, setReplyBody] = useState("");
+  const [composeData, setComposeData] = useState({ to: "", subject: "", body: "", priority: "normal" as "urgent" | "high" | "normal" | "low" });
 
-  const filtered = threads.filter((t) =>
+  const fromSender = {
+    name: user?.name || roleName[activeRole] || "User",
+    role: roleName[activeRole] || "User",
+    avatar: roleAvatar[activeRole] || "U",
+  };
+
+  const displayedThreads = threads.filter((t) => {
+    if (activeFolder === "starred") return t.isStarred;
+    if (activeFolder === "archived") return t.isArchived;
+    return !t.isArchived;
+  });
+
+  const filtered = displayedThreads.filter((t) =>
     t.subject.toLowerCase().includes(search.toLowerCase()) ||
     t.participants.some((p) => p.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   const totalUnread = threads.reduce((acc, t) => acc + t.unreadCount, 0);
+  const starredCount = threads.filter((t) => t.isStarred).length;
+
+  const handleSendReply = () => {
+    if (!selectedThread || !replyBody.trim()) return;
+    sendReply(selectedThread.id, replyBody, fromSender);
+    const updated = useDataStore.getState().threads.find((t) => t.id === selectedThread.id);
+    if (updated) setSelectedThread({ ...updated });
+    setReplyBody("");
+  };
+
+  const handleCompose = () => {
+    if (!composeData.to.trim() || !composeData.body.trim()) return;
+    createThread(
+      composeData.subject || "(No subject)",
+      composeData.to,
+      composeData.body,
+      composeData.priority,
+      fromSender
+    );
+    setComposing(false);
+    setComposeData({ to: "", subject: "", body: "", priority: "normal" });
+  };
 
   if (composing) {
     return (
@@ -69,17 +118,22 @@ export default function MessagesPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-3 border-b pb-3">
                 <span className="text-sm font-medium text-muted-foreground w-16">To:</span>
-                <Input placeholder="Search recipients by name or role..." className="border-0 shadow-none focus-visible:ring-0 flex-1" />
+                <Input value={composeData.to} onChange={(e) => setComposeData((p) => ({ ...p, to: e.target.value }))}
+                  placeholder="Recipient name or role..." className="border-0 shadow-none focus-visible:ring-0 flex-1" />
               </div>
               <div className="flex items-center gap-3 border-b pb-3">
                 <span className="text-sm font-medium text-muted-foreground w-16">Subject:</span>
-                <Input placeholder="Message subject..." className="border-0 shadow-none focus-visible:ring-0 flex-1" />
+                <Input value={composeData.subject} onChange={(e) => setComposeData((p) => ({ ...p, subject: e.target.value }))}
+                  placeholder="Message subject..." className="border-0 shadow-none focus-visible:ring-0 flex-1" />
               </div>
               <div className="flex items-center gap-3 border-b pb-3">
                 <span className="text-sm font-medium text-muted-foreground w-16">Priority:</span>
                 <div className="flex gap-2">
-                  {["urgent", "high", "normal", "low"].map((p) => (
-                    <button key={p} className={cn("px-3 py-1 rounded-full text-xs font-medium border capitalize", p === "normal" ? priorityStyle[p] + " ring-2 ring-slate-400" : priorityStyle[p])}>
+                  {(["urgent", "high", "normal", "low"] as const).map((p) => (
+                    <button key={p} onClick={() => setComposeData((prev) => ({ ...prev, priority: p }))}
+                      className={cn("px-3 py-1 rounded-full text-xs font-medium border capitalize", priorityStyle[p],
+                        composeData.priority === p && "ring-2 ring-primary/40"
+                      )}>
                       {p}
                     </button>
                   ))}
@@ -87,19 +141,20 @@ export default function MessagesPage() {
               </div>
             </div>
             <textarea
+              value={composeData.body}
+              onChange={(e) => setComposeData((p) => ({ ...p, body: e.target.value }))}
               placeholder="Write your message here..."
               rows={12}
               className="w-full text-sm bg-muted/30 rounded-xl p-4 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <div className="flex items-center justify-between pt-2 border-t">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="gap-2 text-xs">
-                  <Paperclip className="h-3.5 w-3.5" /> Attach File
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" className="gap-2 text-xs">
+                <Paperclip className="h-3.5 w-3.5" /> Attach File
+              </Button>
               <div className="flex gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setComposing(false)}>Cancel</Button>
-                <Button size="sm" className="gap-2 bg-primary">
+                <Button size="sm" className="gap-2 bg-primary" onClick={handleCompose}
+                  disabled={!composeData.to.trim() || !composeData.body.trim()}>
                   <Send className="h-4 w-4" /> Send Message
                 </Button>
               </div>
@@ -121,7 +176,12 @@ export default function MessagesPage() {
               <Button variant="outline" onClick={() => setSelectedThread(null)} size="sm" className="gap-1.5">
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9"><Star className={cn("h-4 w-4", selectedThread.isStarred && "fill-amber-400 text-amber-400")} /></Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => {
+                toggleStar(selectedThread.id);
+                setSelectedThread((t) => t ? { ...t, isStarred: !t.isStarred } : null);
+              }}>
+                <Star className={cn("h-4 w-4", selectedThread.isStarred && "fill-amber-400 text-amber-400")} />
+              </Button>
               <Button variant="ghost" size="icon" className="h-9 w-9"><Archive className="h-4 w-4" /></Button>
               <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500"><Trash2 className="h-4 w-4" /></Button>
             </div>
@@ -162,12 +222,14 @@ export default function MessagesPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                  <span>To:</span>
-                  {msg.to.map((r) => (
-                    <Badge key={r.name} variant="secondary" className="text-xs">{r.name}</Badge>
-                  ))}
-                </div>
+                {msg.to.length > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+                    <span>To:</span>
+                    {msg.to.map((r) => (
+                      <Badge key={r.name} variant="secondary" className="text-xs">{r.name}</Badge>
+                    ))}
+                  </div>
+                )}
 
                 <div className="text-sm leading-relaxed whitespace-pre-line text-slate-700 bg-muted/30 rounded-xl p-4">
                   {msg.body}
@@ -192,17 +254,20 @@ export default function MessagesPage() {
           ))}
         </div>
 
-        {/* Quick Reply */}
         <Card>
           <CardContent className="p-4">
             <textarea
+              value={replyBody}
+              onChange={(e) => setReplyBody(e.target.value)}
               placeholder="Write a reply..."
               rows={3}
               className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30 mb-3"
             />
             <div className="flex justify-between items-center">
               <Button variant="outline" size="sm" className="gap-2 text-xs"><Paperclip className="h-3.5 w-3.5" /> Attach</Button>
-              <Button size="sm" className="gap-2"><Send className="h-3.5 w-3.5" /> Send Reply</Button>
+              <Button size="sm" className="gap-2" onClick={handleSendReply} disabled={!replyBody.trim()}>
+                <Send className="h-3.5 w-3.5" /> Send Reply
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -224,20 +289,15 @@ export default function MessagesPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
-        {/* Sidebar */}
         <div className="space-y-2">
           {folders.map((f) => {
             const Icon = f.icon;
-            const cnt = f.id === "inbox" ? totalUnread : f.count;
+            const cnt = f.id === "inbox" ? totalUnread : f.id === "starred" ? starredCount : 0;
             return (
-              <button
-                key={f.id}
-                onClick={() => setActiveFolder(f.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+              <button key={f.id} onClick={() => setActiveFolder(f.id)}
+                className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                   activeFolder === f.id ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"
-                )}
-              >
+                )}>
                 <Icon className="h-4 w-4" />
                 <span className="flex-1 text-left">{f.label}</span>
                 {cnt > 0 && (
@@ -266,7 +326,6 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        {/* Thread List */}
         <div className="lg:col-span-3 space-y-3">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
@@ -285,12 +344,8 @@ export default function MessagesPage() {
             </div>
           ) : (
             filtered.map((thread) => (
-              <Card
-                key={thread.id}
-                className={cn(
-                  "cursor-pointer hover:shadow-md transition-all",
-                  thread.unreadCount > 0 && "ring-1 ring-primary/20 bg-primary/5"
-                )}
+              <Card key={thread.id}
+                className={cn("cursor-pointer hover:shadow-md transition-all", thread.unreadCount > 0 && "ring-1 ring-primary/20 bg-primary/5")}
                 onClick={() => setSelectedThread(thread)}
               >
                 <CardContent className="p-4">
@@ -318,15 +373,10 @@ export default function MessagesPage() {
                           <span className="text-xs text-muted-foreground">{thread.lastTimestamp}</span>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className={cn("text-sm truncate flex-1", thread.unreadCount > 0 ? "font-semibold" : "font-medium text-muted-foreground")}>
-                          {thread.subject}
-                        </p>
-                      </div>
-
+                      <p className={cn("text-sm truncate flex-1 mb-1", thread.unreadCount > 0 ? "font-semibold" : "font-medium text-muted-foreground")}>
+                        {thread.subject}
+                      </p>
                       <p className="text-xs text-muted-foreground truncate">{thread.lastMessage}</p>
-
                       <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <Badge className={cn("text-[10px] capitalize border", priorityStyle[thread.priority])}>
                           {thread.priority}
@@ -346,7 +396,6 @@ export default function MessagesPage() {
                         </span>
                       </div>
                     </div>
-
                     <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
                   </div>
                 </CardContent>

@@ -1,45 +1,67 @@
 "use client";
 import { useState } from "react";
 import {
-  Megaphone, Pin, Clock, Users, Paperclip, Plus,
-  Eye, Search, Filter, Calendar, Tag, AlertCircle,
-  Globe, GraduationCap, Heart, BookOpen,
+  Megaphone, Pin, Clock, Paperclip, Plus,
+  Eye, Search, Calendar, Tag, AlertCircle,
+  Globe, GraduationCap, BookOpen, X,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { announcements, getAnnouncementsForRole, type Announcement, type AnnouncementCategory } from "@/lib/mockData/announcements";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { type Announcement, type AnnouncementCategory } from "@/lib/mockData/announcements";
 import { cn } from "@/lib/utils";
 
 const categoryStyle: Record<AnnouncementCategory, { color: string; icon: React.ElementType; label: string }> = {
-  academic: { color: "bg-blue-100 text-blue-700", icon: BookOpen, label: "Academic" },
-  event: { color: "bg-violet-100 text-violet-700", icon: Calendar, label: "Event" },
-  administrative: { color: "bg-slate-100 text-slate-700", icon: Tag, label: "Admin" },
-  urgent: { color: "bg-red-100 text-red-700", icon: AlertCircle, label: "Urgent" },
-  holiday: { color: "bg-green-100 text-green-700", icon: Calendar, label: "Holiday" },
-  sports: { color: "bg-amber-100 text-amber-700", icon: Globe, label: "Sports" },
-  achievement: { color: "bg-yellow-100 text-yellow-700", icon: GraduationCap, label: "Achievement" },
+  academic:       { color: "bg-blue-100 text-blue-700",    icon: BookOpen,      label: "Academic" },
+  event:          { color: "bg-violet-100 text-violet-700", icon: Calendar,     label: "Event" },
+  administrative: { color: "bg-slate-100 text-slate-700",  icon: Tag,           label: "Admin" },
+  urgent:         { color: "bg-red-100 text-red-700",      icon: AlertCircle,   label: "Urgent" },
+  holiday:        { color: "bg-green-100 text-green-700",  icon: Calendar,      label: "Holiday" },
+  sports:         { color: "bg-amber-100 text-amber-700",  icon: Globe,         label: "Sports" },
+  achievement:    { color: "bg-yellow-100 text-yellow-700", icon: GraduationCap, label: "Achievement" },
 };
 
 const audienceLabel: Record<string, string> = {
-  school_wide: "🌐 School Wide",
-  teachers: "👨‍🏫 Teachers",
-  parents: "👨‍👩‍👧 Parents",
-  students: "🎓 Students",
+  school_wide:    "🌐 School Wide",
+  teachers:       "👨‍🏫 Teachers",
+  parents:        "👨‍👩‍👧 Parents",
+  students:       "🎓 Students",
   grade_specific: "📚 Grade Specific",
-  department: "🏛 Department",
+  department:     "🏛 Department",
 };
+
+const cats: (AnnouncementCategory | "all")[] = ["all", "urgent", "academic", "event", "sports", "achievement", "administrative"];
 
 export default function AnnouncementsPage() {
   const { activeRole } = useRoleStore();
-  const roleAnnouncements = getAnnouncementsForRole(activeRole);
+  const { user } = useAuthStore();
+  const { announcements, addAnnouncement } = useDataStore();
+
+  const roleAnnouncements = announcements.filter((a) => {
+    if (activeRole === "admin") return true;
+    if (activeRole === "teacher") return a.audience.some((aud) => ["school_wide", "teachers", "department"].includes(aud));
+    if (activeRole === "parent") return a.audience.some((aud) => ["school_wide", "parents"].includes(aud));
+    if (activeRole === "student") return a.audience.some((aud) => ["school_wide", "students", "grade_specific"].includes(aud));
+    return a.audience.includes("school_wide");
+  });
+
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<AnnouncementCategory | "all">("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [form, setForm] = useState({
+    title: "", body: "", category: "academic" as AnnouncementCategory,
+    audience: ["school_wide"] as string[], isPinned: false,
+  });
 
   const filtered = roleAnnouncements.filter((a) => {
     const matchSearch = a.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -49,11 +71,27 @@ export default function AnnouncementsPage() {
     return matchSearch && matchCat;
   });
 
-  const pinned = filtered.filter((a) => a.isPinned && !a.isScheduled);
+  const pinned   = filtered.filter((a) => a.isPinned && !a.isScheduled);
   const scheduled = filtered.filter((a) => a.isScheduled);
-  const regular = filtered.filter((a) => !a.isPinned && !a.isScheduled);
+  const regular  = filtered.filter((a) => !a.isPinned && !a.isScheduled);
 
-  const cats: (AnnouncementCategory | "all")[] = ["all", "urgent", "academic", "event", "sports", "achievement", "administrative"];
+  const handleCreate = () => {
+    if (!form.title.trim() || !form.body.trim()) return;
+    addAnnouncement({
+      title: form.title,
+      body: form.body,
+      category: form.category,
+      audience: form.audience as any,
+      isPinned: form.isPinned,
+      isScheduled: false,
+      totalAudience: 1247,
+      author: { name: user?.name || "Admin", role: activeRole, avatar: user?.name?.slice(0, 2).toUpperCase() || "AD" },
+      tags: [form.category],
+      attachments: [],
+    });
+    setCreating(false);
+    setForm({ title: "", body: "", category: "academic", audience: ["school_wide"], isPinned: false });
+  };
 
   return (
     <div className="space-y-5">
@@ -63,20 +101,19 @@ export default function AnnouncementsPage() {
         breadcrumbs={[{ label: "Communication" }, { label: "Announcements" }]}
         actions={
           (activeRole === "admin" || activeRole === "teacher") && (
-            <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" onClick={() => setCreating(true)}>
               <Plus className="h-4 w-4" /> New Announcement
             </Button>
           )
         }
       />
 
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Published", value: roleAnnouncements.filter((a) => !a.isScheduled).length, color: "bg-blue-50 text-blue-700" },
-          { label: "Pinned", value: roleAnnouncements.filter((a) => a.isPinned).length, color: "bg-amber-50 text-amber-700" },
-          { label: "Scheduled", value: roleAnnouncements.filter((a) => a.isScheduled).length, color: "bg-violet-50 text-violet-700" },
-          { label: "Total Reach", value: "1,247", color: "bg-emerald-50 text-emerald-700" },
+          { label: "Pinned",    value: roleAnnouncements.filter((a) => a.isPinned).length,      color: "bg-amber-50 text-amber-700" },
+          { label: "Scheduled", value: roleAnnouncements.filter((a) => a.isScheduled).length,   color: "bg-violet-50 text-violet-700" },
+          { label: "Total Reach", value: "1,247",                                                color: "bg-emerald-50 text-emerald-700" },
         ].map((s) => (
           <Card key={s.label} className={s.color}>
             <CardContent className="p-4">
@@ -87,7 +124,6 @@ export default function AnnouncementsPage() {
         ))}
       </div>
 
-      {/* Search + Filter */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -95,21 +131,16 @@ export default function AnnouncementsPage() {
         </div>
         <div className="flex gap-1.5 overflow-x-auto">
           {cats.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCatFilter(cat)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap capitalize border transition-all",
+            <button key={cat} onClick={() => setCatFilter(cat)}
+              className={cn("px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap capitalize border transition-all",
                 catFilter === cat ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted text-muted-foreground"
-              )}
-            >
+              )}>
               {cat === "all" ? "All" : categoryStyle[cat as AnnouncementCategory]?.label || cat}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Pinned */}
       {pinned.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -122,7 +153,6 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
-      {/* Scheduled */}
       {scheduled.length > 0 && (activeRole === "admin" || activeRole === "teacher") && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -135,7 +165,6 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
-      {/* Regular */}
       {regular.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -154,15 +183,76 @@ export default function AnnouncementsPage() {
           <p className="text-sm">No announcements found</p>
         </div>
       )}
+
+      {/* Create Announcement Dialog */}
+      <Dialog open={creating} onOpenChange={setCreating}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>New Announcement</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Title</label>
+              <Input value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Announcement title..." />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Category</label>
+              <div className="flex flex-wrap gap-2">
+                {(Object.keys(categoryStyle) as AnnouncementCategory[]).map((cat) => (
+                  <button key={cat} onClick={() => setForm((p) => ({ ...p, category: cat }))}
+                    className={cn("px-3 py-1.5 rounded-full text-xs font-medium border capitalize transition-all",
+                      form.category === cat ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted text-muted-foreground"
+                    )}>
+                    {categoryStyle[cat].label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Audience</label>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(audienceLabel).map(([key, label]) => (
+                  <button key={key} onClick={() => setForm((p) => ({
+                    ...p,
+                    audience: p.audience.includes(key) ? p.audience.filter((a) => a !== key) : [...p.audience, key],
+                  }))}
+                    className={cn("px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+                      form.audience.includes(key) ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted text-muted-foreground"
+                    )}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Content</label>
+              <textarea
+                value={form.body}
+                onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
+                placeholder="Write the announcement content..."
+                rows={5}
+                className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.isPinned} onChange={(e) => setForm((p) => ({ ...p, isPinned: e.target.checked }))} className="rounded" />
+              <span className="text-sm">Pin this announcement</span>
+            </label>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreating(false)}>Cancel</Button>
+            <Button onClick={handleCreate} disabled={!form.title.trim() || !form.body.trim()} className="gap-2">
+              <Megaphone className="h-4 w-4" /> Publish
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 function AnnouncementCard({ a, expanded, setExpanded, isScheduled }: {
-  a: Announcement;
-  expanded: string | null;
-  setExpanded: (id: string | null) => void;
-  isScheduled?: boolean;
+  a: Announcement; expanded: string | null; setExpanded: (id: string | null) => void; isScheduled?: boolean;
 }) {
   const isOpen = expanded === a.id;
   const cat = categoryStyle[a.category];
@@ -196,12 +286,9 @@ function AnnouncementCard({ a, expanded, setExpanded, isScheduled }: {
             <div className={cn("text-sm text-muted-foreground leading-relaxed", !isOpen && "line-clamp-2")}>
               {a.body}
             </div>
-
             {a.body.length > 200 && (
-              <button
-                onClick={() => setExpanded(isOpen ? null : a.id)}
-                className="text-xs text-primary font-medium mt-1 hover:underline"
-              >
+              <button onClick={() => setExpanded(isOpen ? null : a.id)}
+                className="text-xs text-primary font-medium mt-1 hover:underline">
                 {isOpen ? "Show less" : "Read more"}
               </button>
             )}
@@ -211,11 +298,7 @@ function AnnouncementCard({ a, expanded, setExpanded, isScheduled }: {
                 {a.audience.map((aud) => (
                   <Badge key={aud} variant="secondary" className="text-[10px]">{audienceLabel[aud] || aud}</Badge>
                 ))}
-                {a.gradeFilter && a.gradeFilter.map((g) => (
-                  <Badge key={g} className="text-[10px] bg-blue-50 text-blue-700">{g}</Badge>
-                ))}
               </div>
-
               <div className="ml-auto flex items-center gap-3">
                 {!isScheduled && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -229,8 +312,7 @@ function AnnouncementCard({ a, expanded, setExpanded, isScheduled }: {
                 )}
                 {a.attachments && a.attachments.length > 0 && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Paperclip className="h-3 w-3" />
-                    <span>{a.attachments.length}</span>
+                    <Paperclip className="h-3 w-3" /><span>{a.attachments.length}</span>
                   </div>
                 )}
               </div>
