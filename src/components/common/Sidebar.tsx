@@ -6,7 +6,7 @@ import {
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
   UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
   Home, FileText, Bell, Megaphone, CheckSquare,
-  Calendar, Mail, Shield, Activity, BookUser, GraduationCap,
+  Calendar, Mail, Shield, BookUser, GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
@@ -14,120 +14,135 @@ import { useRoleStore, roleConfig } from "@/store/useRoleStore";
 import { Button } from "@/components/ui/button";
 import { getUnreadCount } from "@/lib/mockData/notifications";
 
+// ─── Navigation definitions (ordered by role-specific demo priority) ──────────
+// Priority order = demo journey top → most important first → secondary → settings
 const navByRole = {
+  // Admin journey: Dashboard → Students → Attendance → Finance → Messages
   admin: [
-    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { label: "Students", href: "/students", icon: Users },
-    { label: "Admissions", href: "/admissions", icon: UserCheck },
-    { label: "Academics", href: "/academics", icon: BookOpen },
-    { label: "Attendance", href: "/attendance", icon: ClipboardList },
-    { label: "Finance", href: "/fees", icon: DollarSign },
+    { label: "Dashboard",        href: "/admin",              icon: LayoutDashboard },
+    { label: "Students",         href: "/students",           icon: Users },
+    { label: "Attendance",       href: "/attendance",         icon: ClipboardList },
+    { label: "Finance",          href: "/fees",               icon: DollarSign },
+    { label: "Admissions",       href: "/admissions",         icon: UserCheck },
+    { label: "Academics",        href: "/academics",          icon: BookOpen },
     { group: "Directories" },
-    { label: "Student Directory", href: "/directory/students", icon: BookUser },
-    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
-    { label: "Parent Directory", href: "/directory/parents", icon: Users },
+    { label: "Student Directory",  href: "/directory/students", icon: BookUser },
+    { label: "Teacher Directory",  href: "/directory/teachers", icon: GraduationCap },
+    { label: "Parent Directory",   href: "/directory/parents",  icon: Users },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
-    { label: "Tasks", href: "/tasks", icon: CheckSquare },
-    { group: "Security" },
-    { label: "Audit Center", href: "/audit", icon: Shield },
-    { group: "Intelligence" },
-    { label: "AI Insights", href: "/ai-insights", icon: Sparkles },
-    { label: "Settings", href: "/settings", icon: Settings },
+    { label: "Messages",         href: "/messages",           icon: Mail,       badge: "messages" },
+    { label: "Notifications",    href: "/notifications",      icon: Bell,       badge: "notif" },
+    { label: "Announcements",    href: "/announcements",      icon: Megaphone },
+    { label: "Meetings",         href: "/meetings",           icon: Calendar },
+    { label: "Tasks",            href: "/tasks",              icon: CheckSquare },
+    { group: "Intelligence & Security" },
+    { label: "AI Insights",      href: "/ai-insights",        icon: Sparkles },
+    { label: "Audit Center",     href: "/audit",              icon: Shield },
+    { label: "Settings",         href: "/settings",           icon: Settings },
   ],
+
+  // VP journey: Dashboard → Students → Attendance → Announcements → Messages
   vp1: [
-    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
-    { label: "My Students", href: "/directory/students", icon: Users },
-    { group: "Directories" },
-    { label: "Student Directory", href: "/directory/students", icon: BookUser },
-    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
-    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
+    { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
+    { label: "My Students",        href: "/directory/students",  icon: Users },
+    { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { label: "Announcements",      href: "/announcements",       icon: Megaphone },
+    { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
+    { label: "Notifications",      href: "/notifications",       icon: Bell,     badge: "notif" },
+    { label: "Meetings",           href: "/meetings",            icon: Calendar },
+    { group: "Directories" },
+    { label: "Student Directory",  href: "/directory/students",  icon: BookUser },
+    { label: "Teacher Directory",  href: "/directory/teachers",  icon: GraduationCap },
+    { label: "Parent Directory",   href: "/directory/parents",   icon: BookUser },
     { group: "Intelligence" },
-    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+    { label: "AI Assistant",       href: "/ai-insights",         icon: Sparkles },
   ],
+
   vp2: [
-    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
-    { label: "My Students", href: "/directory/students", icon: Users },
-    { group: "Directories" },
-    { label: "Student Directory", href: "/directory/students", icon: BookUser },
-    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
-    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
+    { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
+    { label: "My Students",        href: "/directory/students",  icon: Users },
+    { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { label: "Announcements",      href: "/announcements",       icon: Megaphone },
+    { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
+    { label: "Notifications",      href: "/notifications",       icon: Bell,     badge: "notif" },
+    { label: "Meetings",           href: "/meetings",            icon: Calendar },
+    { group: "Directories" },
+    { label: "Student Directory",  href: "/directory/students",  icon: BookUser },
+    { label: "Teacher Directory",  href: "/directory/teachers",  icon: GraduationCap },
+    { label: "Parent Directory",   href: "/directory/parents",   icon: BookUser },
     { group: "Intelligence" },
-    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+    { label: "AI Assistant",       href: "/ai-insights",         icon: Sparkles },
   ],
+
   vp3: [
-    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
-    { label: "My Students", href: "/directory/students", icon: Users },
+    { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
+    { label: "My Students",        href: "/directory/students",  icon: Users },
+    { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { group: "Communication" },
+    { label: "Announcements",      href: "/announcements",       icon: Megaphone },
+    { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
+    { label: "Notifications",      href: "/notifications",       icon: Bell,     badge: "notif" },
+    { label: "Meetings",           href: "/meetings",            icon: Calendar },
     { group: "Directories" },
-    { label: "Student Directory", href: "/directory/students", icon: BookUser },
-    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
-    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
-    { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { label: "Student Directory",  href: "/directory/students",  icon: BookUser },
+    { label: "Teacher Directory",  href: "/directory/teachers",  icon: GraduationCap },
+    { label: "Parent Directory",   href: "/directory/parents",   icon: BookUser },
     { group: "Intelligence" },
-    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+    { label: "AI Assistant",       href: "/ai-insights",         icon: Sparkles },
   ],
+
+  // Teacher journey: Dashboard → Classes → Attendance → Homework → Messages
   teacher: [
-    { label: "Dashboard", href: "/teacher", icon: LayoutDashboard },
-    { label: "My Classes", href: "/teacher/classes", icon: BookOpen },
-    { label: "Attendance", href: "/teacher/attendance", icon: ClipboardList },
-    { label: "Homework", href: "/teacher/homework", icon: BookMarked },
-    { label: "Performance", href: "/teacher/performance", icon: TrendingUp },
-    { label: "Students", href: "/students", icon: Users },
+    { label: "Dashboard",    href: "/teacher",             icon: LayoutDashboard },
+    { label: "My Classes",   href: "/teacher/classes",     icon: BookOpen },
+    { label: "Attendance",   href: "/teacher/attendance",  icon: ClipboardList },
+    { label: "Homework",     href: "/teacher/homework",    icon: BookMarked },
+    { label: "My Students",  href: "/students",            icon: Users },
+    { label: "Performance",  href: "/teacher/performance", icon: TrendingUp },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
-    { label: "Tasks", href: "/tasks", icon: CheckSquare },
+    { label: "Messages",     href: "/messages",            icon: Mail,       badge: "messages" },
+    { label: "Meetings",     href: "/meetings",            icon: Calendar },
+    { label: "Tasks",        href: "/tasks",               icon: CheckSquare },
+    { label: "Notifications", href: "/notifications",      icon: Bell,       badge: "notif" },
+    { label: "Announcements", href: "/announcements",      icon: Megaphone },
     { group: "Intelligence" },
-    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
-    { label: "Settings", href: "/settings", icon: Settings },
+    { label: "AI Assistant", href: "/ai-insights",         icon: Sparkles },
+    { label: "Settings",     href: "/settings",            icon: Settings },
   ],
+
+  // Parent journey: My Child → Attendance → Marks → Fee Payment → Messages → Meetings
   parent: [
-    { label: "My Child", href: "/parent", icon: Home },
-    { label: "Attendance", href: "/parent/attendance", icon: ClipboardList },
-    { label: "Academics", href: "/parent/marks", icon: Award },
-    { label: "Timetable", href: "/parent/timetable", icon: CalendarDays },
-    { label: "Fee Payment", href: "/fees", icon: DollarSign },
+    { label: "My Child",     href: "/parent",              icon: Home },
+    { label: "Attendance",   href: "/parent/attendance",   icon: ClipboardList },
+    { label: "Marks",        href: "/parent/marks",        icon: Award },
+    { label: "Fee Payment",  href: "/fees",                icon: DollarSign },
+    { label: "Timetable",    href: "/parent/timetable",    icon: CalendarDays },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
-    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { label: "Messages",     href: "/messages",            icon: Mail,       badge: "messages" },
+    { label: "Meetings",     href: "/meetings",            icon: Calendar },
+    { label: "Notifications", href: "/notifications",      icon: Bell,       badge: "notif" },
+    { label: "Announcements", href: "/announcements",      icon: Megaphone },
     { group: "Intelligence" },
-    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+    { label: "AI Assistant", href: "/ai-insights",         icon: Sparkles },
   ],
+
+  // Student journey: Dashboard → Homework → Exams → Marks → Attendance → AI
   student: [
-    { label: "Dashboard", href: "/student-view", icon: LayoutDashboard },
-    { label: "My Attendance", href: "/student-view/attendance", icon: ClipboardList },
-    { label: "Homework", href: "/student-view/homework", icon: BookMarked },
-    { label: "Projects", href: "/student-view/projects", icon: FileText },
-    { label: "Exams", href: "/student-view/exams", icon: Award },
-    { label: "My Marks", href: "/student-view/marks", icon: TrendingUp },
-    { label: "Timetable", href: "/student-view/timetable", icon: CalendarDays },
+    { label: "Dashboard",       href: "/student-view",            icon: LayoutDashboard },
+    { label: "Homework",        href: "/student-view/homework",   icon: BookMarked },
+    { label: "Exams",           href: "/student-view/exams",      icon: Award },
+    { label: "My Marks",        href: "/student-view/marks",      icon: TrendingUp },
+    { label: "Attendance",      href: "/student-view/attendance", icon: ClipboardList },
+    { label: "Projects",        href: "/student-view/projects",   icon: FileText },
+    { label: "Timetable",       href: "/student-view/timetable",  icon: CalendarDays },
     { group: "Communication" },
-    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
-    { label: "Announcements", href: "/announcements", icon: Megaphone },
+    { label: "Messages",        href: "/messages",                icon: Mail,   badge: "messages" },
+    { label: "Notifications",   href: "/notifications",           icon: Bell,   badge: "notif" },
+    { label: "Announcements",   href: "/announcements",           icon: Megaphone },
     { group: "Intelligence" },
-    { label: "AI Study", href: "/ai-insights", icon: Sparkles },
+    { label: "AI Study",        href: "/ai-insights",             icon: Sparkles },
   ],
 };
 
@@ -145,7 +160,7 @@ export function Sidebar() {
   const msgCount = 12;
 
   const getBadgeCount = (badge?: string) => {
-    if (badge === "notif") return notifCount;
+    if (badge === "notif")    return notifCount;
     if (badge === "messages") return msgCount;
     return 0;
   };
@@ -157,8 +172,12 @@ export function Sidebar() {
         sidebarCollapsed ? "w-16" : "w-60"
       )}
     >
+      {/* Logo / role header */}
       <div className="flex items-center gap-2.5 px-4 py-4 border-b">
-        <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg font-bold text-sm shrink-0", cfg.bg, cfg.color)}>
+        <div className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-lg font-bold text-sm shrink-0",
+          cfg.bg, cfg.color
+        )}>
           {cfg.emoji}
         </div>
         {!sidebarCollapsed && (
@@ -169,24 +188,32 @@ export function Sidebar() {
         )}
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
         {navItems.map((item, idx) => {
+          // Group separator
           if ("group" in item && item.group) {
-            if (sidebarCollapsed) return (
-              <div key={`sep-${idx}`} className="my-2 border-t border-border/60" />
-            );
+            if (sidebarCollapsed) {
+              return <div key={`sep-${idx}`} className="my-2 border-t border-border/60" />;
+            }
             return (
               <div key={`group-${idx}`} className="pt-3 pb-1 px-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">{item.group}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                  {item.group}
+                </p>
               </div>
             );
           }
 
+          // Nav link
           const navItem = item as { label: string; href: string; icon: React.ElementType; badge?: string };
           const Icon = navItem.icon;
           const badgeCount = getBadgeCount(navItem.badge);
+
+          // Exact match for role home routes, prefix match for others
           const dashboardRoutes = ["/admin", "/teacher", "/parent", "/student-view", "/vp"];
-          const active = pathname === navItem.href ||
+          const active =
+            pathname === navItem.href ||
             (!dashboardRoutes.includes(navItem.href) && pathname.startsWith(navItem.href));
 
           return (
@@ -225,6 +252,7 @@ export function Sidebar() {
         })}
       </nav>
 
+      {/* Collapse toggle */}
       <Button
         variant="ghost"
         size="icon"

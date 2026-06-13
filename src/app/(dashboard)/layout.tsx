@@ -2,6 +2,7 @@ import { Sidebar } from "@/components/common/Sidebar";
 import { Topbar } from "@/components/common/Topbar";
 import { AIDrawer } from "@/components/common/AIDrawer";
 import { StartupValidator } from "@/components/common/StartupValidator";
+import { WelcomePanel } from "@/components/common/WelcomePanel";
 
 export default function DashboardLayout({
   children,
@@ -13,7 +14,10 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">
+          <WelcomePanel />
+          {children}
+        </main>
       </div>
       <AIDrawer />
       <StartupValidator />
