@@ -7,10 +7,19 @@ import { cn } from "@/lib/utils";
 
 const roleRoutes: Record<AppRole, string> = {
   admin: "/admin",
+  vp1: "/vp",
+  vp2: "/vp",
+  vp3: "/vp",
   teacher: "/teacher",
   parent: "/parent",
   student: "/student-view",
 };
+
+const roleGroups: { label: string; roles: AppRole[] }[] = [
+  { label: "Leadership", roles: ["admin", "vp1", "vp2", "vp3"] },
+  { label: "Staff", roles: ["teacher"] },
+  { label: "Family", roles: ["parent", "student"] },
+];
 
 export function RoleSwitcher() {
   const { activeRole, setRole } = useRoleStore();
@@ -49,31 +58,40 @@ export function RoleSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl border shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+        <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl border shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
           <div className="px-3 py-2 border-b bg-slate-50">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Switch Role</p>
           </div>
-          {(["admin", "teacher", "parent", "student"] as AppRole[]).map((role) => {
-            const cfg = roleConfig[role];
-            const active = role === activeRole;
-            return (
-              <button
-                key={role}
-                onClick={() => handleSelect(role)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors",
-                  active && "bg-slate-50"
-                )}
-              >
-                <span className="text-xl">{cfg.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <p className={cn("text-sm font-semibold", cfg.color)}>{cfg.label}</p>
-                  <p className="text-xs text-slate-400 truncate">{cfg.description}</p>
+          <div className="max-h-[420px] overflow-y-auto">
+            {roleGroups.map((group) => (
+              <div key={group.label}>
+                <div className="px-4 pt-2.5 pb-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{group.label}</p>
                 </div>
-                {active && <Check className="h-4 w-4 text-slate-400 shrink-0" />}
-              </button>
-            );
-          })}
+                {group.roles.map((role) => {
+                  const cfg = roleConfig[role];
+                  const active = role === activeRole;
+                  return (
+                    <button
+                      key={role}
+                      onClick={() => handleSelect(role)}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-slate-50 transition-colors",
+                        active && "bg-slate-50"
+                      )}
+                    >
+                      <span className="text-lg">{cfg.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn("text-sm font-semibold", cfg.color)}>{cfg.label}</p>
+                        <p className="text-xs text-slate-400 truncate">{cfg.description}</p>
+                      </div>
+                      {active && <Check className="h-4 w-4 text-slate-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

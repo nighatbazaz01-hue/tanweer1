@@ -12,19 +12,40 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { AIMessage } from "@/types";
 
-const roleGreetings = {
+const roleGreetings: Record<string, string> = {
   admin: "Hello, Dr. Khalid! I'm your AI Executive Assistant. I can provide real-time analytics, risk alerts, take actions like sending messages or generating reports. What would you like to do?",
+  vp1: "Hello! I'm your AI Assistant for Grades 1–4 (Lower Primary). I can surface at-risk students, attendance summaries, and teacher updates scoped to your division. What would you like to know?",
+  vp2: "Hello! I'm your AI Assistant for Grades 5–8 (Upper Primary). Ask me about attendance trends, student performance, or at-risk alerts — all scoped to your division.",
+  vp3: "Hello! I'm your AI Assistant for Grades 9–12 (Secondary). I can show you at-risk students, exam readiness, and attendance data for your division. What do you need?",
   teacher: "Hello, Dr. Sarah! I'm your AI Teaching Assistant. I can message parents, assign homework, find absent students, generate class summaries, and more. What do you need?",
   parent: "Hello! I'm the Tanweer Parent Assistant. I can tell you about Ahmed's attendance, marks, contact his teachers, check upcoming exams, and more. How can I help?",
   student: "Hey Ahmed! 👋 I'm your AI Study Assistant. I can help you prepare for exams, track homework, generate study plans, and give you tips. What do you need help with?",
 };
 
-const roleSuggestions = {
+const roleSuggestions: Record<string, string[]> = {
   admin: [
     "Show school health summary",
     "Which students are at highest risk?",
     "Generate school performance report",
     "Send attendance alert to all parents",
+  ],
+  vp1: [
+    "Who are the at-risk students in Grades 1–4?",
+    "Show attendance summary for my division",
+    "Which Grade 1–4 teachers need attention?",
+    "Generate Lower Primary performance report",
+  ],
+  vp2: [
+    "Who are the at-risk students in Grades 5–8?",
+    "Show attendance summary for my division",
+    "Which Grade 5–8 sections have low attendance?",
+    "Generate Upper Primary performance report",
+  ],
+  vp3: [
+    "Who are the at-risk students in Grades 9–12?",
+    "Show attendance summary for my division",
+    "Which students need exam intervention?",
+    "Generate Secondary division performance report",
   ],
   teacher: [
     "Message Ahmed's parents about Physics",
@@ -71,6 +92,29 @@ interface AIResponseData {
   actionDetail?: string;
 }
 
+const vpResponse = (gradeLabel: string, gradeRange: string, startGrade: number): (msg: string) => AIResponseData => {
+  return (msg) => {
+    const m = msg.toLowerCase();
+    if (m.includes("at-risk") || m.includes("risk")) return {
+      text: `⚠️ **At-Risk Students — ${gradeLabel}:**\n\nBased on attendance and performance data for ${gradeRange}, there are students flagged with attendance below 80% or performance tier "at-risk".\n\n📌 Recommended actions:\n• Schedule parent outreach for high-risk cases\n• Assign mentoring sessions with grade counselor\n• Review attendance patterns weekly\n\nNavigate to the VP Dashboard for the full at-risk list with individual scores.`,
+    };
+    if (m.includes("attendance") || m.includes("summary")) return {
+      text: `📊 **Attendance Summary — ${gradeLabel}:**\n\n${gradeRange} Division\n• Average Attendance: ~${startGrade <= 4 ? "96.2" : startGrade <= 8 ? "93.6" : "92.4"}%\n• All 4 grades tracked daily\n\n📌 Attendance is reviewed weekly. Students below 85% are flagged automatically.\n\nView the full trend chart on your VP Dashboard.`,
+    };
+    if (m.includes("report") || m.includes("generate")) return {
+      text: `✅ **Division Performance Report Generated**\n\n${gradeLabel} — ${gradeRange}\n\nReport includes:\n• Grade-by-grade attendance breakdown\n• At-risk student list with contact details\n• Teacher assignment coverage\n• Upcoming exams and events\n\n📊 Report saved and ready for download.`,
+      action: "report_generated",
+      actionDetail: `${gradeLabel}_Performance_Report.pdf`,
+    };
+    if (m.includes("teacher")) return {
+      text: `👨‍🏫 **Teachers in ${gradeLabel}:**\n\nAll teachers assigned to ${gradeRange} are listed on your VP Dashboard under "Assigned Teachers".\n\n📌 To flag a concern or schedule a meeting with a specific teacher, navigate to the teacher's profile from the Teacher Directory.`,
+    };
+    return {
+      text: `I can help you manage ${gradeLabel}. Try asking:\n\n• "Who are the at-risk students?"\n• "Show attendance summary for my division"\n• "Generate division performance report"\n• "Which teachers need attention?"\n\nAll data is scoped exclusively to ${gradeRange}.`,
+    };
+  };
+};
+
 const roleResponses: Record<string, (msg: string) => AIResponseData> = {
   admin: (msg) => {
     const m = msg.toLowerCase();
@@ -86,9 +130,9 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       actionDetail: "Q2_School_Performance_Report.pdf",
     };
     if (m.includes("alert") || m.includes("send") || m.includes("parent")) return {
-      text: "📨 **Attendance Alert Dispatched**\n\nSent to: 847 parent accounts\nMessage: 'Reminder — school attendance is now tracked daily. Students with <90% attendance will be flagged for intervention.'\n\nDelivery channel: Parent Portal + SMS\nExpected reach: 94% within 2 hours.",
+      text: "📨 **Attendance Alert Dispatched**\n\nSent to: 600 parent accounts\nMessage: 'Reminder — school attendance is now tracked daily. Students with <90% attendance will be flagged for intervention.'\n\nDelivery channel: Parent Portal + SMS\nExpected reach: 94% within 2 hours.",
       action: "alert_sent",
-      actionDetail: "Attendance reminder sent to 847 parents",
+      actionDetail: "Attendance reminder sent to 600 parents",
     };
     if (m.includes("fee") || m.includes("collection")) return {
       text: "💰 **Fee Collection — June 2024**\n\n• Target: SAR 2,140,000\n• Collected: SAR 1,873,500 (87.5%)\n• Gap: SAR 266,500\n\nOverdue accounts: 128 students\nAI predicts 15 students will default.\n\n📌 Recommendation: Send automated reminders to 43 accounts overdue >30 days.",
@@ -102,6 +146,9 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       text: "I can help you analyze that. Al-Noor Academy has a health score of 87/100. The main areas to watch are fee collection (87.5%) and the 23 at-risk students. Try asking me to 'generate school report' or 'send attendance alert to parents'.",
     };
   },
+  vp1: vpResponse("Grades 1–4", "Lower Primary (Grades 1–4)", 1),
+  vp2: vpResponse("Grades 5–8", "Upper Primary (Grades 5–8)", 5),
+  vp3: vpResponse("Grades 9–12", "Secondary (Grades 9–12)", 9),
   teacher: (msg) => {
     const m = msg.toLowerCase();
     if (m.includes("message") && (m.includes("parent") || m.includes("ahmed"))) return {

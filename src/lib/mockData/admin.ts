@@ -1,8 +1,8 @@
 export const adminStats = {
   schoolHealthScore: 87,
-  totalStudents: 1247,
-  totalTeachers: 86,
-  totalParents: 1103,
+  totalStudents: 600,
+  totalTeachers: 50,
+  totalParents: 600,
   attendanceRate: 94.3,
   feeCollectionRate: 87.5,
   teacherAttendanceRate: 97.1,

@@ -12,6 +12,9 @@ import { getUnreadCount } from "@/lib/mockData/notifications";
 
 const roleNames: Record<string, { name: string; subtitle: string }> = {
   admin: { name: "Dr. Khalid Al-Mansouri", subtitle: "Principal" },
+  vp1: { name: "Dr. Khalid Al-Otaibi", subtitle: "VP · Grades 1–4" },
+  vp2: { name: "Ms. Nora Al-Zahrani", subtitle: "VP · Grades 5–8" },
+  vp3: { name: "Mr. Faris Al-Mutairi", subtitle: "VP · Grades 9–12" },
   teacher: { name: "Dr. Sarah Al-Hamdan", subtitle: "Mathematics · Grade 10" },
   parent: { name: "Mohammed Al-Rashidi", subtitle: "Ahmed's Father" },
   student: { name: "Ahmed Al-Rashidi", subtitle: "Grade 10-A · STU-2024-001" },

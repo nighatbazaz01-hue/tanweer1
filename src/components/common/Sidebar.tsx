@@ -6,7 +6,7 @@ import {
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
   UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
   Home, FileText, Bell, Megaphone, CheckSquare,
-  Calendar, Mail, Shield, Activity,
+  Calendar, Mail, Shield, Activity, BookUser, GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
@@ -22,6 +22,10 @@ const navByRole = {
     { label: "Academics", href: "/academics", icon: BookOpen },
     { label: "Attendance", href: "/attendance", icon: ClipboardList },
     { label: "Finance", href: "/fees", icon: DollarSign },
+    { group: "Directories" },
+    { label: "Student Directory", href: "/directory/students", icon: BookUser },
+    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
+    { label: "Parent Directory", href: "/directory/parents", icon: Users },
     { group: "Communication" },
     { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
     { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
@@ -33,6 +37,51 @@ const navByRole = {
     { group: "Intelligence" },
     { label: "AI Insights", href: "/ai-insights", icon: Sparkles },
     { label: "Settings", href: "/settings", icon: Settings },
+  ],
+  vp1: [
+    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
+    { label: "My Students", href: "/directory/students", icon: Users },
+    { group: "Directories" },
+    { label: "Student Directory", href: "/directory/students", icon: BookUser },
+    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
+    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
+    { group: "Communication" },
+    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
+    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
+    { label: "Announcements", href: "/announcements", icon: Megaphone },
+    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { group: "Intelligence" },
+    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+  ],
+  vp2: [
+    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
+    { label: "My Students", href: "/directory/students", icon: Users },
+    { group: "Directories" },
+    { label: "Student Directory", href: "/directory/students", icon: BookUser },
+    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
+    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
+    { group: "Communication" },
+    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
+    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
+    { label: "Announcements", href: "/announcements", icon: Megaphone },
+    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { group: "Intelligence" },
+    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
+  ],
+  vp3: [
+    { label: "VP Dashboard", href: "/vp", icon: LayoutDashboard },
+    { label: "My Students", href: "/directory/students", icon: Users },
+    { group: "Directories" },
+    { label: "Student Directory", href: "/directory/students", icon: BookUser },
+    { label: "Teacher Directory", href: "/directory/teachers", icon: GraduationCap },
+    { label: "Parent Directory", href: "/directory/parents", icon: BookUser },
+    { group: "Communication" },
+    { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
+    { label: "Notifications", href: "/notifications", icon: Bell, badge: "notif" },
+    { label: "Announcements", href: "/announcements", icon: Megaphone },
+    { label: "Meetings", href: "/meetings", icon: Calendar },
+    { group: "Intelligence" },
+    { label: "AI Assistant", href: "/ai-insights", icon: Sparkles },
   ],
   teacher: [
     { label: "Dashboard", href: "/teacher", icon: LayoutDashboard },
@@ -91,7 +140,7 @@ export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { activeRole } = useRoleStore();
   const cfg = roleConfig[activeRole];
-  const navItems = navByRole[activeRole] as NavItem[];
+  const navItems = (navByRole[activeRole] ?? navByRole.admin) as NavItem[];
   const notifCount = getUnreadCount(activeRole);
   const msgCount = 12;
 
@@ -136,14 +185,13 @@ export function Sidebar() {
           const navItem = item as { label: string; href: string; icon: React.ElementType; badge?: string };
           const Icon = navItem.icon;
           const badgeCount = getBadgeCount(navItem.badge);
+          const dashboardRoutes = ["/admin", "/teacher", "/parent", "/student-view", "/vp"];
           const active = pathname === navItem.href ||
-            (navItem.href !== "/admin" && navItem.href !== "/teacher" &&
-             navItem.href !== "/parent" && navItem.href !== "/student-view" &&
-             pathname.startsWith(navItem.href));
+            (!dashboardRoutes.includes(navItem.href) && pathname.startsWith(navItem.href));
 
           return (
             <Link
-              key={navItem.href}
+              key={`${navItem.href}-${idx}`}
               href={navItem.href}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
