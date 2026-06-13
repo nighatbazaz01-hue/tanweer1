@@ -24,7 +24,9 @@ export const VP_GRADE_RANGES: Record<"vp1" | "vp2" | "vp3", [number, number]> = 
 
 // ─── Demo Persona Bindings (mock system) ──────────────────────────────────────
 // Teacher persona: Dr. Sarah Al-Hamdan teaches Grade 10-A Mathematics
-export const DEMO_TEACHER_NAME = "Dr. Sarah Al-Hamdan";
+// TCH-003 is pinned in population.ts getAllTeachers() at i=2 (grades 9–12 group)
+export const DEMO_TEACHER_ID    = "TCH-003";
+export const DEMO_TEACHER_NAME  = "Dr. Sarah Al-Hamdan";
 export const DEMO_TEACHER_GRADE = 10;
 export const DEMO_TEACHER_SECTION: "A" | "B" | "C" | "D" = "A";
 
@@ -82,7 +84,7 @@ export function filterTeachersForRole(teachers: Teacher[], role: AppRole): Teach
     case "vp1":     return teachers.filter((t) => t.assignedGrades.some((g) => g >= 1 && g <= 4));
     case "vp2":     return teachers.filter((t) => t.assignedGrades.some((g) => g >= 5 && g <= 8));
     case "vp3":     return teachers.filter((t) => t.assignedGrades.some((g) => g >= 9 && g <= 12));
-    case "teacher": return teachers.filter((t) => t.name === DEMO_TEACHER_NAME);
+    case "teacher": return teachers.filter((t) => t.id === DEMO_TEACHER_ID);
     default:        return [];
   }
 }

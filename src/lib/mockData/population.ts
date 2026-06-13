@@ -160,6 +160,27 @@ export function getAllTeachers(): Teacher[] {
   const result: Teacher[] = [];
 
   for (let i = 0; i < 50; i++) {
+    // ── Demo teacher persona: always TCH-003, Dr. Sarah Al-Hamdan ─────────────
+    // i=2 → gradeGroupIdx=2 → grades 9–12 (includes Grade 10-A). Pinned so
+    // filterTeachersForRole('teacher') can reliably match by ID = "TCH-003".
+    if (i === 2) {
+      result.push({
+        id: "TCH-003",
+        name: "Dr. Sarah Al-Hamdan",
+        gender: "female",
+        subject: "Mathematics",
+        qualification: "Ph.D. Mathematics",
+        assignedGrades: [9, 10, 11, 12],
+        assignedSections: ["9-A", "9-B", "10-A", "10-B", "11-A", "11-B", "12-A", "12-B"],
+        employeeId: "TCH-003",
+        phone: "+966 512345678",
+        email: "sarah.hamdan@tanweer.edu",
+        avatar: "SH",
+        yearsExperience: 15,
+      });
+      continue;
+    }
+
     const seed = i * 31 + 7;
     const isMale = seededRandom(seed * 2) > 0.45;
     const firstName = isMale

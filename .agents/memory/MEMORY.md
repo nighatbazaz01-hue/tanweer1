@@ -1,3 +1,4 @@
 - [Permission Engine](permissions-engine.md) — all role-based data filtering must use src/lib/permissions.ts, never ad-hoc inline filters
 - [Data Store Architecture](data-store-arch.md) — useDataStore is the single source of truth; every action emits a structured AppEvent to eventLog
 - [System Health Dashboard](system-health.md) — dev-only page at /system-health; validator lives in src/lib/systemHealth.ts (pure fn, no hooks)
+- [Architecture Lock](architecture-lock.md) — enforced by architectureRules.ts (contracts) + devGuard.ts (runtime checker) + StartupValidator.tsx (console logger on mount)
