@@ -15,11 +15,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAllParents } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterParentsForRole, getRoleScopeLabel } from "@/lib/permissions";
 
 const PAGE_SIZE = 20;
 
 export default function ParentDirectoryPage() {
-  const allParents = useMemo(() => getAllParents(), []);
+  const { activeRole } = useRoleStore();
+  const allParents = useMemo(() => filterParentsForRole(getAllParents(), activeRole), [activeRole]);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState("all");
   const [page, setPage] = useState(1);

@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getAllStudents } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterStudentsForRole, getRoleScopeLabel } from "@/lib/permissions";
 
 const tierVariant: Record<string, "success" | "destructive" | "warning" | "secondary"> = {
   top: "success",
@@ -19,7 +21,8 @@ const tierVariant: Record<string, "success" | "destructive" | "warning" | "secon
 const PAGE_SIZE = 40;
 
 export default function StudentsPage() {
-  const allStudents = useMemo(() => getAllStudents(), []);
+  const { activeRole } = useRoleStore();
+  const allStudents = useMemo(() => filterStudentsForRole(getAllStudents(), activeRole), [activeRole]);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
   const [page, setPage] = useState(1);
@@ -43,7 +46,7 @@ export default function StudentsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Students"
-        description={`${allStudents.length.toLocaleString()} enrolled students across Grades 1–12`}
+        description={`${allStudents.length.toLocaleString()} students · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Students" }]}
         actions={
           <Button size="sm" className="gap-2">

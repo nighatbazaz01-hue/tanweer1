@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAllTeachers } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterTeachersForRole, getRoleScopeLabel } from "@/lib/permissions";
 
 const PAGE_SIZE = 20;
 
@@ -31,7 +33,8 @@ const GRADE_GROUPS = [
 ];
 
 export default function TeacherDirectoryPage() {
-  const allTeachers = useMemo(() => getAllTeachers(), []);
+  const { activeRole } = useRoleStore();
+  const allTeachers = useMemo(() => filterTeachersForRole(getAllTeachers(), activeRole), [activeRole]);
   const [search, setSearch] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("all");
   const [gradeGroupFilter, setGradeGroupFilter] = useState("all");

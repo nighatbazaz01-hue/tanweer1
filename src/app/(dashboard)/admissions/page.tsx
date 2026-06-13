@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockAdmissionLeads } from "@/lib/mockData";
+import { useDataStore } from "@/store/useDataStore";
 import type { AdmissionLead } from "@/types";
 
 const statusConfig: Record<
@@ -27,7 +27,7 @@ const pipelineStages = [
 ];
 
 export default function AdmissionsPage() {
-  const leads = mockAdmissionLeads;
+  const { admissionLeads: leads, updateLeadStatus } = useDataStore();
 
   const getLeadsByStatus = (status: string) =>
     leads.filter((l) => l.status === status);
@@ -102,7 +102,12 @@ export default function AdmissionsPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <Button variant="outline" size="sm" className="text-xs">
+                    <Button variant="outline" size="sm" className="text-xs"
+                      onClick={() => {
+                        const next: AdmissionLead["status"][] = ["new","contacted","interview_scheduled","enrolled","rejected"];
+                        const idx = next.indexOf(lead.status);
+                        if (idx < next.length - 1) updateLeadStatus(lead.id, next[idx + 1]);
+                      }}>
                       Update
                     </Button>
                     <Button variant="ghost" size="sm" className="text-xs">

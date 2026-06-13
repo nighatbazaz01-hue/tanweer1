@@ -18,6 +18,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { type Announcement, type AnnouncementCategory } from "@/lib/mockData/announcements";
+import { filterAnnouncementsForRole, hasPermission } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const categoryStyle: Record<AnnouncementCategory, { color: string; icon: React.ElementType; label: string }> = {
@@ -46,13 +47,7 @@ export default function AnnouncementsPage() {
   const { user } = useAuthStore();
   const { announcements, addAnnouncement } = useDataStore();
 
-  const roleAnnouncements = announcements.filter((a) => {
-    if (activeRole === "admin") return true;
-    if (activeRole === "teacher") return a.audience.some((aud) => ["school_wide", "teachers", "department"].includes(aud));
-    if (activeRole === "parent") return a.audience.some((aud) => ["school_wide", "parents"].includes(aud));
-    if (activeRole === "student") return a.audience.some((aud) => ["school_wide", "students", "grade_specific"].includes(aud));
-    return a.audience.includes("school_wide");
-  });
+  const roleAnnouncements = filterAnnouncementsForRole(announcements, activeRole);
 
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<AnnouncementCategory | "all">("all");
@@ -100,7 +95,7 @@ export default function AnnouncementsPage() {
         description={`${roleAnnouncements.filter((a) => !a.isScheduled).length} published · ${roleAnnouncements.filter((a) => a.isScheduled).length} scheduled`}
         breadcrumbs={[{ label: "Communication" }, { label: "Announcements" }]}
         actions={
-          (activeRole === "admin" || activeRole === "teacher") && (
+          hasPermission(activeRole, "canCreateAnnouncements") && (
             <Button size="sm" className="gap-2" onClick={() => setCreating(true)}>
               <Plus className="h-4 w-4" /> New Announcement
             </Button>

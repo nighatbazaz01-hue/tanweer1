@@ -12,8 +12,11 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { generateFeeRecords, type PopulationFeeRecord, type FeeStatus } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterFeesForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 const statusConfig: Record<FeeStatus, {
   label: string; variant: "success" | "warning" | "destructive" | "secondary"; icon: React.ElementType;
@@ -27,8 +30,10 @@ const statusConfig: Record<FeeStatus, {
 const PAGE_SIZE = 30;
 
 export default function FeesPage() {
-  const allRecords = useMemo(() => generateFeeRecords(), []);
-  const [records, setRecords] = useState<PopulationFeeRecord[]>(allRecords);
+  const { activeRole } = useRoleStore();
+  const baseRecords = useMemo(() => filterFeesForRole(generateFeeRecords(), activeRole), [activeRole]);
+  const [records, setRecords] = useState<PopulationFeeRecord[]>(baseRecords);
+  useEffect(() => { setRecords(baseRecords); setPage(1); }, [baseRecords]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<FeeStatus | "all">("all");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
@@ -74,7 +79,7 @@ export default function FeesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Fee Management"
-        description="Track fee collection, payments, and outstanding balances"
+        description={`Fee records · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Finance" }, { label: "Fees" }]}
         actions={
           <Button size="sm" className="gap-2">

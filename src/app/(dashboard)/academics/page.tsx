@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { StatsCard } from "@/components/common/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockTeachers } from "@/lib/mockData";
+import { getAllTeachers } from "@/lib/mockData/population";
 
 const subjects = [
   { name: "Mathematics", teacher: "Dr. Sarah Al-Hamdan", grade: "Grade 10-12", students: 342 },
@@ -32,7 +32,7 @@ export default function AcademicsPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatsCard title="Subjects" value="12" subtitle="Active this semester" icon={BookOpen} iconClassName="bg-blue-500" />
-        <StatsCard title="Teachers" value={mockTeachers.length} subtitle="Academic staff" icon={Users} iconClassName="bg-green-500" />
+        <StatsCard title="Teachers" value={getAllTeachers().length} subtitle="Academic staff" icon={Users} iconClassName="bg-green-500" />
         <StatsCard title="Upcoming Exams" value="8" subtitle="This week" icon={FileText} iconClassName="bg-amber-500" />
         <StatsCard title="Classes" value="34" subtitle="Active sections" icon={Calendar} iconClassName="bg-violet-500" />
       </div>

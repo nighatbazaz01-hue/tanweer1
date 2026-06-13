@@ -15,6 +15,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { mockInboxStats, type Thread, type Message } from "@/lib/mockData/messages";
+import { filterThreadsForRole } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const priorityStyle: Record<string, string> = {
@@ -66,7 +67,8 @@ export default function MessagesPage() {
     avatar: roleAvatar[activeRole] || "U",
   };
 
-  const displayedThreads = threads.filter((t) => {
+  const roleThreads = filterThreadsForRole(threads, activeRole);
+  const displayedThreads = roleThreads.filter((t) => {
     if (activeFolder === "starred") return t.isStarred;
     if (activeFolder === "archived") return t.isArchived;
     return !t.isArchived;
@@ -77,8 +79,8 @@ export default function MessagesPage() {
     t.participants.some((p) => p.name.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const totalUnread = threads.reduce((acc, t) => acc + t.unreadCount, 0);
-  const starredCount = threads.filter((t) => t.isStarred).length;
+  const totalUnread = roleThreads.reduce((acc, t) => acc + t.unreadCount, 0);
+  const starredCount = roleThreads.filter((t) => t.isStarred).length;
 
   const handleSendReply = () => {
     if (!selectedThread || !replyBody.trim()) return;

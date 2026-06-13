@@ -1,0 +1,65 @@
+SYSTEM STABILIZATION PHASE (CRITICAL)
+
+DO NOT add any new features or UI changes.
+
+Your only goal is to convert the current app into a fully stable, production-like mock system.
+
+TASKS:
+
+1. CREATE A CENTRAL DATA ACCESS LAYER
+- Ensure ALL pages read/write data ONLY through a single unified data store (Zustand or equivalent already present)
+- Remove any remaining local/mock arrays inside components or pages
+- Enforce ONE source of truth for:
+  students, teachers, parents, messages, attendance, fees, announcements, meetings, tasks
+
+2. CREATE A ROLE PERMISSION ENGINE
+- Add a centralized permission file/module
+- Define strict rules:
+  Admin → full access
+  Vice Principal → only assigned grade groups
+  Teacher → only assigned classes/students
+  Parent → only their child
+  Student → only self data
+- Ensure all pages and components respect this logic BEFORE rendering data
+
+3. CONVERT ACTIONS INTO EVENT-BASED SYSTEM
+- Standardize all actions into events:
+  messageCreated
+  meetingCreated
+  announcementCreated
+  taskUpdated
+  attendanceUpdated
+- Ensure all updates go through this system instead of direct state mutation
+
+4. FIX DATA INCONSISTENCIES
+- Ensure ALL modules use the same unified population dataset (students, teachers, parents)
+- Remove any duplicate or legacy mock data files completely
+- Fix any charts or tables using outdated data sources
+
+5. VALIDATE CROSS-ROLE DATA VISIBILITY
+- Ensure:
+  Admin sees full dataset
+  VP sees only assigned grade group
+  Teacher sees only assigned students
+  Parent sees only their child
+  Student sees only self data
+
+6. FIX BROKEN UI ACTIONS (NO NEW FEATURES)
+- Ensure all buttons already present work correctly:
+  View / Details → open correct data modal or page
+  Send Message → updates store
+  Create Meeting → persists in store
+  Mark Attendance → updates correctly
+  All filters and search must reflect real data
+
+RULES:
+- Do NOT create new pages
+- Do NOT redesign UI
+- Do NOT add AI features
+- Do NOT add backend
+- Only fix, unify, and stabilize existing system
+
+OUTPUT REQUIRED:
+- List of issues found
+- Fixes applied
+- Confirmation that system is fully unified and stable

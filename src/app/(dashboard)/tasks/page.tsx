@@ -18,6 +18,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { type Task, type TaskStatus, type TaskPriority } from "@/lib/mockData/tasks";
+import { filterTasksForRole, hasPermission } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const statusStyle: Record<TaskStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
@@ -56,12 +57,7 @@ export default function TasksPage() {
   const { user } = useAuthStore();
   const { tasks, addTask, updateTaskStatus } = useDataStore();
 
-  const roleTasks = tasks.filter((t) => {
-    if (activeRole === "admin") return true;
-    const teacherNames = ["Dr. Sarah Al-Hamdan", "Mr. Khalid Al-Mutairi", "Mr. Faris Al-Shammari", "Mr. Hassan Al-Shehri"];
-    if (activeRole === "teacher") return teacherNames.includes(t.assignedTo.name) || teacherNames.includes(t.assignedBy.name);
-    return true;
-  });
+  const roleTasks = filterTasksForRole(tasks, activeRole);
 
   const [view, setView] = useState<"board" | "list">("list");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
@@ -120,9 +116,11 @@ export default function TasksPage() {
               <button onClick={() => setView("list")} className={cn("px-3 py-1.5 text-xs font-medium", view === "list" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground")}>List</button>
               <button onClick={() => setView("board")} className={cn("px-3 py-1.5 text-xs font-medium", view === "board" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground")}>Board</button>
             </div>
-            <Button size="sm" className="gap-2" onClick={() => setCreating(true)}>
-              <Plus className="h-4 w-4" /> New Task
-            </Button>
+            {hasPermission(activeRole, "canCreateTasks") && (
+              <Button size="sm" className="gap-2" onClick={() => setCreating(true)}>
+                <Plus className="h-4 w-4" /> New Task
+              </Button>
+            )}
           </div>
         }
       />

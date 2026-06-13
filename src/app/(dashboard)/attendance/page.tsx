@@ -12,7 +12,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { generateAttendanceRecords, type PopulationAttendanceRecord, type AttendanceStatus } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterAttendanceForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 const statusConfig: Record<AttendanceStatus, {
   label: string; variant: "success" | "destructive" | "warning" | "secondary"; icon: React.ElementType; color: string;
@@ -26,8 +29,10 @@ const statusConfig: Record<AttendanceStatus, {
 const PAGE_SIZE = 30;
 
 export default function AttendancePage() {
-  const allRecords = useMemo(() => generateAttendanceRecords(), []);
-  const [records, setRecords] = useState<PopulationAttendanceRecord[]>(allRecords);
+  const { activeRole } = useRoleStore();
+  const baseRecords = useMemo(() => filterAttendanceForRole(generateAttendanceRecords(), activeRole), [activeRole]);
+  const [records, setRecords] = useState<PopulationAttendanceRecord[]>(baseRecords);
+  useEffect(() => { setRecords(baseRecords); setPage(1); }, [baseRecords]);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<AttendanceStatus | "all">("all");
@@ -65,7 +70,7 @@ export default function AttendancePage() {
     <div className="space-y-6">
       <PageHeader
         title="Attendance"
-        description="Track and manage daily student attendance records"
+        description={`Attendance records · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Attendance" }]}
         actions={<Button size="sm">Mark Attendance</Button>}
       />

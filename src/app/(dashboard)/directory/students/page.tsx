@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAllStudents } from "@/lib/mockData/population";
+import { useRoleStore } from "@/store/useRoleStore";
+import { filterStudentsForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
@@ -26,7 +28,8 @@ const tierBadge: Record<string, { label: string; variant: "success" | "warning" 
 };
 
 export default function StudentDirectoryPage() {
-  const allStudents = useMemo(() => getAllStudents(), []);
+  const { activeRole } = useRoleStore();
+  const allStudents = useMemo(() => filterStudentsForRole(getAllStudents(), activeRole), [activeRole]);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState("all");
   const [sectionFilter, setSectionFilter] = useState("all");

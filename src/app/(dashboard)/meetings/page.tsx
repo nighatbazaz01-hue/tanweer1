@@ -18,6 +18,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { type Meeting, type RSVPStatus } from "@/lib/mockData/meetings";
+import { filterMeetingsForRole, hasPermission } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const typeColor: Record<string, string> = {
@@ -59,12 +60,7 @@ export default function MeetingsPage() {
   const { user } = useAuthStore();
   const { meetings, addMeeting, updateRSVP } = useDataStore();
 
-  const roleMeetings = meetings.filter((m) => {
-    if (activeRole === "admin") return true;
-    if (activeRole === "parent") return ["parent_teacher", "one_on_one"].includes(m.type);
-    if (activeRole === "student") return m.type === "one_on_one";
-    return true;
-  });
+  const roleMeetings = filterMeetingsForRole(meetings, activeRole);
 
   const [selected, setSelected] = useState<Meeting | null>(null);
   const [viewFilter, setViewFilter] = useState<"all" | "upcoming" | "completed">("all");
@@ -267,7 +263,7 @@ export default function MeetingsPage() {
         description={`${upcoming} upcoming · ${roleMeetings.filter((m) => m.status === "completed").length} completed`}
         breadcrumbs={[{ label: "Communication" }, { label: "Meetings" }]}
         actions={
-          (activeRole === "admin" || activeRole === "teacher") && (
+          hasPermission(activeRole, "canScheduleMeetings") && (
             <Button size="sm" className="gap-2" onClick={() => setScheduling(true)}>
               <Plus className="h-4 w-4" /> Schedule Meeting
             </Button>

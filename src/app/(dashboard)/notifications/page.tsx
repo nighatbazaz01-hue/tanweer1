@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { type NotifType } from "@/lib/mockData/notifications";
+import { filterNotificationsForRole } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const typeIcon: Record<NotifType, React.ElementType> = {
@@ -62,7 +63,7 @@ export default function NotificationsPage() {
   const { notifications, markNotificationRead, markAllNotificationsRead } = useDataStore();
   const [filter, setFilter] = useState<NotifType | "all">("all");
 
-  const roleNotifs = notifications.filter((n) => n.roles.includes(activeRole));
+  const roleNotifs = filterNotificationsForRole(notifications, activeRole);
   const filtered = filter === "all" ? roleNotifs : roleNotifs.filter((n) => n.type === filter);
   const unread = roleNotifs.filter((n) => !n.isRead).length;
 
