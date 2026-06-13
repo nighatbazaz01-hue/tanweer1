@@ -7,15 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore } from "@/store/useRoleStore";
-
-const riskStudents = [
-  { name: "Omar Al-Ghamdi",   grade: "Grade 11", risk: "Academic + Financial", score: 87, color: "text-red-600" },
-  { name: "Rayan Al-Barrak",  grade: "Grade 8",  risk: "Low Attendance",       score: 72, color: "text-amber-600" },
-  { name: "Sara Al-Qahtani",  grade: "Grade 9",  risk: "Academic Decline",     score: 65, color: "text-amber-600" },
-  { name: "Ali Al-Mansouri",  grade: "Grade 12", risk: "Fee Default Risk",     score: 58, color: "text-amber-600" },
-];
+import { atRiskStudents } from "@/lib/mockData/admin";
 
 const insights = [
   {
@@ -155,6 +150,7 @@ export default function AIInsightsPage() {
           ))}
         </div>
 
+        {/* At-Risk Students — sourced from shared admin mock data */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -163,14 +159,19 @@ export default function AIInsightsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {riskStudents.map((student, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
+            {atRiskStudents.map((student) => (
+              <div key={student.id} className="flex items-center gap-3 p-3 rounded-lg border">
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarFallback className="text-xs bg-red-100 text-red-700 font-semibold">
+                    {student.avatar}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{student.name}</p>
-                  <p className="text-xs text-muted-foreground">{student.grade} · {student.risk}</p>
+                  <p className="text-sm font-medium truncate">{student.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{student.grade} · {student.risk}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={`text-sm font-bold ${student.color}`}>{student.score}%</p>
+                  <p className="text-sm font-bold text-red-600">{student.score}%</p>
                   <p className="text-xs text-muted-foreground">Risk Score</p>
                 </div>
               </div>

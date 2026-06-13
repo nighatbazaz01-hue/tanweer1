@@ -6,7 +6,7 @@ import {
   Download, Lock, Megaphone, Calendar, FileText, X,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,10 +15,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TrendArea, GroupedBar, DonutChart, HorizontalBar } from "@/components/charts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useUIStore } from "@/store/useUIStore";
+import { useDataStore } from "@/store/useDataStore";
 import {
   adminStats, attendanceTrend, feeCollectionTrend, teacherAttendanceTrend,
   admissionFunnel, gradeDistribution, atRiskStudents, parentSatisfactionData, recentAlerts,
 } from "@/lib/mockData/admin";
+import { getAllStudents } from "@/lib/mockData/population";
 import { getActivityTimeline, securityMetrics, type AuditAction } from "@/lib/mockData/auditLogs";
 import { cn } from "@/lib/utils";
 
@@ -53,29 +55,39 @@ const alertSeverity: Record<string, "destructive" | "warning" | "info" | "succes
   high: "destructive", medium: "warning", info: "info", positive: "success",
 };
 
-// At-risk full list for dialog
-const fullAtRiskList = [
-  { name: "Omar Al-Ghamdi",  grade: "Grade 11-B", risk: "Academic + Fee Default",  score: 87, avatar: "OG" },
-  { name: "Rayan Al-Khalidi", grade: "Grade 8-C",  risk: "Attendance 71%",         score: 79, avatar: "RK" },
-  { name: "Sara Al-Qahtani", grade: "Grade 9-A",  risk: "Academic Decline",        score: 72, avatar: "SQ" },
-  { name: "Ali Al-Mansouri", grade: "Grade 12-B", risk: "Fee Default Risk",        score: 65, avatar: "AM" },
-  { name: "Lina Al-Dosari",  grade: "Grade 7-A",  risk: "Frequent Absences",       score: 61, avatar: "LD" },
-  { name: "Khalid Al-Barrak", grade: "Grade 10-C", risk: "Low Grades + Absences",  score: 58, avatar: "KB" },
-  { name: "Noura Al-Sayed",  grade: "Grade 8-B",  risk: "Academic Decline",        score: 54, avatar: "NS" },
-  { name: "Fahad Al-Otaibi", grade: "Grade 11-A", risk: "Fee Default",             score: 51, avatar: "FO" },
-];
-
-// Full activity timeline for dialog
-const fullTimeline = getActivityTimeline(50);
-
 export default function AdminDashboard() {
   const { toggleAiDrawer } = useUIStore();
+  const { students } = useDataStore();
   const activityFeed = getActivityTimeline(20);
   const feeChartData = feeCollectionTrend.map((d) => ({
     ...d,
     collected: Math.round(d.collected / 1000),
     target: Math.round(d.target / 1000),
   }));
+
+  // At-risk students derived from shared population + admin mock data
+  const extendedAtRiskList = useMemo(() => {
+    const fromPop = students
+      .filter((s) => s.performanceTier === "at-risk")
+      .slice(0, 15)
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        grade: `Grade ${s.grade}-${s.section}`,
+        risk: s.attendanceRate < 80 ? "Low Attendance + Academic" : "Academic Decline",
+        score: Math.round(70 + (1 - s.gpa / 4) * 30),
+        avatar: s.avatar,
+      }));
+    // Merge with admin curated list (admin list takes priority by id)
+    const adminIds = new Set(atRiskStudents.map((s) => s.id));
+    const merged = [
+      ...atRiskStudents,
+      ...fromPop.filter((s) => !adminIds.has(s.id)).slice(0, 8 - atRiskStudents.length),
+    ];
+    return merged;
+  }, [students]);
+
+  const fullTimeline = getActivityTimeline(50);
 
   const [atRiskOpen, setAtRiskOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
@@ -389,17 +401,18 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* At-Risk Full List Dialog */}
+      {/* At-Risk Full List Dialog — derived from shared store + admin data */}
       <Dialog open={atRiskOpen} onOpenChange={setAtRiskOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" /> At-Risk Students — Full List
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              At-Risk Students — {extendedAtRiskList.length} shown
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-2.5 max-h-96 overflow-y-auto py-2">
-            {fullAtRiskList.map((s, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
+            {extendedAtRiskList.map((s, i) => (
+              <div key={s.id || i} className="flex items-center gap-3 p-3 rounded-lg border">
                 <Avatar className="h-9 w-9 shrink-0">
                   <AvatarFallback className="text-xs bg-red-100 text-red-700 font-semibold">{s.avatar}</AvatarFallback>
                 </Avatar>

@@ -13,6 +13,7 @@ import { meetings as initialMeetings, type Meeting, type RSVPStatus } from "@/li
 import { tasks as initialTasks, type Task, type TaskStatus } from "@/lib/mockData/tasks";
 import { allNotifications, type Notification } from "@/lib/mockData/notifications";
 import { mockAdmissionLeads } from "@/lib/mockData";
+import { getAllStudents, type Student } from "@/lib/mockData/population";
 import type { AdmissionLead } from "@/types";
 
 // ─── Event System ─────────────────────────────────────────────────────────────
@@ -26,8 +27,12 @@ export type AppEventType =
   | "announcementCreated"
   | "taskCreated"
   | "taskUpdated"
-  | "attendanceUpdated"
+  | "attendanceSaved"
   | "leadStatusUpdated"
+  | "leadAdded"
+  | "studentAdded"
+  | "assignmentAdded"
+  | "parentMessageSent"
   | "notificationRead"
   | "allNotificationsRead";
 
@@ -62,19 +67,47 @@ let annCounter = 1000;
 let meetingCounter = 1000;
 let taskCounter = 1000;
 let notifCounter = 1000;
+let studentCounter = 1000;
+let leadCounter = 1000;
+let assignmentCounter = 1000;
+
+// ─── Assignment Type ──────────────────────────────────────────────────────────
+export interface Assignment {
+  id: string;
+  title: string;
+  grade: string;
+  dueDate: string;
+  points: number;
+  submitted: number;
+  total: number;
+  status: "active" | "completed";
+  createdAt: string;
+}
 
 // ─── Store Interface ──────────────────────────────────────────────────────────
 interface DataStore {
   // ── Entity State ──
+  students: Student[];
   threads: Thread[];
   announcements: Announcement[];
   meetings: Meeting[];
   tasks: Task[];
   notifications: Notification[];
   admissionLeads: AdmissionLead[];
+  assignments: Assignment[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
+
+  // ── Student Actions ──
+  addStudent: (
+    name: string,
+    grade: number,
+    section: string,
+    parentName: string,
+    parentPhone: string,
+    actor: string
+  ) => void;
 
   // ── Message Actions ──
   sendReply: (
@@ -109,17 +142,73 @@ interface DataStore {
 
   // ── Admissions Actions ──
   updateLeadStatus: (id: string, status: AdmissionLead["status"]) => void;
+  addLead: (
+    studentName: string,
+    gradeApplied: string,
+    parentName: string,
+    parentPhone: string,
+    parentEmail: string,
+    actor: string
+  ) => void;
+
+  // ── Attendance Actions ──
+  saveAttendance: (
+    grade: string,
+    presentCount: number,
+    absentCount: number,
+    lateCount: number,
+    actor: string
+  ) => void;
+
+  // ── Assignment Actions ──
+  addAssignment: (
+    title: string,
+    grade: string,
+    dueDate: string,
+    points: number,
+    total: number,
+    actor: string
+  ) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
 export const useDataStore = create<DataStore>((set) => ({
+  students:       getAllStudents(),
   threads:        JSON.parse(JSON.stringify(mockThreads)),
   announcements:  JSON.parse(JSON.stringify(initialAnnouncements)),
   meetings:       JSON.parse(JSON.stringify(initialMeetings)),
   tasks:          JSON.parse(JSON.stringify(initialTasks)),
   notifications:  JSON.parse(JSON.stringify(allNotifications)),
   admissionLeads: JSON.parse(JSON.stringify(mockAdmissionLeads)),
+  assignments:    [],
   eventLog:       [],
+
+  // ── Student Actions ──────────────────────────────────────────────────────
+
+  addStudent: (name, grade, section, parentName, parentPhone, actor) =>
+    set((state) => {
+      const id = `STU-NEW-${++studentCounter}`;
+      const newStudent: Student = {
+        id,
+        name,
+        grade,
+        section,
+        gpa: 0,
+        attendanceRate: 0,
+        performanceTier: "average",
+        parentName,
+        parentPhone,
+        parentEmail: `${parentName.toLowerCase().replace(/\s+/g, ".")}@email.com`,
+        gender: "male",
+        enrolledYear: 2026,
+        avatar: name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase(),
+      };
+      const event = makeEvent("studentAdded", actor, { studentId: id, name, grade, section });
+      return {
+        students: [newStudent, ...state.students],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
 
   // ── Message Actions ──────────────────────────────────────────────────────
 
@@ -323,6 +412,66 @@ export const useDataStore = create<DataStore>((set) => ({
       return {
         admissionLeads: state.admissionLeads.map((l) => l.id === id ? { ...l, status } : l),
         eventLog:       [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  addLead: (studentName, gradeApplied, parentName, parentPhone, parentEmail, actor) =>
+    set((state) => {
+      const id = `LEAD-NEW-${++leadCounter}`;
+      const newLead: AdmissionLead = {
+        id,
+        leadId: `ADM-${new Date().getFullYear()}-${leadCounter}`,
+        studentName,
+        gradeApplied,
+        parentName,
+        parentPhone,
+        parentEmail,
+        status: "new",
+        createdAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        schoolId: "SCH-001",
+      };
+      const event = makeEvent("leadAdded", actor, { leadId: id, studentName, gradeApplied });
+      return {
+        admissionLeads: [newLead, ...state.admissionLeads],
+        eventLog:       [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Attendance Actions ──────────────────────────────────────────────────
+
+  saveAttendance: (grade, presentCount, absentCount, lateCount, actor) =>
+    set((state) => {
+      const event = makeEvent("attendanceSaved", actor, {
+        grade,
+        present: presentCount,
+        absent:  absentCount,
+        late:    lateCount,
+        total:   presentCount + absentCount + lateCount,
+        date:    "Jun 13, 2026",
+      });
+      return { eventLog: [event, ...state.eventLog].slice(0, 100) };
+    }),
+
+  // ── Assignment Actions ──────────────────────────────────────────────────
+
+  addAssignment: (title, grade, dueDate, points, total, actor) =>
+    set((state) => {
+      const id = `ASN-${++assignmentCounter}`;
+      const newAssignment: Assignment = {
+        id,
+        title,
+        grade,
+        dueDate,
+        points,
+        submitted: 0,
+        total,
+        status:    "active",
+        createdAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      };
+      const event = makeEvent("assignmentAdded", actor, { assignmentId: id, title, grade, dueDate });
+      return {
+        assignments: [newAssignment, ...state.assignments],
+        eventLog:    [event, ...state.eventLog].slice(0, 100),
       };
     }),
 }));

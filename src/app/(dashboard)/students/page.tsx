@@ -10,8 +10,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { getAllStudents } from "@/lib/mockData/population";
+import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { filterStudentsForRole, getRoleScopeLabel } from "@/lib/permissions";
 import type { Student } from "@/lib/mockData/population";
 
@@ -25,21 +26,26 @@ const PAGE_SIZE = 40;
 
 export default function StudentsPage() {
   const { activeRole } = useRoleStore();
-  const allStudents = useMemo(() => filterStudentsForRole(getAllStudents(), activeRole), [activeRole]);
+  const { user } = useAuthStore();
+  const { students, addStudent } = useDataStore();
+
+  const allStudents = useMemo(
+    () => filterStudentsForRole(students, activeRole),
+    [students, activeRole]
+  );
+
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
   const [page, setPage] = useState(1);
 
-  // Add student dialog
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newGrade, setNewGrade] = useState("1");
+  const [newGrade, setNewGrade] = useState(1);
   const [newSection, setNewSection] = useState("A");
   const [newParent, setNewParent] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  // Profile dialog
   const [profileStudent, setProfileStudent] = useState<Student | null>(null);
 
   const filtered = useMemo(() => {
@@ -65,9 +71,10 @@ export default function StudentsPage() {
   const handleAddStudent = () => {
     if (!newName.trim()) return;
     const name = newName.trim();
+    addStudent(name, newGrade, newSection, newParent.trim(), newPhone.trim(), user?.name || "admin");
     setAddOpen(false);
-    setNewName(""); setNewGrade("1"); setNewSection("A"); setNewParent(""); setNewPhone("");
-    showToast(`Student "${name}" added successfully`);
+    setNewName(""); setNewGrade(1); setNewSection("A"); setNewParent(""); setNewPhone("");
+    showToast(`Student "${name}" added to Grade ${newGrade}-${newSection}`);
   };
 
   return (
@@ -154,11 +161,11 @@ export default function StudentsPage() {
                     <p className="text-xs text-muted-foreground">Section {student.section}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{student.gpa.toFixed(1)}</p>
+                    <p className="text-sm font-medium">{student.gpa > 0 ? student.gpa.toFixed(1) : "N/A"}</p>
                     <p className="text-xs text-muted-foreground">of 4.0</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{student.attendanceRate}%</p>
+                    <p className="text-sm font-medium">{student.attendanceRate > 0 ? `${student.attendanceRate}%` : "—"}</p>
                     <p className="text-xs text-muted-foreground">this term</p>
                   </div>
                   <Badge variant={tierVariant[student.performanceTier]} className="w-fit capitalize text-xs">
@@ -215,7 +222,7 @@ export default function StudentsPage() {
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">Grade</label>
                 <select className="w-full border rounded-md px-3 py-2 text-sm bg-background"
-                  value={newGrade} onChange={(e) => setNewGrade(e.target.value)}>
+                  value={newGrade} onChange={(e) => setNewGrade(parseInt(e.target.value))}>
                   {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => (
                     <option key={g} value={g}>Grade {g}</option>
                   ))}
@@ -275,8 +282,8 @@ export default function StudentsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: "GPA", value: `${profileStudent.gpa.toFixed(1)} / 4.0` },
-                  { label: "Attendance", value: `${profileStudent.attendanceRate}%` },
+                  { label: "GPA", value: profileStudent.gpa > 0 ? `${profileStudent.gpa.toFixed(1)} / 4.0` : "N/A" },
+                  { label: "Attendance", value: profileStudent.attendanceRate > 0 ? `${profileStudent.attendanceRate}%` : "—" },
                   { label: "Gender", value: profileStudent.gender === "male" ? "Male" : "Female" },
                   { label: "Enrolled", value: `${profileStudent.enrolledYear}` },
                 ].map(({ label, value }) => (
@@ -290,15 +297,15 @@ export default function StudentsPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Parent / Guardian</p>
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span>{profileStudent.parentName}</span>
+                  <span>{profileStudent.parentName || "—"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span>{profileStudent.parentPhone}</span>
+                  <span>{profileStudent.parentPhone || "—"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="truncate">{profileStudent.parentEmail}</span>
+                  <span className="truncate">{profileStudent.parentEmail || "—"}</span>
                 </div>
               </div>
             </div>

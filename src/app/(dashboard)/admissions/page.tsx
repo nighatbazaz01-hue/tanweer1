@@ -10,6 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { useDataStore } from "@/store/useDataStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { AdmissionLead } from "@/types";
 
 const statusConfig: Record<
@@ -23,17 +24,18 @@ const statusConfig: Record<
   rejected:             { label: "Rejected",            variant: "destructive" },
 };
 
-const pipelineStages = [
-  { key: "new", label: "New Leads" },
-  { key: "contacted", label: "Contacted" },
-  { key: "interview_scheduled", label: "Interview" },
-  { key: "enrolled", label: "Enrolled" },
-];
-
 const STATUS_ORDER: AdmissionLead["status"][] = ["new", "contacted", "interview_scheduled", "enrolled", "rejected"];
 
+const pipelineStages = [
+  { key: "new",                 label: "New Leads" },
+  { key: "contacted",           label: "Contacted" },
+  { key: "interview_scheduled", label: "Interview" },
+  { key: "enrolled",            label: "Enrolled" },
+];
+
 export default function AdmissionsPage() {
-  const { admissionLeads: leads, updateLeadStatus } = useDataStore();
+  const { admissionLeads: leads, updateLeadStatus, addLead } = useDataStore();
+  const { user } = useAuthStore();
 
   const [newOpen, setNewOpen] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
@@ -54,6 +56,14 @@ export default function AdmissionsPage() {
   const handleAddLead = () => {
     if (!newStudentName.trim() || !newParentName.trim()) return;
     const name = newStudentName.trim();
+    addLead(
+      name,
+      newGrade,
+      newParentName.trim(),
+      newPhone.trim(),
+      newEmail.trim(),
+      user?.name || "admin"
+    );
     setNewOpen(false);
     setNewStudentName(""); setNewGrade("Grade 1"); setNewParentName(""); setNewPhone(""); setNewEmail("");
     showToast(`Lead for "${name}" added to the pipeline`);
@@ -126,7 +136,7 @@ export default function AdmissionsPage() {
                     <p className="text-xs text-muted-foreground mt-1">
                       Applying for: <span className="font-medium">{lead.gradeApplied}</span>
                     </p>
-                    <div className="flex items-center gap-4 mt-2">
+                    <div className="flex items-center gap-4 mt-2 flex-wrap">
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <User className="h-3 w-3" /> {lead.parentName}
                       </span>
@@ -230,7 +240,9 @@ export default function AdmissionsPage() {
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Parent / Guardian</p>
                 <div className="flex items-center gap-2 text-sm"><User className="h-3.5 w-3.5 text-muted-foreground" /> {viewLead.parentName}</div>
-                <div className="flex items-center gap-2 text-sm"><Phone className="h-3.5 w-3.5 text-muted-foreground" /> {viewLead.parentPhone}</div>
+                {viewLead.parentPhone && (
+                  <div className="flex items-center gap-2 text-sm"><Phone className="h-3.5 w-3.5 text-muted-foreground" /> {viewLead.parentPhone}</div>
+                )}
                 {viewLead.parentEmail && (
                   <div className="flex items-center gap-2 text-sm"><Mail className="h-3.5 w-3.5 text-muted-foreground" /> {viewLead.parentEmail}</div>
                 )}

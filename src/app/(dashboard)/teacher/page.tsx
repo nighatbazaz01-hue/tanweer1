@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TrendArea, DonutChart } from "@/components/charts";
 import { useUIStore } from "@/store/useUIStore";
+import { useDataStore } from "@/store/useDataStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   teacherProfile, todaysClasses, classAttendanceToday, homeworkAssignments,
   studentPerformance, gradeDistribution, classRiskStudents,
@@ -35,6 +37,9 @@ const attendanceStatusStyle: Record<string, { label: string; color: string; icon
 
 export default function TeacherDashboard() {
   const { toggleAiDrawer } = useUIStore();
+  const { saveAttendance, addAssignment, createThread } = useDataStore();
+  const { user } = useAuthStore();
+
   const presentCount  = classAttendanceToday.filter((s) => s.status === "present").length;
   const absentCount   = classAttendanceToday.filter((s) => s.status === "absent").length;
   const lateCount     = classAttendanceToday.filter((s) => s.status === "late").length;
@@ -54,23 +59,38 @@ export default function TeacherDashboard() {
   };
 
   const handleSaveAttendance = () => {
+    saveAttendance("Grade 10-A", presentCount, absentCount, lateCount, user?.name || teacherProfile.name);
     showToast(`Attendance saved — ${presentCount} present, ${absentCount} absent, ${lateCount} late`);
   };
 
   const handleAddHw = () => {
     if (!hwTitle.trim()) return;
     const title = hwTitle.trim();
+    const points = parseInt(hwPoints) || 20;
+    addAssignment(title, "Grade 10-A", hwDue || "TBD", points, 32, user?.name || teacherProfile.name);
     setHwOpen(false);
     setHwTitle(""); setHwDue(""); setHwPoints("20");
-    showToast(`Homework "${title}" assigned to Grade 10-A`);
+    showToast(`"${title}" assigned to Grade 10-A`);
   };
 
   const handleSendContact = () => {
-    if (!contactStudent) return;
+    if (!contactStudent || !composeBody.trim()) return;
+    const from = {
+      name:   user?.name || teacherProfile.name,
+      role:   "Teacher",
+      avatar: (user?.name || teacherProfile.name).split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase(),
+    };
+    createThread(
+      `Regarding ${contactStudent.name} — Academic Support`,
+      `${contactStudent.name}'s Parent`,
+      composeBody,
+      "high",
+      from
+    );
     const name = contactStudent.name;
     setContactStudent(null);
     setComposeBody("");
-    showToast(`Message sent to ${name}&apos;s parent`);
+    showToast(`Message sent to ${name}'s parent`);
   };
 
   return (
@@ -304,7 +324,7 @@ export default function TeacherDashboard() {
                 <Button variant="outline" size="sm" className="w-full text-xs h-7 gap-1"
                   onClick={() => {
                     setContactStudent(s);
-                    setComposeBody(`Dear Parent,\n\nI am writing regarding ${s.name} who has been flagged as at-risk in my Mathematics class.\n\nAttendance: ${s.attendance}%\nLast assessment score: ${s.lastScore}/100\n\nI would appreciate scheduling a meeting to discuss a support plan.\n\nBest regards,\nDr. Sarah Al-Hamdan`);
+                    setComposeBody(`Dear Parent,\n\nI am writing regarding ${s.name} who has been flagged as at-risk in my Mathematics class.\n\nAttendance: ${s.attendance}%\nLast assessment score: ${s.lastScore}/100\n\nI would appreciate scheduling a meeting to discuss a support plan.\n\nBest regards,\n${user?.name || teacherProfile.name}`);
                   }}>
                   <Mail className="h-3 w-3" /> Contact Parent
                 </Button>
@@ -370,7 +390,9 @@ export default function TeacherDashboard() {
                 </Avatar>
                 <div>
                   <p className="font-medium text-sm">{contactStudent.name}</p>
-                  <p className="text-xs text-muted-foreground">Grade {contactStudent.grade} · {contactStudent.risk} Risk · Attendance: {contactStudent.attendance}%</p>
+                  <p className="text-xs text-muted-foreground">
+                    Grade {contactStudent.grade} · {contactStudent.risk} Risk · Attendance: {contactStudent.attendance}%
+                  </p>
                 </div>
               </div>
               <div>
