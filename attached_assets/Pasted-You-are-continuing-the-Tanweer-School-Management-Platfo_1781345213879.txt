@@ -1,0 +1,131 @@
+You are continuing the Tanweer School Management Platform (Next.js).
+
+🧠 CURRENT STATE SUMMARY
+
+This is a mock-based full SaaS school system demo with:
+
+- Multi-role system:
+  - Admin / Principal
+  - VP1 / VP2 / VP3 (grade-group scoped)
+  - Teachers
+  - Parents
+  - Students
+
+- Unified Zustand store (single source of truth)
+- 600 students + 50 teachers mock population system
+- Messaging, Meetings, Announcements, Tasks, Notifications (store-based)
+- Permission engine for role-based access
+- Event logging + system health checker
+- DevGuard runtime validation
+- Sidebar + Topbar layout system
+- AI Assistant (but currently needs separation)
+
+⚠️ CURRENT PROBLEMS TO FIX
+
+1. LOGIN SYSTEM IS MISSING (PRIORITY)
+Right now users switch roles manually — replace this with:
+
+Build Mock Authentication System:
+- Login page with:
+  - Email
+  - Password
+- OTP verification step (mock OTP, no backend)
+- After login → redirect to correct role dashboard
+
+Rules:
+- OTP required ONLY on first login
+- Session persists via localStorage
+- Roles supported:
+  - Admin
+  - VP1 / VP2 / VP3
+  - Teacher
+  - Parent
+  - Student
+
+2. AI SYSTEM IS MIXED (MUST FIX)
+Separate AI into 2 systems:
+
+Student AI (Study Assistant):
+- Homework help
+- Exam prep
+- Study plans
+
+School AI Assistant (Admin/Teacher/VP/Parent):
+- School analytics
+- Attendance insights
+- Messaging help
+- Reports
+
+They must NOT overlap.
+
+3. BROKEN INTERACTIVITY ACROSS APP
+
+Fix ALL modules so buttons actually work:
+
+- View / Details → open real modal or panel
+- Send Message → updates store + visible across roles
+- Meetings → persist + visible across roles
+- Announcements → role-based visibility working
+- Tasks → update state live
+
+Everything must behave like real SaaS (even if mock).
+
+4. DATA CONSISTENCY ISSUE
+
+Ensure ALL modules use SAME dataset:
+
+- Students (~200 for performance if needed)
+- Teachers (50)
+- Parents (linked correctly)
+
+Fix inconsistencies in:
+- Attendance
+- Admissions
+- Finance
+- Directory
+- Student dashboards
+
+5. NEW MODULE REQUIRED: TRANSPORT SYSTEM
+
+Access Rules:
+- Admin + VP + Parents + Students = ACCESS
+- Teachers = NO ACCESS
+- Parents CAN EDIT transport info
+
+Data fields:
+- Bus number
+- Route
+- Stop location
+- Student assignment
+- Parent contact
+- Address
+
+Behavior:
+- If parent edits → VP gets notification
+- All updates persist in store
+
+🎯 GOAL OF THIS PHASE
+
+Make the system:
+
+✔ Fully connected across roles  
+✔ Real-time mock SaaS behavior  
+✔ No broken buttons  
+✔ Unified data system  
+✔ Working login + OTP flow  
+✔ Clean AI separation  
+
+🔧 FIRST STEP
+
+1. Scan entire project
+2. Fix broken interactions first
+3. Implement login + OTP system
+4. Then fix AI separation
+5. Then add Transport module
+
+⚠️ RULES
+
+- DO NOT change UI design
+- DO NOT add backend
+- DO NOT remove existing features
+- ONLY fix, connect, and stabilize system
