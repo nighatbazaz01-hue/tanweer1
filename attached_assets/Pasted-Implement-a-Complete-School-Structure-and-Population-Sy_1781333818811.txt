@@ -1,0 +1,148 @@
+Implement a Complete School Structure and Population System.
+
+Current mock data is too small. The platform should feel like a real school with hundreds of users.
+
+Requirements:
+
+1. School Structure
+
+Create:
+
+* Grades 1–12
+* Multiple sections per grade (A, B, C, D)
+* Approximately 600 students
+* Approximately 50 teachers
+* Approximately 600 parent accounts
+* 3 Vice Principals
+
+Vice Principal Assignments:
+
+VP 1:
+Grades 1–4
+
+VP 2:
+Grades 5–8
+
+VP 3:
+Grades 9–12
+
+2. Vice Principal Dashboard
+
+Create a dedicated dashboard for Vice Principals.
+
+They should see ONLY their assigned grades.
+
+Include:
+
+* Attendance trends
+* Teacher performance
+* Student performance
+* At-risk students
+* Parent concerns
+* Teacher attendance
+* Upcoming exams
+* Meetings
+
+They must NOT see:
+
+* School-wide finances
+* Other grade groups
+* Global audit logs
+
+3. School Directory
+
+Create:
+
+* Teacher Directory
+* Student Directory
+* Parent Directory
+
+Include:
+
+* Search
+* Filters
+* Grade
+* Section
+* Subject
+* Contact information
+* Profile photo
+
+4. Realistic Population Data
+
+Generate:
+
+* 600 students
+* 50 teachers
+* Realistic names
+* Different attendance patterns
+* Different academic performance levels
+* Different homework completion levels
+
+Create:
+
+* Top performers
+* Average students
+* At-risk students
+
+5. Parent Accounts
+
+Every student should have parent information.
+
+Parents can:
+
+* View timetable
+* View attendance
+* View homework
+* View projects
+* View exam results
+* Contact teachers
+
+6. Teacher Assignments
+
+Every teacher should teach realistic classes.
+
+Examples:
+
+Math Teacher:
+Grade 9A
+Grade 9B
+Grade 10A
+
+Science Teacher:
+Grade 7A
+Grade 7B
+
+Show these assignments across dashboards.
+
+7. Role Switching
+
+Add:
+
+* Principal
+* VP Grades 1–4
+* VP Grades 5–8
+* VP Grades 9–12
+* Teacher
+* Parent
+* Student
+
+Each role should have noticeably different dashboards and permissions.
+
+8. AI Awareness
+
+AI assistants must understand school structure.
+
+Examples:
+
+VP asks:
+"Show me Grade 7 attendance"
+
+AI should only access grades 5–8.
+
+Principal asks:
+"Which grade has the most at-risk students?"
+
+AI should analyze the entire school.
+
+Keep everything mock-data based and fully interactive.
+No backend required.
