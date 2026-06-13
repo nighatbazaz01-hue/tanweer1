@@ -1,5 +1,6 @@
 "use client";
 import { Bell, Search, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -7,6 +8,7 @@ import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore, roleConfig } from "@/store/useRoleStore";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { getInitials } from "@/lib/utils";
+import { getUnreadCount } from "@/lib/mockData/notifications";
 
 const roleNames: Record<string, { name: string; subtitle: string }> = {
   admin: { name: "Dr. Khalid Al-Mansouri", subtitle: "Principal" },
@@ -20,6 +22,7 @@ export function Topbar() {
   const { activeRole } = useRoleStore();
   const user = roleNames[activeRole];
   const cfg = roleConfig[activeRole];
+  const unreadCount = getUnreadCount(activeRole);
 
   return (
     <header className="h-14 border-b bg-card flex items-center gap-3 px-4 shrink-0">
@@ -36,10 +39,16 @@ export function Topbar() {
       <div className="flex items-center gap-2 ml-auto">
         <RoleSwitcher />
 
-        <Button variant="ghost" size="icon" className="h-9 w-9 relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
-        </Button>
+        <Link href="/notifications">
+          <Button variant="ghost" size="icon" className="h-9 w-9 relative">
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Button>
+        </Link>
 
         <Button
           variant="ghost"

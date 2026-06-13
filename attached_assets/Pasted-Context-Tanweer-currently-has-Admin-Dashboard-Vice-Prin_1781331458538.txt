@@ -1,0 +1,192 @@
+Context:
+
+Tanweer currently has:
+
+* Admin Dashboard
+* Vice Principal Dashboard
+* Teacher Dashboard
+* Parent Dashboard
+* Student Dashboard
+* Student 360° Profile
+* Attendance
+* Exams
+* Homework
+* Projects
+* Meetings
+* Announcements
+* AI Assistant
+* Mock Data
+
+The platform now needs to feel like a real school operating every day.
+
+Create a complete Communication & Collaboration System.
+
+Requirements:
+
+## Internal Messaging
+
+Create a full messaging system.
+
+Allowed communication:
+
+* Parent ↔ Teacher
+* Parent ↔ Vice Principal
+* Teacher ↔ Vice Principal
+* Teacher ↔ Teacher
+* Admin ↔ Everyone
+* Student ↔ Teacher (optional toggle)
+
+Features:
+
+* Inbox
+* Sent
+* Archived
+* Unread count
+* Search
+* Attachments
+* Priority levels
+* Conversation history
+
+Use realistic mock conversations.
+
+---
+
+## Notifications Center
+
+Create a notification center.
+
+Examples:
+
+* Homework assigned
+* Attendance marked
+* Fee reminder
+* New announcement
+* Meeting invitation
+* Exam result published
+* Message received
+
+Notifications should appear:
+
+* Dashboard
+* Bell icon
+* Dedicated notification page
+
+---
+
+## Announcements Hub
+
+Create:
+
+* School-wide announcements
+* Teacher-only announcements
+* Grade-specific announcements
+* Parent announcements
+
+Features:
+
+* Pin announcements
+* Schedule announcements
+* Expiry dates
+* Read receipts
+
+---
+
+## Meetings Management
+
+Create a complete meetings module.
+
+Vice Principals and Admins can:
+
+* Create meetings
+* Select attendees
+* Select departments
+* Select grades
+* Add agenda
+* Add room
+* Add date/time
+
+Teachers can:
+
+* RSVP
+* View agenda
+* View notes
+* Mark attendance
+
+---
+
+## Tasks and Follow-Ups
+
+Create a task management system.
+
+Examples:
+
+* Contact parents
+* Review attendance issue
+* Complete report cards
+* Submit lesson plan
+
+Features:
+
+* Assigned by
+* Assigned to
+* Due date
+* Status
+* Priority
+
+---
+
+## AI Action Center
+
+Make the AI capable of performing demo actions.
+
+Examples:
+
+Teacher:
+
+* Message parent
+* Assign homework
+* Find absent students
+* Generate class summary
+
+Parent:
+
+* Contact teacher
+* Ask about attendance
+* Ask about marks
+
+Vice Principal:
+
+* Schedule meeting
+* Review teacher performance
+* Check unresolved issues
+
+Admin:
+
+* Generate school report
+* Review fee collection
+* Review school attendance
+
+The AI should simulate these actions and update mock data in the UI.
+
+---
+
+## Mock Data Expansion
+
+Generate realistic data:
+
+* 600 students
+* 50 teachers
+* 25 staff members
+* 600 parent accounts
+* 2000+ attendance records
+* 1000+ messages
+* 200+ announcements
+* 100+ meetings
+* 500+ homework records
+* Multiple academic years
+
+Everything should appear realistic and interconnected.
+
+Goal:
+
+Make Tanweer feel like a fully operational school platform that can impress school management during a live demo.
