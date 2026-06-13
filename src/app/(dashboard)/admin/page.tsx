@@ -2,7 +2,10 @@
 import {
   Users, GraduationCap, DollarSign, UserCheck, TrendingUp,
   AlertTriangle, Sparkles, Heart, ArrowUpRight, ArrowDownRight,
+  Shield, Activity, Eye, Edit3, LogIn, BookOpen, Send,
+  Download, Lock, Megaphone, Calendar, FileText,
 } from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +17,24 @@ import {
   adminStats, attendanceTrend, feeCollectionTrend, teacherAttendanceTrend,
   admissionFunnel, gradeDistribution, atRiskStudents, parentSatisfactionData, recentAlerts,
 } from "@/lib/mockData/admin";
+import { getActivityTimeline, securityMetrics, type AuditAction } from "@/lib/mockData/auditLogs";
+import { cn } from "@/lib/utils";
+
+const activityIcon: Partial<Record<AuditAction, React.ElementType>> = {
+  LOGIN: LogIn, LOGOUT: Lock, LOGIN_FAILED: AlertTriangle,
+  STUDENT_PROFILE_VIEWED: Eye, TEACHER_PROFILE_VIEWED: Eye,
+  ATTENDANCE_MARKED: UserCheck, ATTENDANCE_EDITED: Edit3,
+  MARKS_ENTERED: BookOpen, MARKS_EDITED: Edit3,
+  FEE_VIEWED: DollarSign, FEE_MODIFIED: DollarSign, FEE_PAYMENT_RECORDED: DollarSign,
+  MESSAGE_SENT: Send, ANNOUNCEMENT_CREATED: Megaphone, MEETING_CREATED: Calendar,
+  REPORT_GENERATED: FileText, DATA_EXPORTED: Download,
+  SENSITIVE_ADDRESS_VIEWED: Eye, SENSITIVE_PHONE_VIEWED: Eye,
+};
+
+const severityDot: Record<string, string> = {
+  critical: "bg-red-500", high: "bg-amber-500",
+  medium: "bg-yellow-400", low: "bg-blue-400", info: "bg-slate-300",
+};
 
 const kpiCards = [
   {
@@ -91,6 +112,7 @@ const alertSeverity: Record<string, "destructive" | "warning" | "info" | "succes
 
 export default function AdminDashboard() {
   const { toggleAiDrawer } = useUIStore();
+  const activityFeed = getActivityTimeline(20);
   const feeChartData = feeCollectionTrend.map((d) => ({
     ...d,
     collected: Math.round(d.collected / 1000),
@@ -330,6 +352,83 @@ export default function AdminDashboard() {
           />
         </CardContent>
       </Card>
+
+      {/* Security Overview + Activity Timeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Security Snapshot */}
+        <Card className="border-indigo-100">
+          <CardHeader className="pb-3 flex-row items-center justify-between">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Shield className="h-4 w-4 text-indigo-600" /> Security Overview
+            </CardTitle>
+            <Link href="/audit">
+              <Button variant="outline" size="sm" className="text-xs h-7">View Audit</Button>
+            </Link>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              { label: "Total Audit Logs", value: securityMetrics.totalLogs.toLocaleString(), color: "text-indigo-600" },
+              { label: "Today's Actions", value: securityMetrics.todayLogs, color: "text-blue-600" },
+              { label: "Failed Logins", value: securityMetrics.failedLogins, color: "text-red-600" },
+              { label: "Sensitive Accesses", value: securityMetrics.sensitiveAccesses, color: "text-amber-600" },
+              { label: "Grade Changes", value: securityMetrics.gradeChanges, color: "text-violet-600" },
+              { label: "Data Exports", value: securityMetrics.dataExports, color: "text-orange-600" },
+            ].map((s) => (
+              <div key={s.label} className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{s.label}</span>
+                <span className={cn("font-bold", s.color)}>{s.value}</span>
+              </div>
+            ))}
+            {securityMetrics.criticalAlerts > 0 && (
+              <div className="mt-2 p-2 rounded-lg bg-red-50 border border-red-100 flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0" />
+                <p className="text-xs text-red-700 font-medium">{securityMetrics.criticalAlerts} critical alerts pending review</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Live Activity Timeline */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-3 flex-row items-center justify-between">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-600" />
+              Live Activity Feed
+              <Badge className="text-[10px] bg-emerald-100 text-emerald-700 ml-1">Live</Badge>
+            </CardTitle>
+            <Link href="/audit?tab=timeline">
+              <Button variant="outline" size="sm" className="text-xs h-7">Full Timeline</Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+              {activityFeed.map((entry) => {
+                const Icon = activityIcon[entry.action] ?? Activity;
+                const isSensitive = ["SENSITIVE_ADDRESS_VIEWED","SENSITIVE_PHONE_VIEWED","SENSITIVE_FEE_RECORD_VIEWED","DATA_EXPORTED","FEE_MODIFIED","MARKS_EDITED","LOGIN_FAILED"].includes(entry.action);
+                return (
+                  <div key={entry.id} className={cn("flex items-start gap-2.5 p-2.5 rounded-lg transition-all", isSensitive ? "bg-amber-50 border border-amber-100" : "hover:bg-muted/50")}>
+                    <div className={cn("p-1.5 rounded-lg shrink-0", isSensitive ? "bg-amber-100" : "bg-muted")}>
+                      <Icon className={cn("h-3 w-3", isSensitive ? "text-amber-700" : "text-muted-foreground")} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-semibold truncate">{entry.userName}</span>
+                        <Badge variant="secondary" className="text-[9px] px-1 py-0">{entry.userRole}</Badge>
+                        {isSensitive && <Badge className="text-[9px] px-1 py-0 bg-amber-100 text-amber-700">⚠ Sensitive</Badge>}
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{entry.details}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", severityDot[entry.severity])} />
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">{entry.time}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

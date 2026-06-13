@@ -2,11 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Users, GraduationCap, BookOpen, DollarSign,
+  LayoutDashboard, Users, BookOpen, DollarSign,
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
-  UserCheck, BookMarked, CalendarDays, TrendingUp, MessageSquare,
-  Home, FileText, Award, Bell, Megaphone, CheckSquare,
-  Calendar, Mail,
+  UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
+  Home, FileText, Bell, Megaphone, CheckSquare,
+  Calendar, Mail, Shield, Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
@@ -28,6 +28,8 @@ const navByRole = {
     { label: "Announcements", href: "/announcements", icon: Megaphone },
     { label: "Meetings", href: "/meetings", icon: Calendar },
     { label: "Tasks", href: "/tasks", icon: CheckSquare },
+    { group: "Security" },
+    { label: "Audit Center", href: "/audit", icon: Shield },
     { group: "Intelligence" },
     { label: "AI Insights", href: "/ai-insights", icon: Sparkles },
     { label: "Settings", href: "/settings", icon: Settings },
@@ -54,7 +56,6 @@ const navByRole = {
     { label: "Attendance", href: "/parent/attendance", icon: ClipboardList },
     { label: "Academics", href: "/parent/marks", icon: Award },
     { label: "Timetable", href: "/parent/timetable", icon: CalendarDays },
-    { label: "Teachers", href: "/parent/teachers", icon: GraduationCap },
     { label: "Fee Payment", href: "/fees", icon: DollarSign },
     { group: "Communication" },
     { label: "Messages", href: "/messages", icon: Mail, badge: "messages" },
@@ -92,7 +93,7 @@ export function Sidebar() {
   const cfg = roleConfig[activeRole];
   const navItems = navByRole[activeRole] as NavItem[];
   const notifCount = getUnreadCount(activeRole);
-  const msgCount = 12; // mock unread messages
+  const msgCount = 12;
 
   const getBadgeCount = (badge?: string) => {
     if (badge === "notif") return notifCount;
