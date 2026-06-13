@@ -6,26 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore, roleConfig } from "@/store/useRoleStore";
-import { RoleSwitcher } from "./RoleSwitcher";
+import { useAuthStore } from "@/store/useAuthStore";
 import { getInitials } from "@/lib/utils";
 import { getUnreadCount } from "@/lib/mockData/notifications";
-
-const roleNames: Record<string, { name: string; subtitle: string }> = {
-  admin: { name: "Dr. Khalid Al-Mansouri", subtitle: "Principal" },
-  vp1: { name: "Dr. Khalid Al-Otaibi", subtitle: "VP · Grades 1–4" },
-  vp2: { name: "Ms. Nora Al-Zahrani", subtitle: "VP · Grades 5–8" },
-  vp3: { name: "Mr. Faris Al-Mutairi", subtitle: "VP · Grades 9–12" },
-  teacher: { name: "Dr. Sarah Al-Hamdan", subtitle: "Mathematics · Grade 10" },
-  parent: { name: "Mohammed Al-Rashidi", subtitle: "Ahmed's Father" },
-  student: { name: "Ahmed Al-Rashidi", subtitle: "Grade 10-A · STU-2024-001" },
-};
 
 export function Topbar() {
   const { toggleAiDrawer } = useUIStore();
   const { activeRole } = useRoleStore();
-  const user = roleNames[activeRole];
+  const { user } = useAuthStore();
   const cfg = roleConfig[activeRole];
   const unreadCount = getUnreadCount(activeRole);
+
+  const displayName = user?.name ?? cfg.label;
+  const displaySubtitle = cfg.description;
 
   return (
     <header className="h-14 border-b bg-card flex items-center gap-3 px-4 shrink-0">
@@ -40,7 +33,12 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
-        <RoleSwitcher />
+        <div
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium ${cfg.bg} ${cfg.color} border-current/20`}
+        >
+          <span className="text-base leading-none">{cfg.emoji}</span>
+          <span className="hidden sm:block">{cfg.label}</span>
+        </div>
 
         <Link href="/notifications">
           <Button variant="ghost" size="icon" className="h-9 w-9 relative">
@@ -66,12 +64,12 @@ export function Topbar() {
         <div className="flex items-center gap-2 pl-2 border-l">
           <Avatar className="h-8 w-8">
             <AvatarFallback className={`text-xs font-semibold ${cfg.bg} ${cfg.color}`}>
-              {getInitials(user.name)}
+              {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
           <div className="hidden md:block">
-            <p className="text-xs font-semibold leading-none">{user.name}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{user.subtitle}</p>
+            <p className="text-xs font-semibold leading-none">{displayName}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{displaySubtitle}</p>
           </div>
         </div>
       </div>

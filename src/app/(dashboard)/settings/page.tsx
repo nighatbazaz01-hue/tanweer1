@@ -1,12 +1,25 @@
 "use client";
-import { Settings, School, Bell, Shield, Palette } from "lucide-react";
+import { Settings, School, Bell, Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRoleStore } from "@/store/useRoleStore";
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const { logout } = useAuthStore();
+  const { setRole } = useRoleStore();
+
+  const handleLogout = () => {
+    logout();
+    setRole("admin");
+    router.push("/login");
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -89,7 +102,9 @@ export default function SettingsPage() {
             <Button variant="outline" size="sm" className="w-full">Change Password</Button>
             <Button variant="outline" size="sm" className="w-full">Enable Two-Factor Authentication</Button>
             <Separator />
-            <Button variant="destructive" size="sm" className="w-full">Logout</Button>
+            <Button variant="destructive" size="sm" className="w-full" onClick={handleLogout}>
+              Logout
+            </Button>
           </CardContent>
         </Card>
       </div>
