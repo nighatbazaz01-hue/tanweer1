@@ -4,6 +4,7 @@ export const student360 = {
   studentId: "STU-2024-001",
   grade: "Grade 10-A",
   section: "A",
+  rollNumber: 7,
   age: 15,
   dob: "March 15, 2009",
   gender: "Male",

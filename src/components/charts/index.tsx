@@ -143,7 +143,7 @@ export function DonutChart({ data, height = 200, innerRadius = 55, label = false
           outerRadius={innerRadius + 28}
           paddingAngle={3}
           dataKey="value"
-          label={label ? ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%` : undefined}
+          label={label ? (props: { name?: string; percent?: number }) => `${props.name ?? ""} ${((props.percent ?? 0) * 100).toFixed(0)}%` : undefined}
           labelLine={label}
         >
           {data.map((entry, i) => (
