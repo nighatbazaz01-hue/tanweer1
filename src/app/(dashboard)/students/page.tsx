@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Search, Plus, Filter } from "lucide-react";
+import { Search, Plus, Filter, Eye, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,9 +95,13 @@ export default function StudentsPage() {
                   <Badge variant={statusVariant[student.status]} className="w-fit capitalize">
                     {student.status}
                   </Badge>
-                  <Button variant="ghost" size="sm" className="hidden md:flex text-xs">
-                    View
-                  </Button>
+                  <div className="hidden md:flex items-center gap-1">
+                    <Link href={`/students/${student.id}`}>
+                      <Button variant="ghost" size="sm" className="text-xs gap-1.5">
+                        <Eye className="h-3.5 w-3.5" /> 360° View
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </CardContent>
