@@ -148,7 +148,7 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
-      {scheduled.length > 0 && (activeRole === "admin" || activeRole === "teacher") && (
+      {scheduled.length > 0 && hasPermission(activeRole, "canCreateAnnouncements") && (
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Clock className="h-4 w-4 text-violet-500" />
