@@ -1,19 +1,24 @@
 "use client";
 import {
   Clock, CheckCircle, XCircle, BookOpen, AlertTriangle,
-  TrendingUp, Users, Sparkles, ChevronRight,
+  TrendingUp, Sparkles, ChevronRight, X, Check, Mail,
 } from "lucide-react";
+import { useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { TrendArea, DonutChart, GroupedBar } from "@/components/charts";
+import { TrendArea, DonutChart } from "@/components/charts";
 import { useUIStore } from "@/store/useUIStore";
 import {
   teacherProfile, todaysClasses, classAttendanceToday, homeworkAssignments,
   studentPerformance, gradeDistribution, classRiskStudents,
 } from "@/lib/mockData/teacher";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const classStatusStyle: Record<string, string> = {
@@ -24,19 +29,59 @@ const classStatusStyle: Record<string, string> = {
 
 const attendanceStatusStyle: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   present: { label: "Present", color: "text-emerald-600", icon: CheckCircle },
-  absent: { label: "Absent", color: "text-red-600", icon: XCircle },
-  late: { label: "Late", color: "text-amber-600", icon: Clock },
+  absent:  { label: "Absent",  color: "text-red-600",     icon: XCircle },
+  late:    { label: "Late",    color: "text-amber-600",   icon: Clock },
 };
 
 export default function TeacherDashboard() {
   const { toggleAiDrawer } = useUIStore();
-  const presentCount = classAttendanceToday.filter((s) => s.status === "present").length;
-  const absentCount = classAttendanceToday.filter((s) => s.status === "absent").length;
-  const lateCount = classAttendanceToday.filter((s) => s.status === "late").length;
+  const presentCount  = classAttendanceToday.filter((s) => s.status === "present").length;
+  const absentCount   = classAttendanceToday.filter((s) => s.status === "absent").length;
+  const lateCount     = classAttendanceToday.filter((s) => s.status === "late").length;
   const attendanceRate = Math.round((presentCount / classAttendanceToday.length) * 100);
+
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [hwOpen, setHwOpen] = useState(false);
+  const [hwTitle, setHwTitle] = useState("");
+  const [hwDue, setHwDue] = useState("");
+  const [hwPoints, setHwPoints] = useState("20");
+  const [contactStudent, setContactStudent] = useState<typeof classRiskStudents[0] | null>(null);
+  const [composeBody, setComposeBody] = useState("");
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const handleSaveAttendance = () => {
+    showToast(`Attendance saved — ${presentCount} present, ${absentCount} absent, ${lateCount} late`);
+  };
+
+  const handleAddHw = () => {
+    if (!hwTitle.trim()) return;
+    const title = hwTitle.trim();
+    setHwOpen(false);
+    setHwTitle(""); setHwDue(""); setHwPoints("20");
+    showToast(`Homework "${title}" assigned to Grade 10-A`);
+  };
+
+  const handleSendContact = () => {
+    if (!contactStudent) return;
+    const name = contactStudent.name;
+    setContactStudent(null);
+    setComposeBody("");
+    showToast(`Message sent to ${name}&apos;s parent`);
+  };
 
   return (
     <div className="space-y-6">
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-3 shadow-lg text-sm font-medium animate-in slide-in-from-bottom-2">
+          <Check className="h-4 w-4 shrink-0" />
+          {toastMsg}
+        </div>
+      )}
+
       <PageHeader
         title={`Good morning, ${teacherProfile.name.split(" ")[1]}!`}
         description={`${teacherProfile.subject} · ${teacherProfile.sections.join(", ")} · ${teacherProfile.totalStudents} students`}
@@ -52,10 +97,10 @@ export default function TeacherDashboard() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Classes Today", value: todaysClasses.length, sub: "2 remaining", icon: BookOpen, color: "bg-blue-500" },
-          { label: "Present Today", value: `${attendanceRate}%`, sub: `${presentCount}/${classAttendanceToday.length} students`, icon: CheckCircle, color: "bg-emerald-500" },
-          { label: "Homework Due", value: homeworkAssignments.filter((h) => h.status === "active").length, sub: "Active assignments", icon: BookOpen, color: "bg-amber-500" },
-          { label: "At-Risk", value: classRiskStudents.length, sub: "Needs attention", icon: AlertTriangle, color: "bg-red-500" },
+          { label: "Classes Today",  value: todaysClasses.length,                                                       sub: "2 remaining",               icon: BookOpen,     color: "bg-blue-500" },
+          { label: "Present Today",  value: `${attendanceRate}%`,                                                       sub: `${presentCount}/${classAttendanceToday.length} students`, icon: CheckCircle,  color: "bg-emerald-500" },
+          { label: "Homework Due",   value: homeworkAssignments.filter((h) => h.status === "active").length,             sub: "Active assignments",          icon: BookOpen,     color: "bg-amber-500" },
+          { label: "At-Risk",        value: classRiskStudents.length,                                                   sub: "Needs attention",            icon: AlertTriangle, color: "bg-red-500" },
         ].map((s) => (
           <Card key={s.label} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center gap-3">
@@ -117,9 +162,9 @@ export default function TeacherDashboard() {
                 data={studentPerformance}
                 xKey="month"
                 lines={[
-                  { key: "avg", color: "#6366f1", label: "Average" },
+                  { key: "avg",     color: "#6366f1", label: "Average" },
                   { key: "highest", color: "#34d399", label: "Highest" },
-                  { key: "lowest", color: "#f87171", label: "Lowest" },
+                  { key: "lowest",  color: "#f87171", label: "Lowest" },
                 ]}
                 legend
                 height={200}
@@ -143,8 +188,8 @@ export default function TeacherDashboard() {
                 <DonutChart
                   data={[
                     { name: "Present", value: presentCount, color: "#34d399" },
-                    { name: "Absent", value: absentCount, color: "#f87171" },
-                    { name: "Late", value: lateCount, color: "#f59e0b" },
+                    { name: "Absent",  value: absentCount,  color: "#f87171" },
+                    { name: "Late",    value: lateCount,    color: "#f59e0b" },
                   ]}
                   height={140}
                   innerRadius={40}
@@ -163,7 +208,9 @@ export default function TeacherDashboard() {
                   );
                 })}
               </div>
-              <Button size="sm" className="w-full mt-3 text-xs h-8">Save Attendance</Button>
+              <Button size="sm" className="w-full mt-3 text-xs h-8" onClick={handleSaveAttendance}>
+                Save Attendance
+              </Button>
             </CardContent>
           </Card>
 
@@ -188,7 +235,7 @@ export default function TeacherDashboard() {
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-3">
             <CardTitle className="text-sm font-semibold">Homework Tracking</CardTitle>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1" onClick={() => setHwOpen(true)}>
               + New Assignment
             </Button>
           </CardHeader>
@@ -254,14 +301,98 @@ export default function TeacherDashboard() {
                     <span className="font-semibold">{s.lastScore}/100</span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="w-full text-xs h-7">
-                  Contact Parent
+                <Button variant="outline" size="sm" className="w-full text-xs h-7 gap-1"
+                  onClick={() => {
+                    setContactStudent(s);
+                    setComposeBody(`Dear Parent,\n\nI am writing regarding ${s.name} who has been flagged as at-risk in my Mathematics class.\n\nAttendance: ${s.attendance}%\nLast assessment score: ${s.lastScore}/100\n\nI would appreciate scheduling a meeting to discuss a support plan.\n\nBest regards,\nDr. Sarah Al-Hamdan`);
+                  }}>
+                  <Mail className="h-3 w-3" /> Contact Parent
                 </Button>
               </div>
             ))}
           </CardContent>
         </Card>
       </div>
+
+      {/* New Assignment Dialog */}
+      <Dialog open={hwOpen} onOpenChange={setHwOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" /> New Assignment
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Assignment Title *</label>
+              <Input value={hwTitle} onChange={(e) => setHwTitle(e.target.value)} placeholder="e.g. Chapter 5 Exercises" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Due Date</label>
+                <Input value={hwDue} onChange={(e) => setHwDue(e.target.value)} placeholder="e.g. Jun 20, 2026" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Points</label>
+                <Input type="number" value={hwPoints} onChange={(e) => setHwPoints(e.target.value)} placeholder="20" />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground bg-blue-50 border border-blue-100 rounded-lg p-2.5">
+              This assignment will be posted to all Grade 10-A students and their parents.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHwOpen(false)} className="gap-1">
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleAddHw} disabled={!hwTitle.trim()} className="gap-1">
+              <Check className="h-4 w-4" /> Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Parent Dialog */}
+      <Dialog open={!!contactStudent} onOpenChange={(o) => !o && setContactStudent(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" /> Contact Parent
+            </DialogTitle>
+          </DialogHeader>
+          {contactStudent && (
+            <div className="space-y-3 py-2">
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <Avatar className="h-9 w-9">
+                  <AvatarFallback className="bg-red-100 text-red-700 text-xs font-semibold">
+                    {contactStudent.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-sm">{contactStudent.name}</p>
+                  <p className="text-xs text-muted-foreground">Grade {contactStudent.grade} · {contactStudent.risk} Risk · Attendance: {contactStudent.attendance}%</p>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Message to Parent</label>
+                <textarea
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-background resize-none h-32"
+                  value={composeBody}
+                  onChange={(e) => setComposeBody(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setContactStudent(null)} className="gap-1">
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleSendContact} disabled={!composeBody.trim()} className="gap-1">
+              <Mail className="h-4 w-4" /> Send Message
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

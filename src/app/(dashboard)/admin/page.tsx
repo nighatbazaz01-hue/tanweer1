@@ -3,15 +3,17 @@ import {
   Users, GraduationCap, DollarSign, UserCheck, TrendingUp,
   AlertTriangle, Sparkles, Heart, ArrowUpRight, ArrowDownRight,
   Shield, Activity, Eye, Edit3, LogIn, BookOpen, Send,
-  Download, Lock, Megaphone, Calendar, FileText,
+  Download, Lock, Megaphone, Calendar, FileText, X,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TrendArea, GroupedBar, DonutChart, HorizontalBar } from "@/components/charts";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useUIStore } from "@/store/useUIStore";
 import {
   adminStats, attendanceTrend, feeCollectionTrend, teacherAttendanceTrend,
@@ -37,78 +39,34 @@ const severityDot: Record<string, string> = {
 };
 
 const kpiCards = [
-  {
-    title: "School Health Score",
-    value: `${adminStats.schoolHealthScore}/100`,
-    sub: "Overall platform score",
-    icon: Heart,
-    color: "bg-violet-500",
-    trend: { v: 3, up: true },
-  },
-  {
-    title: "Total Students",
-    value: adminStats.totalStudents.toLocaleString(),
-    sub: "Active enrollments",
-    icon: Users,
-    color: "bg-blue-500",
-    trend: { v: 5.2, up: true },
-  },
-  {
-    title: "Fee Collection",
-    value: `${adminStats.feeCollectionRate}%`,
-    sub: "SAR 1.87M collected",
-    icon: DollarSign,
-    color: "bg-emerald-500",
-    trend: { v: 2.1, up: false },
-  },
-  {
-    title: "Attendance Rate",
-    value: `${adminStats.attendanceRate}%`,
-    sub: "School-wide today",
-    icon: UserCheck,
-    color: "bg-amber-500",
-    trend: { v: 1.3, up: true },
-  },
-  {
-    title: "Teacher Attendance",
-    value: `${adminStats.teacherAttendanceRate}%`,
-    sub: `${adminStats.totalTeachers} total teachers`,
-    icon: GraduationCap,
-    color: "bg-sky-500",
-    trend: { v: 0.5, up: true },
-  },
-  {
-    title: "Parent Satisfaction",
-    value: `${adminStats.parentSatisfaction}/5`,
-    sub: "Avg rating this month",
-    icon: Heart,
-    color: "bg-pink-500",
-    trend: { v: 0.2, up: true },
-  },
-  {
-    title: "New Admissions",
-    value: adminStats.newLeadsThisMonth,
-    sub: `${adminStats.enrolledThisMonth} enrolled`,
-    icon: TrendingUp,
-    color: "bg-indigo-500",
-    trend: { v: 12, up: true },
-  },
-  {
-    title: "At-Risk Students",
-    value: adminStats.atRiskStudents,
-    sub: "Needs intervention",
-    icon: AlertTriangle,
-    color: "bg-red-500",
-    trend: { v: 4, up: false },
-  },
+  { title: "School Health Score", value: `${adminStats.schoolHealthScore}/100`, sub: "Overall platform score", icon: Heart, color: "bg-violet-500", trend: { v: 3, up: true } },
+  { title: "Total Students", value: adminStats.totalStudents.toLocaleString(), sub: "Active enrollments", icon: Users, color: "bg-blue-500", trend: { v: 5.2, up: true } },
+  { title: "Fee Collection", value: `${adminStats.feeCollectionRate}%`, sub: "SAR 1.87M collected", icon: DollarSign, color: "bg-emerald-500", trend: { v: 2.1, up: false } },
+  { title: "Attendance Rate", value: `${adminStats.attendanceRate}%`, sub: "School-wide today", icon: UserCheck, color: "bg-amber-500", trend: { v: 1.3, up: true } },
+  { title: "Teacher Attendance", value: `${adminStats.teacherAttendanceRate}%`, sub: `${adminStats.totalTeachers} total teachers`, icon: GraduationCap, color: "bg-sky-500", trend: { v: 0.5, up: true } },
+  { title: "Parent Satisfaction", value: `${adminStats.parentSatisfaction}/5`, sub: "Avg rating this month", icon: Heart, color: "bg-pink-500", trend: { v: 0.2, up: true } },
+  { title: "New Admissions", value: adminStats.newLeadsThisMonth, sub: `${adminStats.enrolledThisMonth} enrolled`, icon: TrendingUp, color: "bg-indigo-500", trend: { v: 12, up: true } },
+  { title: "At-Risk Students", value: adminStats.atRiskStudents, sub: "Needs intervention", icon: AlertTriangle, color: "bg-red-500", trend: { v: 4, up: false } },
 ];
 
 const alertSeverity: Record<string, "destructive" | "warning" | "info" | "success" | "secondary"> = {
-  high: "destructive",
-  medium: "warning",
-  info: "info",
-  positive: "success",
+  high: "destructive", medium: "warning", info: "info", positive: "success",
 };
+
+// At-risk full list for dialog
+const fullAtRiskList = [
+  { name: "Omar Al-Ghamdi",  grade: "Grade 11-B", risk: "Academic + Fee Default",  score: 87, avatar: "OG" },
+  { name: "Rayan Al-Khalidi", grade: "Grade 8-C",  risk: "Attendance 71%",         score: 79, avatar: "RK" },
+  { name: "Sara Al-Qahtani", grade: "Grade 9-A",  risk: "Academic Decline",        score: 72, avatar: "SQ" },
+  { name: "Ali Al-Mansouri", grade: "Grade 12-B", risk: "Fee Default Risk",        score: 65, avatar: "AM" },
+  { name: "Lina Al-Dosari",  grade: "Grade 7-A",  risk: "Frequent Absences",       score: 61, avatar: "LD" },
+  { name: "Khalid Al-Barrak", grade: "Grade 10-C", risk: "Low Grades + Absences",  score: 58, avatar: "KB" },
+  { name: "Noura Al-Sayed",  grade: "Grade 8-B",  risk: "Academic Decline",        score: 54, avatar: "NS" },
+  { name: "Fahad Al-Otaibi", grade: "Grade 11-A", risk: "Fee Default",             score: 51, avatar: "FO" },
+];
+
+// Full activity timeline for dialog
+const fullTimeline = getActivityTimeline(50);
 
 export default function AdminDashboard() {
   const { toggleAiDrawer } = useUIStore();
@@ -118,6 +76,9 @@ export default function AdminDashboard() {
     collected: Math.round(d.collected / 1000),
     target: Math.round(d.target / 1000),
   }));
+
+  const [atRiskOpen, setAtRiskOpen] = useState(false);
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -292,7 +253,8 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-3">
             <CardTitle className="text-sm font-semibold">At-Risk Students</CardTitle>
-            <Button variant="outline" size="sm" className="text-xs h-7">View All</Button>
+            <Button variant="outline" size="sm" className="text-xs h-7"
+              onClick={() => setAtRiskOpen(true)}>View All</Button>
           </CardHeader>
           <CardContent className="space-y-3">
             {atRiskStudents.map((s) => (
@@ -355,7 +317,6 @@ export default function AdminDashboard() {
 
       {/* Security Overview + Activity Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Security Snapshot */}
         <Card className="border-indigo-100">
           <CardHeader className="pb-3 flex-row items-center justify-between">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -388,7 +349,6 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Live Activity Timeline */}
         <Card className="lg:col-span-2">
           <CardHeader className="pb-3 flex-row items-center justify-between">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -396,9 +356,8 @@ export default function AdminDashboard() {
               Live Activity Feed
               <Badge className="text-[10px] bg-emerald-100 text-emerald-700 ml-1">Live</Badge>
             </CardTitle>
-            <Link href="/audit?tab=timeline">
-              <Button variant="outline" size="sm" className="text-xs h-7">Full Timeline</Button>
-            </Link>
+            <Button variant="outline" size="sm" className="text-xs h-7"
+              onClick={() => setTimelineOpen(true)}>Full Timeline</Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
@@ -429,6 +388,90 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* At-Risk Full List Dialog */}
+      <Dialog open={atRiskOpen} onOpenChange={setAtRiskOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500" /> At-Risk Students — Full List
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2.5 max-h-96 overflow-y-auto py-2">
+            {fullAtRiskList.map((s, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
+                <Avatar className="h-9 w-9 shrink-0">
+                  <AvatarFallback className="text-xs bg-red-100 text-red-700 font-semibold">{s.avatar}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">{s.grade} · {s.risk}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-red-600">{s.score}%</p>
+                  <p className="text-xs text-muted-foreground">risk</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAtRiskOpen(false)} className="gap-1">
+              <X className="h-4 w-4" /> Close
+            </Button>
+            <Link href="/ai-insights">
+              <Button className="gap-1">
+                <Sparkles className="h-4 w-4" /> View AI Insights
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Full Timeline Dialog */}
+      <Dialog open={timelineOpen} onOpenChange={setTimelineOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-emerald-600" /> Full Activity Timeline
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[28rem] overflow-y-auto py-2 pr-1">
+            {fullTimeline.map((entry) => {
+              const Icon = activityIcon[entry.action] ?? Activity;
+              const isSensitive = ["SENSITIVE_ADDRESS_VIEWED","SENSITIVE_PHONE_VIEWED","DATA_EXPORTED","FEE_MODIFIED","MARKS_EDITED","LOGIN_FAILED"].includes(entry.action);
+              return (
+                <div key={entry.id} className={cn("flex items-start gap-2.5 p-2.5 rounded-lg", isSensitive ? "bg-amber-50 border border-amber-100" : "bg-muted/40")}>
+                  <div className={cn("p-1.5 rounded-lg shrink-0", isSensitive ? "bg-amber-100" : "bg-muted")}>
+                    <Icon className={cn("h-3 w-3", isSensitive ? "text-amber-700" : "text-muted-foreground")} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-semibold">{entry.userName}</span>
+                      <Badge variant="secondary" className="text-[9px] px-1 py-0">{entry.userRole}</Badge>
+                      {isSensitive && <Badge className="text-[9px] px-1 py-0 bg-amber-100 text-amber-700">⚠ Sensitive</Badge>}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{entry.details}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={cn("h-1.5 w-1.5 rounded-full", severityDot[entry.severity])} />
+                    <span className="text-[10px] text-muted-foreground">{entry.time}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTimelineOpen(false)} className="gap-1">
+              <X className="h-4 w-4" /> Close
+            </Button>
+            <Link href="/audit">
+              <Button className="gap-1">
+                <Shield className="h-4 w-4" /> Full Audit Center
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

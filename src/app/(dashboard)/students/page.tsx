@@ -1,16 +1,19 @@
 "use client";
 import { useState, useMemo } from "react";
-import { Search, Plus, Filter, Eye, ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Search, Plus, Filter, Eye, ChevronLeft, ChevronRight, X, Check, Phone, Mail, User } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
 import { getAllStudents } from "@/lib/mockData/population";
 import { useRoleStore } from "@/store/useRoleStore";
 import { filterStudentsForRole, getRoleScopeLabel } from "@/lib/permissions";
+import type { Student } from "@/lib/mockData/population";
 
 const tierVariant: Record<string, "success" | "destructive" | "warning" | "secondary"> = {
   top: "success",
@@ -27,6 +30,18 @@ export default function StudentsPage() {
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
   const [page, setPage] = useState(1);
 
+  // Add student dialog
+  const [addOpen, setAddOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newGrade, setNewGrade] = useState("1");
+  const [newSection, setNewSection] = useState("A");
+  const [newParent, setNewParent] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  // Profile dialog
+  const [profileStudent, setProfileStudent] = useState<Student | null>(null);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return allStudents.filter((s) => {
@@ -42,17 +57,39 @@ export default function StudentsPage() {
   const handleSearch = (v: string) => { setSearch(v); setPage(1); };
   const handleGrade = (g: number | "all") => { setGradeFilter(g); setPage(1); };
 
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const handleAddStudent = () => {
+    if (!newName.trim()) return;
+    const name = newName.trim();
+    setAddOpen(false);
+    setNewName(""); setNewGrade("1"); setNewSection("A"); setNewParent(""); setNewPhone("");
+    showToast(`Student "${name}" added successfully`);
+  };
+
   return (
     <div className="space-y-6">
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-3 shadow-lg text-sm font-medium animate-in slide-in-from-bottom-2">
+          <Check className="h-4 w-4 shrink-0" />
+          {toastMsg}
+        </div>
+      )}
+
       <PageHeader
         title="Students"
         description={`${allStudents.length.toLocaleString()} students · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Students" }]}
         actions={
-          <Button size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Student
-          </Button>
+          activeRole === "admin" ? (
+            <Button size="sm" className="gap-2" onClick={() => setAddOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Add Student
+            </Button>
+          ) : undefined
         }
       />
 
@@ -128,11 +165,10 @@ export default function StudentsPage() {
                     {student.performanceTier === "at-risk" ? "At Risk" : student.performanceTier}
                   </Badge>
                   <div className="hidden md:flex items-center gap-1">
-                    <Link href={`/students/1`}>
-                      <Button variant="ghost" size="sm" className="text-xs gap-1.5">
-                        <Eye className="h-3.5 w-3.5" /> 360°
-                      </Button>
-                    </Link>
+                    <Button variant="ghost" size="sm" className="text-xs gap-1.5"
+                      onClick={() => setProfileStudent(student)}>
+                      <Eye className="h-3.5 w-3.5" /> View
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -161,6 +197,117 @@ export default function StudentsPage() {
           </div>
         </div>
       )}
+
+      {/* Add Student Dialog */}
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" /> Add New Student
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Full Name *</label>
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Mohammed Al-Rashidi" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Grade</label>
+                <select className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                  value={newGrade} onChange={(e) => setNewGrade(e.target.value)}>
+                  {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => (
+                    <option key={g} value={g}>Grade {g}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Section</label>
+                <select className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                  value={newSection} onChange={(e) => setNewSection(e.target.value)}>
+                  {["A","B","C","D"].map(s => <option key={s} value={s}>Section {s}</option>)}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent / Guardian Name</label>
+              <Input value={newParent} onChange={(e) => setNewParent(e.target.value)} placeholder="e.g. Ahmed Al-Rashidi" />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Phone</label>
+              <Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+966 5xxxxxxxx" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddOpen(false)} className="gap-1">
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleAddStudent} disabled={!newName.trim()} className="gap-1">
+              <Check className="h-4 w-4" /> Add Student
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Student Profile Dialog */}
+      <Dialog open={!!profileStudent} onOpenChange={(o) => !o && setProfileStudent(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" /> Student Profile
+            </DialogTitle>
+          </DialogHeader>
+          {profileStudent && (
+            <div className="space-y-4 py-1">
+              <div className="flex items-center gap-4 p-3 bg-muted rounded-xl">
+                <Avatar className="h-14 w-14">
+                  <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
+                    {profileStudent.avatar}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-base">{profileStudent.name}</p>
+                  <p className="text-sm text-muted-foreground">{profileStudent.id} · Grade {profileStudent.grade} — Section {profileStudent.section}</p>
+                  <Badge variant={tierVariant[profileStudent.performanceTier]} className="mt-1 text-xs capitalize">
+                    {profileStudent.performanceTier === "at-risk" ? "At Risk" : profileStudent.performanceTier}
+                  </Badge>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "GPA", value: `${profileStudent.gpa.toFixed(1)} / 4.0` },
+                  { label: "Attendance", value: `${profileStudent.attendanceRate}%` },
+                  { label: "Gender", value: profileStudent.gender === "male" ? "Male" : "Female" },
+                  { label: "Enrolled", value: `${profileStudent.enrolledYear}` },
+                ].map(({ label, value }) => (
+                  <div key={label} className="bg-muted/60 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="text-sm font-semibold mt-0.5">{value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Parent / Guardian</p>
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>{profileStudent.parentName}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>{profileStudent.parentPhone}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="truncate">{profileStudent.parentEmail}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setProfileStudent(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

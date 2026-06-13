@@ -6,7 +6,7 @@ import {
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
   UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
   Home, FileText, Bell, Megaphone, CheckSquare,
-  Calendar, Mail, Shield, BookUser, GraduationCap,
+  Calendar, Mail, Shield, BookUser, GraduationCap, Bus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
@@ -38,6 +38,7 @@ const navByRole = {
     { group: "Intelligence & Security" },
     { label: "AI Insights",      href: "/ai-insights",        icon: Sparkles },
     { label: "Audit Center",     href: "/audit",              icon: Shield },
+    { label: "Transport",        href: "/transport",          icon: Bus },
     { label: "Settings",         href: "/settings",           icon: Settings },
   ],
 
@@ -46,6 +47,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
     { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
@@ -63,6 +65,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
     { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
@@ -80,6 +83,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
     { label: "Messages",           href: "/messages",            icon: Mail,     badge: "messages" },
@@ -112,13 +116,14 @@ const navByRole = {
     { label: "Settings",     href: "/settings",            icon: Settings },
   ],
 
-  // Parent journey: My Child → Attendance → Marks → Fee Payment → Messages → Meetings
+  // Parent journey: My Child → Attendance → Marks → Fee Payment → Transport → Messages → Meetings
   parent: [
     { label: "My Child",     href: "/parent",              icon: Home },
     { label: "Attendance",   href: "/parent/attendance",   icon: ClipboardList },
     { label: "Marks",        href: "/parent/marks",        icon: Award },
     { label: "Fee Payment",  href: "/fees",                icon: DollarSign },
     { label: "Timetable",    href: "/parent/timetable",    icon: CalendarDays },
+    { label: "Transport",    href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Messages",     href: "/messages",            icon: Mail,       badge: "messages" },
     { label: "Meetings",     href: "/meetings",            icon: Calendar },
