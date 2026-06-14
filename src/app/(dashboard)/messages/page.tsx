@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import {
   Search, Star, Paperclip, ChevronRight, ArrowLeft,
   Plus, Inbox, Send, Archive, Tag,
-  Mail, Reply, Forward, Trash2,
+  Mail, Reply, Forward, Trash2, Check,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,14 +52,21 @@ const folders = [
 export default function MessagesPage() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
-  const { threads, sendReply, createThread, toggleStar } = useDataStore();
+  const { threads, sendReply, createThread, toggleStar, archiveThread, deleteThread } = useDataStore();
 
   const [activeFolder, setActiveFolder] = useState("inbox");
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
   const [search, setSearch] = useState("");
+  const [labelFilter, setLabelFilter] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
   const [replyBody, setReplyBody] = useState("");
   const [composeData, setComposeData] = useState({ to: "", subject: "", body: "", priority: "normal" as "urgent" | "high" | "normal" | "low" });
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fromSender = {
     name: user?.name || roleName[activeRole] || "User",
@@ -74,12 +81,14 @@ export default function MessagesPage() {
     return !t.isArchived;
   });
 
-  const filtered = displayedThreads.filter((t) =>
-    t.subject.toLowerCase().includes(search.toLowerCase()) ||
-    t.participants.some((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = displayedThreads.filter((t) => {
+    const matchSearch = t.subject.toLowerCase().includes(search.toLowerCase()) ||
+      t.participants.some((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+    const matchLabel = !labelFilter || t.label === labelFilter;
+    return matchSearch && matchLabel;
+  });
 
-  const totalUnread = roleThreads.reduce((acc, t) => acc + t.unreadCount, 0);
+  const totalUnread = roleThreads.filter((t) => !t.isArchived).reduce((acc, t) => acc + t.unreadCount, 0);
   const starredCount = roleThreads.filter((t) => t.isStarred).length;
 
   const handleSendReply = () => {
@@ -103,9 +112,41 @@ export default function MessagesPage() {
     setComposeData({ to: "", subject: "", body: "", priority: "normal" });
   };
 
+  const handleArchive = () => {
+    if (!selectedThread) return;
+    archiveThread(selectedThread.id);
+    showToast(selectedThread.isArchived ? "Thread moved to inbox" : "Thread archived");
+    setSelectedThread(null);
+  };
+
+  const handleDelete = () => {
+    if (!selectedThread) return;
+    deleteThread(selectedThread.id);
+    showToast("Thread deleted");
+    setSelectedThread(null);
+  };
+
+  const handleForward = () => {
+    if (!selectedThread) return;
+    const lastMsg = selectedThread.messages[selectedThread.messages.length - 1];
+    setComposeData({
+      to: "",
+      subject: `Fwd: ${selectedThread.subject}`,
+      body: `\n\n---------- Forwarded Message ----------\nFrom: ${lastMsg.from.name}\n\n${lastMsg.body}`,
+      priority: selectedThread.priority,
+    });
+    setSelectedThread(null);
+    setComposing(true);
+  };
+
   if (composing) {
     return (
       <div className="space-y-5">
+        {toast && (
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-3 shadow-lg text-sm font-medium animate-in slide-in-from-bottom-2">
+            <Check className="h-4 w-4 shrink-0" />{toast}
+          </div>
+        )}
         <PageHeader
           title="New Message"
           breadcrumbs={[{ label: "Messages" }, { label: "Compose" }]}
@@ -150,7 +191,7 @@ export default function MessagesPage() {
               className="w-full text-sm bg-muted/30 rounded-xl p-4 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <div className="flex items-center justify-between pt-2 border-t">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
+              <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => showToast("File attachment is not available in demo mode")}>
                 <Paperclip className="h-3.5 w-3.5" /> Attach File
               </Button>
               <div className="flex gap-2">
@@ -170,6 +211,11 @@ export default function MessagesPage() {
   if (selectedThread) {
     return (
       <div className="space-y-5">
+        {toast && (
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-3 shadow-lg text-sm font-medium animate-in slide-in-from-bottom-2">
+            <Check className="h-4 w-4 shrink-0" />{toast}
+          </div>
+        )}
         <PageHeader
           title={selectedThread.subject}
           breadcrumbs={[{ label: "Messages" }, { label: "Thread" }]}
@@ -184,8 +230,12 @@ export default function MessagesPage() {
               }}>
                 <Star className={cn("h-4 w-4", selectedThread.isStarred && "fill-amber-400 text-amber-400")} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9"><Archive className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500"><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9" title={selectedThread.isArchived ? "Unarchive" : "Archive"} onClick={handleArchive}>
+                <Archive className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500" title="Delete thread" onClick={handleDelete}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           }
         />
@@ -241,14 +291,18 @@ export default function MessagesPage() {
                   <div className="mt-3 flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-100 w-fit">
                     <Paperclip className="h-4 w-4 text-blue-600" />
                     <span className="text-xs font-medium text-blue-700">{msg.attachmentName}</span>
-                    <Button variant="ghost" size="sm" className="text-xs h-6 text-blue-600">Download</Button>
+                    <Button variant="ghost" size="sm" className="text-xs h-6 text-blue-600" onClick={() => showToast("File download is not available in demo mode")}>Download</Button>
                   </div>
                 )}
 
                 {i === selectedThread.messages.length - 1 && (
                   <div className="flex gap-2 mt-4 pt-4 border-t">
-                    <Button size="sm" className="gap-2"><Reply className="h-3.5 w-3.5" /> Reply</Button>
-                    <Button variant="outline" size="sm" className="gap-2"><Forward className="h-3.5 w-3.5" /> Forward</Button>
+                    <Button size="sm" className="gap-2" onClick={() => { setSelectedThread(null); setTimeout(() => setSelectedThread(selectedThread), 0); }}>
+                      <Reply className="h-3.5 w-3.5" /> Reply
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2" onClick={handleForward}>
+                      <Forward className="h-3.5 w-3.5" /> Forward
+                    </Button>
                   </div>
                 )}
               </CardContent>
@@ -266,7 +320,9 @@ export default function MessagesPage() {
               className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30 mb-3"
             />
             <div className="flex justify-between items-center">
-              <Button variant="outline" size="sm" className="gap-2 text-xs"><Paperclip className="h-3.5 w-3.5" /> Attach</Button>
+              <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => showToast("File attachment is not available in demo mode")}>
+                <Paperclip className="h-3.5 w-3.5" /> Attach
+              </Button>
               <Button size="sm" className="gap-2" onClick={handleSendReply} disabled={!replyBody.trim()}>
                 <Send className="h-3.5 w-3.5" /> Send Reply
               </Button>
@@ -279,6 +335,11 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-5">
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-3 shadow-lg text-sm font-medium animate-in slide-in-from-bottom-2">
+          <Check className="h-4 w-4 shrink-0" />{toast}
+        </div>
+      )}
       <PageHeader
         title="Messages"
         description={`${totalUnread} unread · ${mockInboxStats.total.toLocaleString()} total messages`}
@@ -296,14 +357,14 @@ export default function MessagesPage() {
             const Icon = f.icon;
             const cnt = f.id === "inbox" ? totalUnread : f.id === "starred" ? starredCount : 0;
             return (
-              <button key={f.id} onClick={() => setActiveFolder(f.id)}
+              <button key={f.id} onClick={() => { setActiveFolder(f.id); setLabelFilter(null); }}
                 className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                  activeFolder === f.id ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"
+                  activeFolder === f.id && !labelFilter ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"
                 )}>
                 <Icon className="h-4 w-4" />
                 <span className="flex-1 text-left">{f.label}</span>
                 {cnt > 0 && (
-                  <Badge className={cn("text-xs", activeFolder === f.id ? "bg-white/20 text-white" : "bg-primary/10 text-primary")}>
+                  <Badge className={cn("text-xs", activeFolder === f.id && !labelFilter ? "bg-white/20 text-white" : "bg-primary/10 text-primary")}>
                     {cnt}
                   </Badge>
                 )}
@@ -313,10 +374,27 @@ export default function MessagesPage() {
 
           <div className="pt-3 border-t mt-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-3 mb-2">Labels</p>
+            {labelFilter && (
+              <button
+                onClick={() => setLabelFilter(null)}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs hover:bg-muted text-primary font-medium mb-1"
+              >
+                <span className="h-2.5 w-2.5 rounded-full inline-block bg-primary" />
+                Clear filter
+              </button>
+            )}
             {Object.entries(labelColor).map(([label, cls]) => (
-              <button key={label} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs hover:bg-muted capitalize">
+              <button
+                key={label}
+                onClick={() => { setLabelFilter(labelFilter === label ? null : label); setActiveFolder("inbox"); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs hover:bg-muted capitalize transition-all",
+                  labelFilter === label && "bg-muted font-semibold text-foreground"
+                )}
+              >
                 <span className={cn("h-2.5 w-2.5 rounded-full inline-block", cls.replace("text-", "bg-").split(" ")[0])} />
                 {label}
+                {labelFilter === label && <span className="ml-auto text-[10px] text-primary font-bold">✓</span>}
               </button>
             ))}
           </div>
@@ -334,15 +412,21 @@ export default function MessagesPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search messages..." className="pl-9 h-9" />
             </div>
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-              <Tag className="h-3.5 w-3.5" /> Filter
+            {labelFilter && (
+              <Badge className={cn("text-xs capitalize gap-1", labelColor[labelFilter] || "bg-slate-100")}>
+                <Tag className="h-3 w-3" /> {labelFilter}
+                <button onClick={() => setLabelFilter(null)} className="ml-1 opacity-70 hover:opacity-100">×</button>
+              </Badge>
+            )}
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setLabelFilter(null)}>
+              <Tag className="h-3.5 w-3.5" /> {labelFilter ? "Clear" : "Filter"}
             </Button>
           </div>
 
           {filtered.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
               <Mail className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p>No messages found</p>
+              <p>{labelFilter ? `No messages with label "${labelFilter}"` : "No messages found"}</p>
             </div>
           ) : (
             filtered.map((thread) => (

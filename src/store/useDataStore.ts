@@ -22,6 +22,8 @@ export type AppEventType =
   | "messageCreated"
   | "replyAdded"
   | "threadStarred"
+  | "threadArchived"
+  | "threadDeleted"
   | "meetingCreated"
   | "rsvpUpdated"
   | "announcementCreated"
@@ -123,6 +125,8 @@ interface DataStore {
     from: { name: string; role: string; avatar: string }
   ) => void;
   toggleStar: (threadId: string) => void;
+  archiveThread: (threadId: string) => void;
+  deleteThread: (threadId: string) => void;
 
   // ── Announcement Actions ──
   addAnnouncement: (a: Omit<Announcement, "id" | "readCount" | "publishedAt">) => void;
@@ -283,6 +287,25 @@ export const useDataStore = create<DataStore>((set) => ({
       const event = makeEvent("threadStarred", "user", { threadId, starred: !thread?.isStarred });
       return {
         threads:  state.threads.map((t) => t.id === threadId ? { ...t, isStarred: !t.isStarred } : t),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  archiveThread: (threadId) =>
+    set((state) => {
+      const thread = state.threads.find((t) => t.id === threadId);
+      const event = makeEvent("threadArchived", "user", { threadId, archived: !thread?.isArchived });
+      return {
+        threads:  state.threads.map((t) => t.id === threadId ? { ...t, isArchived: !t.isArchived } : t),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  deleteThread: (threadId) =>
+    set((state) => {
+      const event = makeEvent("threadDeleted", "user", { threadId });
+      return {
+        threads:  state.threads.filter((t) => t.id !== threadId),
         eventLog: [event, ...state.eventLog].slice(0, 100),
       };
     }),

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { Bus, Search, MapPin, Phone, User, ChevronLeft, ChevronRight, X, Check, Edit2 } from "lucide-react";
+import { Bus, Search, MapPin, Phone, User, ChevronLeft, ChevronRight, X, Check, Edit2, ShieldOff } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,34 @@ const PAGE_SIZE = 30;
 
 export default function TransportPage() {
   const { activeRole } = useRoleStore();
-  const allRecords = useMemo(() => generateTransportRecords(), []);
+
+  // Teacher role is blocked from transport
+  if (activeRole === "teacher") {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Transport"
+          description="School bus routes and student transport assignments"
+          breadcrumbs={[{ label: "Home" }, { label: "Transport" }]}
+        />
+        <Card>
+          <CardContent className="py-16 flex flex-col items-center gap-3 text-center">
+            <ShieldOff className="h-10 w-10 text-muted-foreground opacity-40" />
+            <p className="font-semibold text-muted-foreground">Access Restricted</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Transport information is available to Admins, Vice Principals, Parents, and Students only.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <TransportContent activeRole={activeRole} />;
+}
+
+function TransportContent({ activeRole }: { activeRole: string }) {
+  const [allRecords, setAllRecords] = useState<TransportRecord[]>(() => generateTransportRecords());
 
   // Parent sees only their child's record
   const records = useMemo(() => {
@@ -84,6 +111,13 @@ export default function TransportPage() {
 
   const handleSaveEdit = () => {
     if (!detailRecord) return;
+    setAllRecords((prev) =>
+      prev.map((r) =>
+        r.id === detailRecord.id
+          ? { ...r, address: editAddress, stopLocation: editStop, parentContact: editContact }
+          : r
+      )
+    );
     showToast(`Transport details updated for ${detailRecord.studentName}`);
     setEditOpen(false);
     setDetailRecord(null);

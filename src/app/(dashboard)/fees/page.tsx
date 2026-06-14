@@ -81,12 +81,6 @@ export default function FeesPage() {
         title="Fee Management"
         description={`Fee records · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Finance" }, { label: "Fees" }]}
-        actions={
-          <Button size="sm" className="gap-2">
-            <DollarSign className="h-4 w-4" />
-            Record Payment
-          </Button>
-        }
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">

@@ -1,0 +1,127 @@
+You are continuing the Tanweer School Management Platform (Next.js).
+
+IMPORTANT
+
+The previous Replit agent ran out of credits while implementing critical fixes.
+
+Before building anything new, perform a COMPLETE PROJECT AUDIT.
+
+CURRENT SYSTEM
+
+- Multi-role platform
+  - Admin
+  - VP1
+  - VP2
+  - VP3
+  - Teacher
+  - Parent
+  - Student
+
+- Login + OTP system was partially implemented
+- Unified Zustand store exists
+- Permission engine exists
+- Event log exists
+- Messaging system exists
+- Meetings system exists
+- Announcements system exists
+- Tasks system exists
+- Transport module was partially implemented
+- AI assistant was separated into:
+  - Student AI Study Assistant
+  - School AI Assistant
+
+LAST KNOWN ISSUE
+
+The previous agent was fixing:
+
+- Broken buttons
+- Store integration
+- Shared data consistency
+- Transport integration
+
+Credits ended before completion.
+
+FIRST TASK
+
+Audit every page and produce a report.
+
+Identify:
+
+1. Buttons that do nothing
+2. Missing onClick handlers
+3. Placeholder actions
+4. Pages not connected to useDataStore
+5. Hardcoded arrays still in use
+6. Pages not using unified population data
+7. Broken routes
+8. Missing routes
+9. Login issues
+10. OTP issues
+11. Transport integration issues
+12. Dashboard data inconsistencies
+
+VERIFY
+
+- Admin dashboard
+- VP1 dashboard
+- VP2 dashboard
+- VP3 dashboard
+- Teacher dashboard
+- Parent dashboard
+- Student dashboard
+
+VERIFY LOGIN
+
+- Login page works
+- OTP works
+- Session persistence works
+- Logout works
+- Protected route guard works
+
+VERIFY DATA CONSISTENCY
+
+All modules must use same dataset:
+
+- students
+- teachers
+- parents
+- attendance
+- fees
+- messages
+- meetings
+- announcements
+- tasks
+- notifications
+
+VERIFY TRANSPORT
+
+Admin → access
+VP → access
+Parent → access
+Student → access
+Teacher → blocked
+
+OUTPUT FIRST
+
+Before changing code provide:
+
+COMPLETED FEATURES
+BROKEN FEATURES
+PARTIAL FEATURES
+MISSING FEATURES
+
+Then fix issues in this order:
+
+1. Broken functionality
+2. Login/authentication
+3. Data consistency
+4. Transport module
+5. UX polish
+
+DO NOT ADD NEW FEATURES YET.
+
+DO NOT REDESIGN UI.
+
+DO NOT ADD BACKEND.
+
+ONLY FINISH AND STABILIZE THE EXISTING SYSTEM.

@@ -11,8 +11,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore, roleConfig } from "@/store/useRoleStore";
+import { useDataStore } from "@/store/useDataStore";
 import { Button } from "@/components/ui/button";
 import { getUnreadCount } from "@/lib/mockData/notifications";
+import { filterThreadsForRole } from "@/lib/permissions";
 
 // ─── Navigation definitions (ordered by role-specific demo priority) ──────────
 // Priority order = demo journey top → most important first → secondary → settings
@@ -159,10 +161,13 @@ export function Sidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { activeRole } = useRoleStore();
+  const { threads } = useDataStore();
   const cfg = roleConfig[activeRole];
   const navItems = (navByRole[activeRole] ?? navByRole.admin) as NavItem[];
   const notifCount = getUnreadCount(activeRole);
-  const msgCount = 12;
+  const msgCount = filterThreadsForRole(threads, activeRole)
+    .filter((t) => !t.isArchived)
+    .reduce((acc, t) => acc + t.unreadCount, 0);
 
   const getBadgeCount = (badge?: string) => {
     if (badge === "notif")    return notifCount;
