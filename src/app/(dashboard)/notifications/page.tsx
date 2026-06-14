@@ -14,6 +14,7 @@ import { useRoleStore } from "@/store/useRoleStore";
 import { type NotifType } from "@/lib/mockData/notifications";
 import { filterNotificationsForRole } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const typeIcon: Record<NotifType, React.ElementType> = {
   homework:     BookOpen,
@@ -62,6 +63,7 @@ export default function NotificationsPage() {
   const { activeRole } = useRoleStore();
   const { notifications, markNotificationRead, markAllNotificationsRead } = useDataStore();
   const [filter, setFilter] = useState<NotifType | "all">("all");
+  const router = useRouter();
 
   const roleNotifs = filterNotificationsForRole(notifications, activeRole);
   const filtered = filter === "all" ? roleNotifs : roleNotifs.filter((n) => n.type === filter);
@@ -177,7 +179,10 @@ export default function NotificationsPage() {
                             {notif.priority}
                           </Badge>
                           {notif.link && (
-                            <Button variant="ghost" size="sm" className="text-xs h-5 px-2 ml-auto">View →</Button>
+                            <Button variant="ghost" size="sm" className="text-xs h-5 px-2 ml-auto"
+                              onClick={(e) => { e.stopPropagation(); router.push(notif.link!); }}>
+                              View →
+                            </Button>
                           )}
                         </div>
                       </div>

@@ -205,7 +205,8 @@ export default function StudentDashboard() {
                   </p>
                 </div>
                 {hw.status !== "submitted" && (
-                  <Button variant="outline" size="sm" className="text-xs h-7 shrink-0">Start</Button>
+                  <Button variant="outline" size="sm" className="text-xs h-7 shrink-0"
+                    onClick={() => toggleAiDrawer()}>Start</Button>
                 )}
               </div>
             ))}

@@ -46,6 +46,8 @@ export default function TeacherDashboard() {
   const attendanceRate = Math.round((presentCount / classAttendanceToday.length) * 100);
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [classActionOpen, setClassActionOpen] = useState(false);
+  const [activeClass, setActiveClass] = useState<typeof todaysClasses[0] | null>(null);
   const [hwOpen, setHwOpen] = useState(false);
   const [hwTitle, setHwTitle] = useState("");
   const [hwDue, setHwDue] = useState("");
@@ -181,7 +183,8 @@ export default function TeacherDashboard() {
                     <p className="text-xs opacity-70">{cls.grade} · {cls.room} · {cls.students} students</p>
                     <p className="text-xs font-medium mt-0.5">Topic: {cls.topic}</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs shrink-0 gap-1">
+                  <Button variant="ghost" size="sm" className="text-xs shrink-0 gap-1"
+                    onClick={() => { setActiveClass(cls); setClassActionOpen(true); }}>
                     {cls.status === "upcoming" ? "Start" : "View"} <ChevronRight className="h-3 w-3" />
                   </Button>
                 </div>
@@ -450,6 +453,53 @@ export default function TeacherDashboard() {
             <Button onClick={handleSaveGrades} className="gap-1">
               <Check className="h-4 w-4" /> Save Grades
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Class Action Dialog */}
+      <Dialog open={classActionOpen} onOpenChange={(o) => { setClassActionOpen(o); if (!o) setActiveClass(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              {activeClass?.status === "upcoming" ? "Start Class" : "Class Details"}
+            </DialogTitle>
+          </DialogHeader>
+          {activeClass && (
+            <div className="space-y-4 py-2">
+              <div className="p-4 rounded-xl bg-muted/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-sm">{activeClass.subject}</p>
+                  <Badge className={cn("text-xs capitalize", classStatusStyle[activeClass.status])}>{activeClass.status}</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <span>🕐 {activeClass.time}</span>
+                  <span>📍 {activeClass.room}</span>
+                  <span>👥 {activeClass.students} students</span>
+                  <span>📚 {activeClass.grade}</span>
+                </div>
+                <p className="text-xs font-medium text-foreground">Topic: {activeClass.topic}</p>
+              </div>
+              {activeClass.status === "upcoming" && (
+                <p className="text-xs text-muted-foreground bg-blue-50 border border-blue-100 rounded-lg p-3">
+                  Starting this class will notify all students and begin the session timer.
+                </p>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setClassActionOpen(false)}>
+              <X className="h-4 w-4 mr-1" /> Close
+            </Button>
+            {activeClass?.status === "upcoming" && (
+              <Button onClick={() => {
+                setClassActionOpen(false);
+                showToast(`Class started — ${activeClass.subject} · ${activeClass.room}`);
+              }} className="gap-1">
+                <Check className="h-4 w-4" /> Start Class
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

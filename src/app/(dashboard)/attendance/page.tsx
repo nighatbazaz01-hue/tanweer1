@@ -39,6 +39,15 @@ export default function AttendancePage() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<PopulationAttendanceRecord | null>(null);
   const [editStatus, setEditStatus] = useState<AttendanceStatus>("present");
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkStatus, setBulkStatus] = useState<AttendanceStatus>("present");
+
+  const todayLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+  const handleBulkMark = () => {
+    setRecords((prev) => prev.map((r) => ({ ...r, status: bulkStatus })));
+    setBulkOpen(false);
+  };
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -72,7 +81,7 @@ export default function AttendancePage() {
         title="Attendance"
         description={`Attendance records · ${getRoleScopeLabel(activeRole)}`}
         breadcrumbs={[{ label: "Home" }, { label: "Attendance" }]}
-        actions={<Button size="sm">Mark Attendance</Button>}
+        actions={<Button size="sm" onClick={() => setBulkOpen(true)}>Mark Attendance</Button>}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -119,7 +128,7 @@ export default function AttendancePage() {
 
       <div className="space-y-2">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          Today's Attendance — Jun 13, 2026
+          Today&apos;s Attendance — {todayLabel}
         </h2>
         {paginated.map((record) => {
           const status = statusConfig[record.status];
@@ -161,6 +170,39 @@ export default function AttendancePage() {
           </div>
         </div>
       )}
+
+      {/* Bulk Mark Dialog */}
+      <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Mark Attendance</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              Set attendance status for all <span className="font-semibold text-foreground">{records.length}</span> students in the current view.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {(["present", "absent", "late", "excused"] as AttendanceStatus[]).map((s) => {
+                const cfg = statusConfig[s];
+                const Icon = cfg.icon;
+                return (
+                  <button key={s} onClick={() => setBulkStatus(s)}
+                    className={cn("flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all",
+                      bulkStatus === s ? "border-primary bg-primary/5 text-primary" : "border-border hover:bg-muted"
+                    )}>
+                    <Icon className={cn("h-4 w-4", bulkStatus === s ? "text-primary" : cfg.color)} />
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkOpen(false)}>Cancel</Button>
+            <Button onClick={handleBulkMark}>Apply to All</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Modal */}
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>

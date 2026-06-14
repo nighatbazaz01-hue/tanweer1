@@ -1,7 +1,7 @@
 "use client";
 import {
-  Star, CheckCircle, Clock, AlertCircle, DollarSign,
-  BookOpen, MessageSquare, Sparkles, Calendar, User,
+  Star, CheckCircle, AlertCircle, DollarSign,
+  MessageSquare, Sparkles, Calendar,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TrendLine, TrendArea } from "@/components/charts";
 import { useUIStore } from "@/store/useUIStore";
+import { useRouter } from "next/navigation";
 import {
   childProfile, childAttendanceTrend, childMarksTrend,
   subjectTeachers, teacherReviews, todayChildSchedule, feeStatus,
@@ -24,6 +25,7 @@ const scheduleStatusStyle: Record<string, string> = {
 
 export default function ParentDashboard() {
   const { toggleAiDrawer } = useUIStore();
+  const router = useRouter();
 
   return (
     <div className="space-y-6">
@@ -204,7 +206,7 @@ export default function ParentDashboard() {
       <Card>
         <CardHeader className="flex-row items-center justify-between pb-3">
           <CardTitle className="text-sm font-semibold">Subject Teachers Directory</CardTitle>
-          <Button variant="outline" size="sm" className="text-xs h-7">
+          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => router.push("/messages")}>
             <MessageSquare className="h-3 w-3 mr-1" /> Message All
           </Button>
         </CardHeader>
@@ -225,7 +227,7 @@ export default function ParentDashboard() {
                     <span className="text-xs text-muted-foreground ml-0.5">{t.rating}</span>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
+                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => router.push("/messages")}>
                   <MessageSquare className="h-3.5 w-3.5" />
                 </Button>
               </div>

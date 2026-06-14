@@ -62,6 +62,7 @@ export default function MessagesPage() {
   const [replyBody, setReplyBody] = useState("");
   const [composeData, setComposeData] = useState({ to: "", subject: "", body: "", priority: "normal" as "urgent" | "high" | "normal" | "low" });
   const [toast, setToast] = useState<string | null>(null);
+  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -297,7 +298,12 @@ export default function MessagesPage() {
 
                 {i === selectedThread.messages.length - 1 && (
                   <div className="flex gap-2 mt-4 pt-4 border-t">
-                    <Button size="sm" className="gap-2" onClick={() => { setSelectedThread(null); setTimeout(() => setSelectedThread(selectedThread), 0); }}>
+                    <Button size="sm" className="gap-2" onClick={() => {
+                      setTimeout(() => {
+                        replyTextareaRef.current?.focus();
+                        replyTextareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }, 50);
+                    }}>
                       <Reply className="h-3.5 w-3.5" /> Reply
                     </Button>
                     <Button variant="outline" size="sm" className="gap-2" onClick={handleForward}>
@@ -313,6 +319,7 @@ export default function MessagesPage() {
         <Card>
           <CardContent className="p-4">
             <textarea
+              ref={replyTextareaRef}
               value={replyBody}
               onChange={(e) => setReplyBody(e.target.value)}
               placeholder="Write a reply..."

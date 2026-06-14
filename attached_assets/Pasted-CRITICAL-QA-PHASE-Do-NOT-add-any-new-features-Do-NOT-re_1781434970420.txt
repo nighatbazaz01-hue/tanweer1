@@ -1,0 +1,198 @@
+CRITICAL QA PHASE
+
+Do NOT add any new features.
+
+Do NOT redesign UI.
+
+Do NOT add backend.
+
+The platform is approaching demo readiness and now requires a COMPLETE INTERACTION AUDIT.
+
+I have already manually discovered multiple issues that previous audits missed.
+
+Therefore I do NOT trust static code inspection alone.
+
+You must perform an exhaustive UI interaction audit.
+
+=========================================
+GOAL
+=========================================
+
+Simulate a real user.
+
+Visit every role.
+
+Visit every page.
+
+Click every interactive element.
+
+Verify every workflow.
+
+=========================================
+ROLES TO TEST
+=========================================
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+=========================================
+INTERACTIONS TO TEST
+=========================================
+
+For every role and every page:
+
+Test:
+
+- Buttons
+- Links
+- Menu items
+- Sidebar items
+- Cards
+- Dropdowns
+- Tabs
+- Filters
+- Search boxes
+- Modals
+- Dialogs
+- Forms
+- Action menus
+- Pagination
+- Table actions
+- View buttons
+- Edit buttons
+- Delete buttons
+- Details buttons
+- Create buttons
+- Save buttons
+- Submit buttons
+
+Anything clickable must be tested.
+
+=========================================
+VERIFY
+=========================================
+
+1. Does it open?
+
+2. Does it do something useful?
+
+3. Does it show correct data?
+
+4. Does it update store state?
+
+5. Does it throw console errors?
+
+6. Does it navigate correctly?
+
+7. Does it silently redirect somewhere unexpected?
+
+8. Does it use correct role permissions?
+
+=========================================
+SPECIAL ATTENTION
+=========================================
+
+Teacher account
+
+I already found:
+
+- Today's Classes buttons
+- Broken routes
+- Student count mismatches
+- Attendance mismatches
+
+Audit ALL teacher workflows carefully.
+
+Verify:
+
+- Dashboard
+- My Classes
+- My Students
+- Attendance
+- Homework
+- Performance
+- Tasks
+- Leave
+- Messages
+- Meetings
+
+=========================================
+DATA CONSISTENCY TEST
+=========================================
+
+For every role:
+
+Record counts shown on:
+
+Dashboard
+Students
+Attendance
+Fees
+Performance
+Tasks
+
+Verify counts match expected scope.
+
+Find any page using:
+
+- different datasets
+- stale arrays
+- duplicate mock data
+- filtered data incorrectly
+
+=========================================
+ROUTE AUDIT
+=========================================
+
+Generate complete route inventory.
+
+For every route:
+
+Status:
+
+- Working
+- Redirecting
+- Missing
+- Broken
+
+Identify:
+
+- sidebar links with no page
+- pages with no navigation
+- routes redirecting incorrectly
+
+=========================================
+OUTPUT FORMAT
+=========================================
+
+Before fixing:
+
+BROKEN BUTTONS
+BROKEN LINKS
+BROKEN ROUTES
+BROKEN FILTERS
+DATA INCONSISTENCIES
+PERMISSION ISSUES
+CONSOLE ERRORS
+
+Include exact page names.
+
+Then fix everything found.
+
+After fixes provide:
+
+TOTAL PAGES TESTED
+TOTAL INTERACTIONS TESTED
+TOTAL ISSUES FOUND
+TOTAL ISSUES FIXED
+
+Demo Readiness Score (%)
+
+Do NOT stop after finding a few issues.
+
+Continue until every interactive element has been checked.
