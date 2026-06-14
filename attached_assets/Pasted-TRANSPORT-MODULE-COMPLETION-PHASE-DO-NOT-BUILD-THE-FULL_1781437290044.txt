@@ -1,0 +1,192 @@
+TRANSPORT MODULE COMPLETION PHASE
+
+DO NOT BUILD THE FULL ENTERPRISE TRANSPORT SCOPE YET.
+
+The goal is a BOARD DEMO, not a production rollout.
+
+Implement ONLY the Demo-Critical Transport Features.
+
+====================================================
+ROLES
+====================================================
+
+Admin
+VP1
+VP2
+VP3
+Parent
+Student
+
+Teacher must have NO access.
+
+====================================================
+VEHICLE MANAGEMENT
+====================================================
+
+Create:
+
+Vehicle List
+Vehicle Details
+Add Vehicle
+Edit Vehicle
+
+Fields:
+
+Vehicle Number
+Vehicle Type
+Capacity
+Fuel Type
+Registration Number
+Insurance Expiry
+Fitness Expiry
+Pollution Expiry
+Status
+
+Status:
+
+Active
+Inactive
+Maintenance
+
+====================================================
+ROUTE MANAGEMENT
+====================================================
+
+Create:
+
+Route List
+Route Detail View
+
+Fields:
+
+Route Name
+Route Code
+Start Point
+End Point
+Stops
+Pickup Times
+Drop Times
+
+Features:
+
+Add Route
+Edit Route
+Assign Vehicle
+Assign Students
+
+====================================================
+STUDENT TRANSPORT ALLOCATION
+====================================================
+
+Create:
+
+Assign Student to Route
+Assign Student to Stop
+
+Fields:
+
+Student
+Route
+Stop
+Vehicle
+One-Way / Two-Way
+
+Auto-calculate:
+
+Students Per Route
+Seat Utilization
+
+====================================================
+PARENT VIEW
+====================================================
+
+Parent sees ONLY their child.
+
+Display:
+
+Bus Number
+Route
+Stop
+Driver
+Conductor
+
+Parent can:
+
+Submit Transport Update Request
+
+Examples:
+
+Change Stop
+Change Address
+Temporary Transport Request
+
+====================================================
+NOTIFICATIONS
+====================================================
+
+Parent request creates:
+
+Notification for VP
+Notification for Admin
+Event Log entry
+
+Route change creates:
+
+Notification for Parent
+
+====================================================
+REPORTS
+====================================================
+
+Create:
+
+Route Utilization Report
+Vehicle Report
+Student Transport Report
+
+Mock-data only.
+
+====================================================
+PERMISSIONS
+====================================================
+
+Admin:
+Full access
+
+VP:
+Full access
+
+Parent:
+Own child only
+
+Student:
+Own transport only
+
+Teacher:
+No transport access
+
+====================================================
+REQUIREMENTS
+====================================================
+
+Use useDataStore only.
+
+No local state datasets.
+
+No duplicate mock arrays.
+
+All actions must update store.
+
+All actions must create event log entries.
+
+All buttons must work.
+
+Audit every transport page after implementation.
+
+Report:
+
+Pages Created
+Buttons Tested
+Issues Found
+Issues Fixed
+Remaining Gaps
