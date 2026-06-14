@@ -718,11 +718,15 @@ export const useDataStore = create<DataStore>((set) => ({
         actor, roles: ["admin", "vp1", "vp2", "vp3"],
       };
       return {
-        vehicles: state.vehicles.map((v) =>
-          v.registrationNumber === registrationNumber
-            ? { ...v, busNumber, routeCode }
-            : v
-        ),
+        vehicles: state.vehicles.map((v) => {
+          if (v.registrationNumber === registrationNumber) {
+            return { ...v, busNumber, routeCode };
+          }
+          if (v.routeCode === routeCode || v.busNumber === busNumber) {
+            return { ...v, busNumber: "", routeCode: "" };
+          }
+          return v;
+        }),
         notifications: [notif, ...state.notifications],
         eventLog: [event, ...state.eventLog].slice(0, 100),
       };

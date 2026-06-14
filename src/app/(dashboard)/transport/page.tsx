@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { type TransportRecord, type TransportRequestType } from "@/lib/mockData/transport";
+import { type TransportRecord, type TransportRequestType, BUS_ROUTES } from "@/lib/mockData/transport";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useDataStore } from "@/store/useDataStore";
 import { DEMO_CHILD_ID } from "@/lib/permissions";
@@ -430,13 +430,15 @@ function TransportContent({ activeRole }: { activeRole: string }) {
 
   const handleSubmitRequest = () => {
     if (!records[0] || !requestDetails.trim()) return;
+    const derivedRouteId =
+      BUS_ROUTES.find((r) => r.bus === records[0].busNumber)?.routeCode ?? "RT-01";
     submitTransportRequest(
       records[0].studentId,
       records[0].studentName,
       records[0].parentName,
       requestType,
       requestDetails,
-      "RT-01",
+      derivedRouteId,
       "Parent",
       proposedStop.trim() || undefined,
       proposedAddress.trim() || undefined,

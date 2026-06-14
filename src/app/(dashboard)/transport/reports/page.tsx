@@ -58,9 +58,9 @@ function ReportsContent() {
     return counts;
   }, [transportRecords]);
 
-  const vehicleByBus = useMemo(() => {
+  const vehicleByRouteCode = useMemo(() => {
     const map: Record<string, typeof vehicles[0]> = {};
-    vehicles.forEach((v) => { map[v.busNumber] = v; });
+    vehicles.forEach((v) => { if (v.routeCode) map[v.routeCode] = v; });
     return map;
   }, [vehicles]);
 
@@ -118,7 +118,7 @@ function ReportsContent() {
             <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Utilization</p>
               <p className="text-2xl font-bold">
                 {Math.round(BUS_ROUTES.reduce((s, r) => {
-                  const v = vehicleByBus[r.bus];
+                  const v = vehicleByRouteCode[r.routeCode];
                   const cap = v?.capacity ?? 50;
                   return s + ((busCounts[r.bus] || 0) / cap) * 100;
                 }, 0) / BUS_ROUTES.length)}%
@@ -144,7 +144,7 @@ function ReportsContent() {
                   <tbody>
                     {BUS_ROUTES.map((route) => {
                       const count = busCounts[route.bus] || 0;
-                      const vehicle = vehicleByBus[route.bus];
+                      const vehicle = vehicleByRouteCode[route.routeCode];
                       const cap = vehicle?.capacity ?? 50;
                       const util = Math.round((count / cap) * 100);
                       return (

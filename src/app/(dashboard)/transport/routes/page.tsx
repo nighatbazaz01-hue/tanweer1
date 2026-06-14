@@ -57,9 +57,9 @@ function RoutesContent() {
     return counts;
   }, [transportRecords]);
 
-  const vehicleByBus = useMemo(() => {
+  const vehicleByRouteCode = useMemo(() => {
     const map: Record<string, typeof vehicles[0]> = {};
-    vehicles.forEach((v) => { map[v.busNumber] = v; });
+    vehicles.forEach((v) => { if (v.routeCode) map[v.routeCode] = v; });
     return map;
   }, [vehicles]);
 
@@ -113,7 +113,7 @@ function RoutesContent() {
       <div className="space-y-3">
         {BUS_ROUTES.map((route) => {
           const studentCount = busCounts[route.bus] || 0;
-          const vehicle = vehicleByBus[route.bus];
+          const vehicle = vehicleByRouteCode[route.routeCode];
           const capacity = vehicle?.capacity ?? 50;
           const utilization = Math.round((studentCount / capacity) * 100);
           const isExpanded = expanded === route.routeCode;
