@@ -1,13 +1,13 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Loader2, ShieldCheck, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { GraduationCap, Loader2, ShieldCheck, Eye, EyeOff, ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRoleStore } from "@/store/useRoleStore";
-import { findCredential, MOCK_CREDENTIALS } from "@/lib/mockData/credentials";
+import { findCredential } from "@/lib/mockData/credentials";
 
 function generateOtp(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [otpDelivered, setOtpDelivered] = useState(false);
   const [pendingCredential, setPendingCredential] = useState<ReturnType<typeof findCredential>>(null);
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -36,7 +37,15 @@ export default function LoginPage() {
   useEffect(() => {
     if (step === "otp") {
       otpRefs.current[0]?.focus();
+      // Simulate OTP delivery: auto-fill after 1.5s (demo mode)
+      const timer = setTimeout(() => {
+        setOtpDelivered(true);
+        setOtp(generatedOtp.split(""));
+        otpRefs.current[5]?.focus();
+      }, 1500);
+      return () => clearTimeout(timer);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const handleCredentialSubmit = async (e: React.FormEvent) => {
@@ -59,6 +68,7 @@ export default function LoginPage() {
     } else {
       const code = generateOtp();
       setGeneratedOtp(code);
+      setOtpDelivered(false);
       setStep("otp");
       setLoading(false);
     }
@@ -133,6 +143,7 @@ export default function LoginPage() {
     setOtp(["", "", "", "", "", ""]);
     setOtpError("");
     setGeneratedOtp("");
+    setOtpDelivered(false);
     setPendingCredential(null);
   };
 
@@ -205,23 +216,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </form>
-
-              <div className="mt-5 pt-4 border-t">
-                <p className="text-xs font-medium text-muted-foreground mb-2">Demo accounts:</p>
-                <div className="grid grid-cols-2 gap-1">
-                  {MOCK_CREDENTIALS.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => { setEmail(c.email); setPassword(c.password); setError(""); }}
-                      className="text-left text-xs px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
-                    >
-                      <span className="font-medium text-foreground capitalize">{c.appRole}</span>
-                      <span className="text-muted-foreground block truncate">{c.email}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
         ) : (
@@ -233,23 +227,31 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <CardTitle>Verify Your Identity</CardTitle>
-                  <CardDescription>Enter the 6-digit code shown below</CardDescription>
+                  <CardDescription>Two-factor authentication required</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-5 rounded-xl bg-violet-50 border border-violet-200 p-4 text-center">
-                <p className="text-xs text-violet-600 font-medium mb-1">Your one-time code</p>
-                <p className="text-3xl font-bold tracking-[0.3em] text-violet-700 font-mono">
-                  {generatedOtp}
-                </p>
-                <p className="text-xs text-violet-500 mt-1">Use this code to verify your device</p>
+              {/* Delivery status — no code shown */}
+              <div className="mb-5 rounded-xl bg-muted/60 border p-4 flex items-start gap-3">
+                <Mail className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Code sent to your registered email</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {otpDelivered
+                      ? "Code delivered — check your authenticator or email inbox."
+                      : "Sending verification code…"}
+                  </p>
+                </div>
+                {!otpDelivered && (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground ml-auto mt-0.5 shrink-0" />
+                )}
               </div>
 
               <form onSubmit={handleOtpSubmit} className="space-y-4">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground block mb-2">
-                    Enter code
+                    Enter 6-digit code
                   </label>
                   <div className="flex gap-2 justify-center" onPaste={handleOtpPaste}>
                     {otp.map((digit, i) => (
@@ -274,7 +276,7 @@ export default function LoginPage() {
                   </p>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading || !otpDelivered}>
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

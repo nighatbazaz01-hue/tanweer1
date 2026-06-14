@@ -5,6 +5,10 @@ import {
   DollarSign, Sparkles, Star, TrendingUp, TrendingDown,
   CheckCircle, Award, Brain, ArrowLeft,
 } from "lucide-react";
+import { useRoleStore } from "@/store/useRoleStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { PinGate } from "@/components/common/PinGate";
+import { getPinForRole } from "@/lib/mockData/credentials";
 import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +44,9 @@ const radarData = [
 
 export default function Student360Page() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { activeRole } = useRoleStore();
+  const { user } = useAuthStore();
+  const correctPin = getPinForRole(activeRole as Parameters<typeof getPinForRole>[0]) ?? "";
 
   return (
     <div className="space-y-5">
@@ -89,12 +96,22 @@ export default function Student360Page() {
           </div>
         </div>
 
-        {/* Contact Row */}
+        {/* Contact Row — sensitive fields gated by PIN */}
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/10 flex-wrap text-xs text-slate-300">
-          <span>📧 {student360.email}</span>
-          <span>📱 {student360.phone}</span>
-          <span>🏠 {student360.address}</span>
-          <span>👤 Parent: {student360.parentName} · {student360.parentPhone}</span>
+          <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Student Email" inline>
+            <span>📧 {student360.email}</span>
+          </PinGate>
+          <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Student Phone" inline>
+            <span>📱 {student360.phone}</span>
+          </PinGate>
+          <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Home Address" inline>
+            <span>🏠 {student360.address}</span>
+          </PinGate>
+          <span>👤 Parent: {student360.parentName} ·{" "}
+            <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Parent Phone" inline>
+              <span>{student360.parentPhone}</span>
+            </PinGate>
+          </span>
         </div>
       </div>
 

@@ -5,6 +5,7 @@ export interface MockCredential {
   id: string;
   email: string;
   password: string;
+  pin?: string;
   name: string;
   role: UserRole;
   appRole: AppRole;
@@ -18,6 +19,7 @@ export const MOCK_CREDENTIALS: MockCredential[] = [
     id: "user-admin",
     email: "admin@school.edu",
     password: "Admin123!",
+    pin: "1234",
     name: "Dr. Khalid Al-Mansouri",
     role: "school_admin",
     appRole: "admin",
@@ -29,6 +31,7 @@ export const MOCK_CREDENTIALS: MockCredential[] = [
     id: "user-vp1",
     email: "vp1@school.edu",
     password: "VP1pass!",
+    pin: "5678",
     name: "Dr. Khalid Al-Otaibi",
     role: "school_admin",
     appRole: "vp1",
@@ -40,6 +43,7 @@ export const MOCK_CREDENTIALS: MockCredential[] = [
     id: "user-vp2",
     email: "vp2@school.edu",
     password: "VP2pass!",
+    pin: "9012",
     name: "Ms. Nora Al-Zahrani",
     role: "school_admin",
     appRole: "vp2",
@@ -51,6 +55,7 @@ export const MOCK_CREDENTIALS: MockCredential[] = [
     id: "user-vp3",
     email: "vp3@school.edu",
     password: "VP3pass!",
+    pin: "3456",
     name: "Mr. Faris Al-Mutairi",
     role: "school_admin",
     appRole: "vp3",
@@ -99,4 +104,8 @@ export function findCredential(email: string, password: string): MockCredential 
       (c) => c.email.toLowerCase() === email.toLowerCase() && c.password === password
     ) ?? null
   );
+}
+
+export function getPinForRole(appRole: AppRole): string | undefined {
+  return MOCK_CREDENTIALS.find((c) => c.appRole === appRole)?.pin;
 }

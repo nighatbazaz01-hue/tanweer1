@@ -2,3 +2,5 @@
 - [Data Store Architecture](data-store-arch.md) — useDataStore is the single source of truth; every action emits a structured AppEvent to eventLog
 - [System Health Dashboard](system-health.md) — dev-only page at /system-health; validator lives in src/lib/systemHealth.ts (pure fn, no hooks)
 - [Architecture Lock](architecture-lock.md) — enforced by architectureRules.ts (contracts) + devGuard.ts (runtime checker) + StartupValidator.tsx (console logger on mount)
+- [PIN Security System](pin-security.md) — session-level PIN gate for admin/VP sensitive fields; usePinStore + PinGate component; 3-failure lockout fires addNotification to admin
+- [Student Data Model](student-data-model.md) — Student interface in population.ts is the canonical shape; expanded with 10+ fields in Phase 6; always use getAllStudents() via useDataStore

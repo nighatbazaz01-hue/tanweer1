@@ -14,6 +14,8 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { filterStudentsForRole, getRoleScopeLabel } from "@/lib/permissions";
+import { PinGate } from "@/components/common/PinGate";
+import { getPinForRole } from "@/lib/mockData/credentials";
 import type { Student } from "@/lib/mockData/population";
 
 const tierVariant: Record<string, "success" | "destructive" | "warning" | "secondary"> = {
@@ -286,6 +288,8 @@ export default function StudentsPage() {
                   { label: "Attendance", value: profileStudent.attendanceRate > 0 ? `${profileStudent.attendanceRate}%` : "—" },
                   { label: "Gender", value: profileStudent.gender === "male" ? "Male" : "Female" },
                   { label: "Enrolled", value: `${profileStudent.enrolledYear}` },
+                  { label: "Nationality", value: profileStudent.nationality || "—" },
+                  { label: "Blood Type", value: profileStudent.bloodType || "—" },
                 ].map(({ label, value }) => (
                   <div key={label} className="bg-muted/60 rounded-lg p-3">
                     <p className="text-xs text-muted-foreground">{label}</p>
@@ -293,6 +297,33 @@ export default function StudentsPage() {
                   </div>
                 ))}
               </div>
+              {profileStudent.interests?.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Interests</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profileStudent.interests.map((interest) => (
+                      <span key={interest} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{interest}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {profileStudent.medicalNote && (
+                <div className="flex items-start gap-2 text-xs p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
+                  <span className="shrink-0 mt-0.5">⚕️</span>
+                  <span><strong>Medical:</strong> {profileStudent.medicalNote}</span>
+                </div>
+              )}
+              {profileStudent.emergencyContact && (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Emergency Contact</p>
+                  <div className="text-sm bg-muted/50 rounded-lg px-3 py-2 space-y-0.5">
+                    <p className="font-medium">{profileStudent.emergencyContact.name} <span className="text-xs text-muted-foreground">({profileStudent.emergencyContact.relation})</span></p>
+                    <PinGate correctPin={getPinForRole(activeRole as Parameters<typeof getPinForRole>[0]) ?? ""} role={activeRole} actor={user?.name || activeRole} field="Emergency Contact Phone" inline>
+                      <span className="text-xs text-muted-foreground">{profileStudent.emergencyContact.phone}</span>
+                    </PinGate>
+                  </div>
+                </div>
+              )}
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Parent / Guardian</p>
                 <div className="flex items-center gap-2 text-sm">
@@ -301,11 +332,27 @@ export default function StudentsPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span>{profileStudent.parentPhone || "—"}</span>
+                  <PinGate
+                    correctPin={getPinForRole(activeRole as Parameters<typeof getPinForRole>[0]) ?? ""}
+                    role={activeRole}
+                    actor={user?.name || activeRole}
+                    field="Parent Phone"
+                    inline
+                  >
+                    <span>{profileStudent.parentPhone || "—"}</span>
+                  </PinGate>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="truncate">{profileStudent.parentEmail || "—"}</span>
+                  <PinGate
+                    correctPin={getPinForRole(activeRole as Parameters<typeof getPinForRole>[0]) ?? ""}
+                    role={activeRole}
+                    actor={user?.name || activeRole}
+                    field="Parent Email"
+                    inline
+                  >
+                    <span className="truncate">{profileStudent.parentEmail || "—"}</span>
+                  </PinGate>
                 </div>
               </div>
             </div>

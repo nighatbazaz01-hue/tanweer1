@@ -1,7 +1,7 @@
 "use client";
 import {
   Clock, CheckCircle, XCircle, BookOpen, AlertTriangle,
-  TrendingUp, Sparkles, ChevronRight, X, Check, Mail,
+  TrendingUp, Sparkles, ChevronRight, X, Check, Mail, GraduationCap,
 } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -52,6 +52,19 @@ export default function TeacherDashboard() {
   const [hwPoints, setHwPoints] = useState("20");
   const [contactStudent, setContactStudent] = useState<typeof classRiskStudents[0] | null>(null);
   const [composeBody, setComposeBody] = useState("");
+
+  // Grade Entry
+  const [gradeOpen, setGradeOpen] = useState(false);
+  const [gradeAssessment, setGradeAssessment] = useState("Mid-Term Exam");
+  const [gradeMarks, setGradeMarks] = useState<Record<string, string>>({});
+  const getLetterGrade = (mark: number) =>
+    mark >= 90 ? "A+" : mark >= 85 ? "A" : mark >= 80 ? "B+" : mark >= 75 ? "B" : mark >= 70 ? "C+" : mark >= 65 ? "C" : mark >= 60 ? "D" : "F";
+  const handleSaveGrades = () => {
+    const saved = Object.keys(gradeMarks).filter((id) => gradeMarks[id] !== "").length;
+    setGradeOpen(false);
+    setGradeMarks({});
+    showToast(`Grades saved for ${saved} student${saved !== 1 ? "s" : ""} — ${gradeAssessment}`);
+  };
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -107,10 +120,14 @@ export default function TeacherDashboard() {
         description={`${teacherProfile.subject} · ${teacherProfile.sections.join(", ")} · ${teacherProfile.totalStudents} students`}
         breadcrumbs={[{ label: "Teacher" }, { label: "Dashboard" }]}
         actions={
-          <Button onClick={toggleAiDrawer} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700">
-            <Sparkles className="h-4 w-4" />
-            AI Teaching Assistant
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => { setGradeOpen(true); setGradeMarks({}); }} size="sm" variant="outline" className="gap-1.5">
+              <GraduationCap className="h-4 w-4" /> Grade Entry
+            </Button>
+            <Button onClick={toggleAiDrawer} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700">
+              <Sparkles className="h-4 w-4" /> AI Teaching Assistant
+            </Button>
+          </div>
         }
       />
 
@@ -367,6 +384,71 @@ export default function TeacherDashboard() {
             </Button>
             <Button onClick={handleAddHw} disabled={!hwTitle.trim()} className="gap-1">
               <Check className="h-4 w-4" /> Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Grade Entry Dialog */}
+      <Dialog open={gradeOpen} onOpenChange={(o) => { setGradeOpen(o); if (!o) setGradeMarks({}); }}>
+        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-primary" /> Grade Entry
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 flex-1 overflow-y-auto pr-1 py-2">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Assessment</label>
+              <select
+                value={gradeAssessment}
+                onChange={(e) => setGradeAssessment(e.target.value)}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
+                {["Mid-Term Exam", "Final Exam", "Quiz 1", "Quiz 2", "Project Work", "Classwork", "Homework"].map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-xs text-muted-foreground bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+              Enter marks out of 100. Letter grade calculated automatically.
+            </div>
+            <div className="space-y-2">
+              {classAttendanceToday.map((s) => {
+                const mark = parseInt(gradeMarks[s.id] ?? "");
+                const letter = !isNaN(mark) && mark >= 0 && mark <= 100 ? getLetterGrade(mark) : null;
+                const markColor = !letter ? "" : mark >= 80 ? "text-emerald-600" : mark >= 60 ? "text-amber-600" : "text-red-600";
+                return (
+                  <div key={s.id} className="flex items-center gap-3 p-2.5 rounded-lg border bg-card">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{s.name}</p>
+                      <p className="text-xs text-muted-foreground">{s.id}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={gradeMarks[s.id] ?? ""}
+                        onChange={(e) => setGradeMarks((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                        placeholder="—"
+                        className="w-16 h-8 text-center text-sm"
+                      />
+                      {letter && (
+                        <span className={`text-sm font-bold w-8 text-center ${markColor}`}>{letter}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <DialogFooter className="pt-2 border-t mt-2">
+            <Button variant="outline" onClick={() => setGradeOpen(false)} className="gap-1">
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleSaveGrades} className="gap-1">
+              <Check className="h-4 w-4" /> Save Grades
             </Button>
           </DialogFooter>
         </DialogContent>

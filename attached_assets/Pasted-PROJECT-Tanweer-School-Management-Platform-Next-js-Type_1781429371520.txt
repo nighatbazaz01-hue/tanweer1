@@ -1,0 +1,325 @@
+PROJECT: Tanweer School Management Platform (Next.js + TypeScript + Zustand)
+
+ROLE
+
+You are the lead engineer continuing an existing codebase.
+
+Do NOT redesign the application.
+Do NOT rebuild existing systems.
+Do NOT add a backend.
+Do NOT replace Zustand.
+Do NOT create new architecture.
+
+Your job is to finish and stabilize the existing demo platform.
+
+==================================================
+CURRENT STATE
+==================================================
+
+Already implemented:
+
+- Multi-role system
+  - Admin
+  - VP1 (Grades 1-4)
+  - VP2 (Grades 5-8)
+  - VP3 (Grades 9-12)
+  - Teacher
+  - Parent
+  - Student
+
+- Login system
+- OTP system
+- Protected routes
+- Unified population generator
+  - 600 students
+  - 50 teachers
+- Unified Zustand store
+- Permission engine
+- Event log
+- Audit system
+- Messaging
+- Meetings
+- Announcements
+- Tasks
+- Notifications
+- Admissions
+- Attendance
+- Fees
+- Academics
+- Directories
+- Transport module
+- AI School Assistant
+- AI Study Assistant
+
+The platform is functional but not demo-ready.
+
+==================================================
+PRIMARY OBJECTIVE
+==================================================
+
+Make the system realistic enough for a school board presentation.
+
+Focus on:
+
+1. Security
+2. Workflow completion
+3. Data consistency
+4. Demo realism
+5. Removal of placeholder behavior
+
+==================================================
+PHASE 1
+SECURITY & LOGIN
+==================================================
+
+Audit and fix authentication.
+
+Requirements:
+
+1. Remove ALL visible demo credentials from login page
+
+2. Remove visible OTP display
+
+Current behavior:
+OTP appears on screen.
+
+New behavior:
+- OTP screen appears
+- User enters code
+- Code is validated
+- OTP is never shown
+
+3. Keep mock authentication architecture
+
+4. Store demo credentials in a single configuration file
+
+5. Provide final report containing:
+- role
+- username
+- password
+- PIN
+
+==================================================
+PHASE 2
+SENSITIVE DATA PROTECTION
+==================================================
+
+Implement secondary security for:
+
+- Admin
+- VP1
+- VP2
+- VP3
+
+Sensitive data:
+
+- parent phone
+- parent email
+- address
+- transport
+- medical records
+- emergency contacts
+- confidential notes
+
+Requirements:
+
+1. Separate Security PIN
+
+2. Accessing protected data triggers PIN prompt
+
+3. PIN remains valid for current session only
+
+4. Log:
+   - successful access
+   - failed access
+   - unlock events
+
+5. Generate audit entries
+
+6. Generate security alerts after repeated failures
+
+7. Teachers cannot bypass this
+
+8. Students cannot bypass this
+
+9. Parents only see their own child data
+
+==================================================
+PHASE 3
+WORKFLOW COMPLETION
+==================================================
+
+Audit every role.
+
+For each role identify:
+
+VIEW
+CREATE
+EDIT
+APPROVE
+
+Then implement missing workflows.
+
+Teacher must be able to:
+
+- mark attendance
+- edit attendance
+- create homework
+- edit homework
+- create assessments
+- enter grades
+- edit grades
+- message parents
+- request meetings
+- update assigned tasks
+
+VP must be able to:
+
+- manage timetable
+- schedule exams
+- review attendance
+- approve attendance corrections
+- review transport updates
+- publish announcements
+- manage grade-group operations
+
+Admin must be able to:
+
+- manage admissions
+- manage fees
+- manage attendance
+- manage timetable
+- manage transport
+- manage staff
+- manage security
+- manage audit logs
+
+==================================================
+PHASE 4
+DATA ENTRY AUDIT
+==================================================
+
+Current problem:
+
+Many pages DISPLAY information but provide no way to CREATE or UPDATE it.
+
+Perform a full audit.
+
+For every major module:
+
+- Attendance
+- Homework
+- Assessments
+- Grades
+- Timetable
+- Admissions
+- Fees
+- Transport
+- Meetings
+- Messages
+- Announcements
+- Tasks
+
+Verify:
+
+1. Create path exists
+2. Edit path exists
+3. View path exists
+4. Data persists in Zustand
+
+If missing:
+Implement it.
+
+==================================================
+PHASE 5
+TRANSPORT COMPLETION
+==================================================
+
+Verify transport permissions:
+
+Admin:
+Full access
+
+VP:
+Grade-group access
+
+Parent:
+Can view
+Can submit transport updates
+
+Student:
+Can view assigned transport
+
+Teacher:
+No access
+
+Parent transport updates must:
+
+- update store
+- create notification
+- create event log entry
+- notify appropriate VP
+
+==================================================
+PHASE 6
+STUDENT DATA EXPANSION
+==================================================
+
+Expand approximately 200 students only.
+
+Add:
+
+- medical profile
+- emergency contacts
+- address
+- transport assignment
+- academic history
+- assessment history
+- attendance history
+- confidential notes
+
+These records must integrate with the new PIN security system.
+
+==================================================
+PHASE 7
+DEMO READINESS AUDIT
+==================================================
+
+After implementation produce:
+
+1. Completed features
+2. Partial features
+3. Broken features
+4. Security features
+5. Remaining demo risks
+
+Also provide:
+
+- remaining dead buttons
+- remaining placeholder screens
+- remaining missing workflows
+- routes with no connected data
+
+==================================================
+EXECUTION RULES
+==================================================
+
+Before coding:
+
+Perform audit.
+
+After audit:
+
+Fix issues in this order:
+
+1. Security
+2. Workflow completion
+3. Data entry gaps
+4. Transport completion
+5. Demo polish
+
+Work directly in code.
+
+Do not stop after planning.
+
+Implement fixes.

@@ -27,6 +27,15 @@ const SUBJECTS = [
   "Geography", "Physical Education", "Art", "Social Studies",
 ];
 
+const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+const NATIONALITIES = ["Saudi", "Saudi", "Saudi", "Saudi", "Saudi", "Emirati", "Jordanian", "Egyptian", "Pakistani", "Indian"];
+const DISTRICTS = ["Al-Olaya", "Al-Malaz", "Al-Sulimaniyah", "Al-Rawdah", "Al-Wurood", "Al-Naseem", "Al-Rabwah", "Al-Nakheel", "Diplomatic Quarter", "Al-Aqiq"];
+const CITIES = ["Riyadh", "Riyadh", "Jeddah", "Dammam"];
+const RELATIONS = ["Father", "Mother", "Father", "Father", "Mother", "Uncle", "Grandfather"];
+const INTERESTS_POOL = ["Football", "Basketball", "Chess", "Art", "Coding", "Reading", "Science", "Music", "Debate Club", "Robotics", "Swimming", "Photography", "Drama", "Math Olympiad", "Quran Memorization"];
+const MEDICAL_NOTES = ["Mild asthma — inhaler required", "Nut allergy — EpiPen on record", "Glasses prescribed", "Lactose intolerant", "Mild dyslexia — support plan active"];
+const PREV_SCHOOLS = ["Al-Falah International School", "Ibn Rushd Academy", "Dar Al-Uloom Primary", "Al-Manar Model School", "National Learning Institute", "Al-Bayan Elementary"];
+
 const QUALIFICATIONS = [
   "B.Ed. Mathematics", "M.Sc. Physics", "Ph.D. Chemistry", "B.Ed. English",
   "M.A. Arabic Literature", "B.Sc. Computer Science", "M.Ed. Educational Leadership",
@@ -57,6 +66,17 @@ export interface Student {
   parentEmail: string;
   avatar: string;
   enrolledYear: number;
+  // Phase 6 expanded fields
+  nationalId: string;
+  bloodType: string;
+  nationality: string;
+  address: string;
+  phone: string;
+  email: string;
+  medicalNote?: string;
+  interests: string[];
+  emergencyContact: { name: string; phone: string; relation: string };
+  previousSchool?: string;
 }
 
 export interface Teacher {
@@ -131,6 +151,25 @@ export function getAllStudents(): Student[] {
       const phoneDigits = Math.floor(50000000 + seededRandom(seed + 8) * 49999999);
       const enrolledYear = 2024 - (grade - 1);
 
+      const nationalId = `10${String(Math.floor(10000000 + seededRandom(seed + 20) * 89999999)).slice(0, 8)}`;
+      const bloodType = seededPick(BLOOD_TYPES, seed + 21);
+      const nationality = seededPick(NATIONALITIES, seed + 22);
+      const district = seededPick(DISTRICTS, seed + 23);
+      const city = seededPick(CITIES, seed + 24);
+      const address = `${Math.floor(1 + seededRandom(seed + 25) * 999)} ${district} St, ${city}`;
+      const studentPhone = `+966 5${String(Math.floor(50000000 + seededRandom(seed + 26) * 49999999)).slice(0, 8)}`;
+      const studentEmail = `${firstName.toLowerCase()}.${lastName.replace("Al-", "").toLowerCase()}@student.tanweer.edu`;
+      const hasMedical = seededRandom(seed + 27) < 0.15;
+      const medicalNote = hasMedical ? seededPick(MEDICAL_NOTES, seed + 28) : undefined;
+      const numInterests = Math.floor(2 + seededRandom(seed + 29) * 3);
+      const interests = Array.from({ length: numInterests }, (_, k) =>
+        seededPick(INTERESTS_POOL, seed + 30 + k)
+      ).filter((v, i, a) => a.indexOf(v) === i);
+      const emergencyRelation = seededPick(RELATIONS, seed + 35);
+      const emergencyFName = seededPick(FIRST_NAMES_MALE, seed + 36);
+      const emergencyPhone = `+966 5${String(Math.floor(50000000 + seededRandom(seed + 37) * 49999999)).slice(0, 8)}`;
+      const previousSchool = grade > 1 ? seededPick(PREV_SCHOOLS, seed + 38) : undefined;
+
       result.push({
         id: `STU-${String(idx + 1).padStart(4, "0")}`,
         name: fullName,
@@ -145,6 +184,20 @@ export function getAllStudents(): Student[] {
         parentEmail: `${parentFName.toLowerCase()}.${lastName.replace("Al-", "").toLowerCase()}@email.com`,
         avatar: `${firstName[0]}${lastName[0]}`,
         enrolledYear,
+        nationalId,
+        bloodType,
+        nationality,
+        address,
+        phone: studentPhone,
+        email: studentEmail,
+        medicalNote,
+        interests,
+        emergencyContact: {
+          name: `${emergencyFName} ${lastName}`,
+          phone: emergencyPhone,
+          relation: emergencyRelation,
+        },
+        previousSchool,
       });
       idx++;
     }

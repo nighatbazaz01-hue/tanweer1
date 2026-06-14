@@ -42,6 +42,7 @@ const navByRole = {
     { label: "Audit Center",     href: "/audit",              icon: Shield },
     { label: "Transport",        href: "/transport",          icon: Bus },
     { label: "Settings",         href: "/settings",           icon: Settings },
+    { label: "Demo Guide",       href: "/admin/demo-guide",   icon: FileText },
   ],
 
   // VP journey: Dashboard → Students → Attendance → Announcements → Messages
@@ -49,6 +50,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
@@ -67,6 +69,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
@@ -85,6 +88,7 @@ const navByRole = {
     { label: "VP Dashboard",       href: "/vp",                  icon: LayoutDashboard },
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
+    { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
