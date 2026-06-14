@@ -102,22 +102,30 @@ export const initialVehicles: VehicleRecord[] = BUS_ROUTES.map((route, i) => ({
 export const initialTransportRequests: TransportRequest[] = [
   {
     id: "TR-001", studentId: "STU-001", studentName: "Ahmed Al-Rashidi", parentName: "Mohammed Al-Rashidi",
-    requestType: "change_stop", details: "Please change pickup stop from Al-Nakheel Roundabout to Malaz Square starting Monday.",
+    requestType: "change_stop",
+    proposedStop: "Malaz Square",
+    details: "Please change pickup stop from Al-Nakheel Roundabout to Malaz Square starting Monday.",
     status: "pending", submittedAt: "Jun 12, 2026", routeId: "RT-01",
   },
   {
     id: "TR-002", studentId: "STU-051", studentName: "Mazen Al-Harbi", parentName: "Hassan Al-Harbi",
-    requestType: "change_address", details: "We have moved to Villa 45, Al-Ruwais District. Please update our home address.",
+    requestType: "change_address",
+    proposedAddress: "Villa 45, Al-Ruwais District, Riyadh",
+    details: "We have moved to Villa 45, Al-Ruwais District. Please update our home address.",
     status: "pending", submittedAt: "Jun 13, 2026", routeId: "RT-02",
   },
   {
     id: "TR-003", studentId: "STU-101", studentName: "Fahad Al-Mutairi", parentName: "Saeed Al-Mutairi",
-    requestType: "temporary", details: "My son will need temporary pickup from his grandmother's house at Prince Fawwaz Road for two weeks (Jun 17–Jun 28).",
+    requestType: "temporary",
+    proposedStop: "Prince Fawwaz Road (Grandmother's house)",
+    details: "My son will need temporary pickup from his grandmother's house at Prince Fawwaz Road for two weeks (Jun 17–Jun 28).",
     status: "approved", submittedAt: "Jun 10, 2026", reviewedBy: "VP — Mrs. Hessa", reviewedAt: "Jun 11, 2026", routeId: "RT-06",
   },
   {
     id: "TR-004", studentId: "STU-151", studentName: "Abdullah Al-Zahrani", parentName: "Khalid Al-Zahrani",
-    requestType: "change_stop", details: "Please move pickup to Al-Naseem Gate instead of Al-Shifa Center.",
+    requestType: "change_stop",
+    proposedStop: "Al-Naseem Gate",
+    details: "Please move pickup to Al-Naseem Gate instead of Al-Shifa Center.",
     status: "rejected", submittedAt: "Jun 9, 2026", reviewedBy: "Admin", reviewedAt: "Jun 10, 2026", routeId: "RT-04",
   },
 ];

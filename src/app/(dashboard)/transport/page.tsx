@@ -564,7 +564,17 @@ function TransportContent({ activeRole }: { activeRole: string }) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRequestOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmitRequest} disabled={!requestDetails.trim()}>Submit Request</Button>
+            <Button
+              onClick={handleSubmitRequest}
+              disabled={
+                !requestDetails.trim() ||
+                (requestType === "change_stop" && !proposedStop.trim()) ||
+                (requestType === "change_address" && !proposedAddress.trim()) ||
+                (requestType === "temporary" && !proposedStop.trim())
+              }
+            >
+              Submit Request
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
