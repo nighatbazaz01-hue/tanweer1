@@ -12,6 +12,7 @@ import { announcements as initialAnnouncements, type Announcement } from "@/lib/
 import { meetings as initialMeetings, type Meeting, type RSVPStatus } from "@/lib/mockData/meetings";
 import { tasks as initialTasks, type Task, type TaskStatus } from "@/lib/mockData/tasks";
 import { allNotifications, type Notification } from "@/lib/mockData/notifications";
+import { initialLeaveRequests, type LeaveRequest, type LeaveStatus } from "@/lib/mockData/leaves";
 import { mockAdmissionLeads } from "@/lib/mockData";
 import { getAllStudents, type Student } from "@/lib/mockData/population";
 import { generateTransportRecords, type TransportRecord } from "@/lib/mockData/transport";
@@ -38,7 +39,10 @@ export type AppEventType =
   | "parentMessageSent"
   | "notificationRead"
   | "allNotificationsRead"
-  | "transportRecordUpdated";
+  | "transportRecordUpdated"
+  | "leaveSubmitted"
+  | "leaveApproved"
+  | "leaveRejected";
 
 export interface AppEvent {
   id: string;
@@ -74,6 +78,7 @@ let notifCounter = 1000;
 let studentCounter = 1000;
 let leadCounter = 1000;
 let assignmentCounter = 1000;
+let leaveCounter = 1000;
 
 // ─── Assignment Type ──────────────────────────────────────────────────────────
 export interface Assignment {
@@ -141,6 +146,21 @@ interface DataStore {
   // ── Task Actions ──
   addTask: (t: Omit<Task, "id">) => void;
   updateTaskStatus: (id: string, status: TaskStatus, progress?: number) => void;
+  addTaskComment: (id: string, author: string, body: string) => void;
+
+  // ── Leave Actions ──
+  leaveRequests: LeaveRequest[];
+  submitLeaveRequest: (
+    teacherId: string,
+    teacherName: string,
+    teacherAvatar: string,
+    leaveType: LeaveRequest["leaveType"],
+    fromDate: string,
+    toDate: string,
+    reason: string
+  ) => void;
+  approveLeaveRequest: (id: string, reviewerName: string, remarks: string) => void;
+  rejectLeaveRequest:  (id: string, reviewerName: string, remarks: string) => void;
 
   // ── Notification Actions ──
   markNotificationRead: (id: string) => void;
@@ -198,6 +218,7 @@ export const useDataStore = create<DataStore>((set) => ({
   admissionLeads:   JSON.parse(JSON.stringify(mockAdmissionLeads)),
   assignments:      [],
   transportRecords: generateTransportRecords(),
+  leaveRequests:    JSON.parse(JSON.stringify(initialLeaveRequests)),
   eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────
@@ -407,11 +428,24 @@ export const useDataStore = create<DataStore>((set) => ({
                 ...t,
                 status,
                 progress:    progress !== undefined ? progress : status === "done" ? 100 : t.progress,
-                completedAt: status === "done" ? "Jun 13, 2026" : t.completedAt,
+                completedAt: status === "done" ? new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : t.completedAt,
               }
             : t
         ),
         eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  addTaskComment: (id, author, body) =>
+    set((state) => {
+      const timeStr = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      const comment = { author, body, timestamp: `Jun 14, 2026 — ${timeStr}` };
+      return {
+        tasks: state.tasks.map((t) =>
+          t.id === id
+            ? { ...t, comments: [...(t.comments ?? []), comment] }
+            : t
+        ),
       };
     }),
 
@@ -508,6 +542,94 @@ export const useDataStore = create<DataStore>((set) => ({
       return {
         assignments: [newAssignment, ...state.assignments],
         eventLog:    [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Leave Actions ────────────────────────────────────────────────────
+
+  submitLeaveRequest: (teacherId, teacherName, teacherAvatar, leaveType, fromDate, toDate, reason) =>
+    set((state) => {
+      const id = `LVR-NEW-${++leaveCounter}`;
+      const submittedAt = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const newRequest: LeaveRequest = {
+        id, teacherId, teacherName, teacherAvatar, leaveType,
+        fromDate, toDate, reason, status: "pending", submittedAt,
+      };
+      const event = makeEvent("leaveSubmitted", teacherName, {
+        leaveId: id, leaveType, fromDate, toDate,
+      });
+      const notif: Notification = {
+        id: `N${++notifCounter}`,
+        type: "alert",
+        title: `Leave Request — ${teacherName}`,
+        body: `${teacherName} submitted a ${leaveType.replace("_", " ")} request from ${fromDate} to ${toDate}.`,
+        timestamp: "Just now",
+        isRead: false,
+        priority: "high",
+        link: "/vp/leave",
+        actor: teacherName,
+        roles: ["admin", "vp1", "vp2", "vp3"],
+      };
+      return {
+        leaveRequests: [newRequest, ...state.leaveRequests],
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  approveLeaveRequest: (id, reviewerName, remarks) =>
+    set((state) => {
+      const request = state.leaveRequests.find((r) => r.id === id);
+      const reviewedAt = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const event = makeEvent("leaveApproved", reviewerName, { leaveId: id, teacherName: request?.teacherName });
+      const notif: Notification = {
+        id: `N${++notifCounter}`,
+        type: "announcement",
+        title: "Leave Request Approved ✓",
+        body: `Your ${request?.leaveType?.replace("_", " ")} request (${request?.fromDate} – ${request?.toDate}) has been approved. ${remarks ? `Remarks: ${remarks}` : ""}`,
+        timestamp: "Just now",
+        isRead: false,
+        priority: "normal",
+        link: "/teacher/leave",
+        actor: reviewerName,
+        roles: ["teacher"],
+      };
+      return {
+        leaveRequests: state.leaveRequests.map((r) =>
+          r.id === id
+            ? { ...r, status: "approved" as LeaveStatus, reviewedAt, reviewedBy: reviewerName, remarks }
+            : r
+        ),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  rejectLeaveRequest: (id, reviewerName, remarks) =>
+    set((state) => {
+      const request = state.leaveRequests.find((r) => r.id === id);
+      const reviewedAt = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const event = makeEvent("leaveRejected", reviewerName, { leaveId: id, teacherName: request?.teacherName });
+      const notif: Notification = {
+        id: `N${++notifCounter}`,
+        type: "alert",
+        title: "Leave Request Not Approved",
+        body: `Your ${request?.leaveType?.replace("_", " ")} request (${request?.fromDate} – ${request?.toDate}) was not approved. ${remarks ? `Reason: ${remarks}` : ""}`,
+        timestamp: "Just now",
+        isRead: false,
+        priority: "normal",
+        link: "/teacher/leave",
+        actor: reviewerName,
+        roles: ["teacher"],
+      };
+      return {
+        leaveRequests: state.leaveRequests.map((r) =>
+          r.id === id
+            ? { ...r, status: "rejected" as LeaveStatus, reviewedAt, reviewedBy: reviewerName, remarks }
+            : r
+        ),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
       };
     }),
 

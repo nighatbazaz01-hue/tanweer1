@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import {
-  CheckSquare, AlertTriangle, Clock, Plus, ChevronRight,
-  Calendar, Tag, CheckCircle, Circle,
-  BarChart3, Link2,
+  CheckSquare, AlertTriangle, Clock, Plus, Calendar,
+  CheckCircle, Circle, BarChart3, Link2, MessageSquare, Send,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +17,8 @@ import { useDataStore } from "@/store/useDataStore";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { type Task, type TaskStatus, type TaskPriority } from "@/lib/mockData/tasks";
-import { filterTasksForRole, hasPermission } from "@/lib/permissions";
+import { filterTasksForRole, filterTeachersForRole, hasPermission } from "@/lib/permissions";
+import { getAllTeachers } from "@/lib/mockData/population";
 import { cn } from "@/lib/utils";
 
 const statusStyle: Record<TaskStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
@@ -52,20 +52,26 @@ const columns: { status: TaskStatus; label: string }[] = [
   { status: "done",        label: "✅ Done" },
 ];
 
+const allTeachers = getAllTeachers();
+
 export default function TasksPage() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
-  const { tasks, addTask, updateTaskStatus } = useDataStore();
+  const { tasks, addTask, updateTaskStatus, addTaskComment } = useDataStore();
 
   const roleTasks = filterTasksForRole(tasks, activeRole);
+  const assignableTeachers = filterTeachersForRole(allTeachers, activeRole);
 
-  const [view, setView] = useState<"board" | "list">("list");
+  const [view, setView]                 = useState<"board" | "list">("list");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">("all");
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating]         = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [commentText, setCommentText]   = useState("");
+
   const [form, setForm] = useState({
     title: "", description: "", priority: "medium" as TaskPriority,
-    category: "administrative", dueDate: "",
+    category: "administrative", dueDate: "", assignedToId: "",
   });
 
   const filtered = roleTasks.filter((t) => {
@@ -84,24 +90,62 @@ export default function TasksPage() {
   const handleCreateTask = () => {
     if (!form.title.trim()) return;
     const myName = user?.name || "Admin";
+    const myAvatar = myName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+
+    let assignedTo = { name: myName, role: activeRole, avatar: myAvatar };
+    if (form.assignedToId) {
+      const teacher = allTeachers.find((t) => t.id === form.assignedToId);
+      if (teacher) {
+        assignedTo = {
+          name:   teacher.name,
+          role:   `${teacher.subject} Teacher`,
+          avatar: teacher.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase(),
+        };
+      }
+    }
+
     addTask({
-      title: form.title,
+      title:       form.title,
       description: form.description,
-      assignedBy: { name: myName, role: activeRole, avatar: myName.slice(0, 2).toUpperCase() },
-      assignedTo:  { name: myName, role: activeRole, avatar: myName.slice(0, 2).toUpperCase() },
-      dueDate: form.dueDate || "Jun 30, 2026",
-      status: "todo",
-      priority: form.priority,
-      category: form.category,
-      progress: 0,
+      assignedBy:  { name: myName, role: activeRole, avatar: myAvatar },
+      assignedTo,
+      assignedToId: form.assignedToId || undefined,
+      dueDate:     form.dueDate
+        ? new Date(form.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+        : "Jun 30, 2026",
+      status:      "todo",
+      priority:    form.priority,
+      category:    form.category,
+      progress:    0,
+      createdDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     });
+
     setCreating(false);
-    setForm({ title: "", description: "", priority: "medium", category: "administrative", dueDate: "" });
+    setForm({ title: "", description: "", priority: "medium", category: "administrative", dueDate: "", assignedToId: "" });
+  };
+
+  const handleMarkInProgress = (task: Task, e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateTaskStatus(task.id, "in_progress", Math.max(task.progress, 10));
   };
 
   const handleMarkDone = (task: Task, e: React.MouseEvent) => {
     e.stopPropagation();
     updateTaskStatus(task.id, "done", 100);
+  };
+
+  const handleSendComment = () => {
+    if (!selectedTask || !commentText.trim()) return;
+    addTaskComment(selectedTask.id, user?.name || activeRole, commentText.trim());
+    setCommentText("");
+    // Refresh selected task from store
+    const updated = tasks.find((t) => t.id === selectedTask.id);
+    if (updated) setSelectedTask({ ...updated, comments: [...(updated.comments ?? []), { author: user?.name || activeRole, body: commentText.trim(), timestamp: "Just now" }] });
+  };
+
+  const openTask = (task: Task) => {
+    setSelectedTask(task);
+    setCommentText("");
   };
 
   return (
@@ -125,11 +169,12 @@ export default function TasksPage() {
         }
       />
 
+      {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Total",       value: counts.total,      color: "bg-slate-50 text-slate-700",   icon: CheckSquare },
-          { label: "Overdue",     value: counts.overdue,    color: "bg-red-50 text-red-700",       icon: AlertTriangle },
-          { label: "In Progress", value: counts.inProgress, color: "bg-blue-50 text-blue-700",     icon: Clock },
+          { label: "Total",       value: counts.total,      color: "bg-slate-50 text-slate-700",     icon: CheckSquare },
+          { label: "Overdue",     value: counts.overdue,    color: "bg-red-50 text-red-700",         icon: AlertTriangle },
+          { label: "In Progress", value: counts.inProgress, color: "bg-blue-50 text-blue-700",       icon: Clock },
           { label: "Completed",   value: counts.done,       color: "bg-emerald-50 text-emerald-700", icon: CheckCircle },
         ].map((s) => (
           <Card key={s.label} className={s.color}>
@@ -141,8 +186,9 @@ export default function TasksPage() {
         ))}
       </div>
 
+      {/* Filters */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5 flex-wrap">
           <span className="text-xs text-muted-foreground self-center">Status:</span>
           {(["all", "overdue", "todo", "in_progress", "done"] as const).map((s) => (
             <button key={s} onClick={() => setStatusFilter(s)}
@@ -166,6 +212,7 @@ export default function TasksPage() {
         </div>
       </div>
 
+      {/* List View */}
       {view === "list" && (
         <div className="space-y-2.5">
           {filtered.length === 0 ? (
@@ -174,13 +221,23 @@ export default function TasksPage() {
               <p>No tasks found</p>
             </div>
           ) : (
-            filtered.map((task) => <TaskCard key={task.id} task={task} onMarkDone={handleMarkDone} />)
+            filtered.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                activeRole={activeRole}
+                onMarkInProgress={handleMarkInProgress}
+                onMarkDone={handleMarkDone}
+                onClick={() => openTask(task)}
+              />
+            ))
           )}
         </div>
       )}
 
+      {/* Board View */}
       {view === "board" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 overflow-x-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {columns.map((col) => {
             const colTasks = roleTasks.filter((t) => t.status === col.status);
             return (
@@ -190,13 +247,162 @@ export default function TasksPage() {
                   <Badge variant="secondary" className="text-xs">{colTasks.length}</Badge>
                 </div>
                 <div className="space-y-2">
-                  {colTasks.map((task) => <TaskCardCompact key={task.id} task={task} onMarkDone={(e) => { handleMarkDone(task, e); }} />)}
+                  {colTasks.map((task) => (
+                    <TaskCardCompact
+                      key={task.id}
+                      task={task}
+                      activeRole={activeRole}
+                      onMarkInProgress={(e) => handleMarkInProgress(task, e)}
+                      onMarkDone={(e) => handleMarkDone(task, e)}
+                      onClick={() => openTask(task)}
+                    />
+                  ))}
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Task Detail Dialog */}
+      <Dialog open={!!selectedTask} onOpenChange={(v) => { if (!v) setSelectedTask(null); }}>
+        {selectedTask && (() => {
+          const liveTask = tasks.find((t) => t.id === selectedTask.id) ?? selectedTask;
+          const st = statusStyle[liveTask.status];
+          const pr = priorityStyle[liveTask.priority];
+          const StIcon = st.icon;
+          return (
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-base pr-6">{liveTask.title}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className={cn("flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium", st.bg, st.color)}>
+                    <StIcon className="h-3 w-3" /> {st.label}
+                  </div>
+                  <Badge className={cn("text-xs border", pr.color)}>{pr.label}</Badge>
+                  <Badge variant="secondary" className="text-xs capitalize">{liveTask.category}</Badge>
+                </div>
+
+                <p className="text-sm text-muted-foreground">{liveTask.description}</p>
+
+                {liveTask.notes && (
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-xs text-amber-800">
+                    📌 {liveTask.notes}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-muted-foreground mb-1">Assigned To</p>
+                    <div className="flex items-center gap-1.5">
+                      <Avatar className="h-5 w-5"><AvatarFallback className="text-[9px] bg-blue-100 text-blue-700">{liveTask.assignedTo.avatar}</AvatarFallback></Avatar>
+                      <span className="font-medium">{liveTask.assignedTo.name}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground mb-1">Assigned By</p>
+                    <div className="flex items-center gap-1.5">
+                      <Avatar className="h-5 w-5"><AvatarFallback className="text-[9px] bg-violet-100 text-violet-700">{liveTask.assignedBy.avatar}</AvatarFallback></Avatar>
+                      <span className="font-medium">{liveTask.assignedBy.name}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground mb-1">Due Date</p>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                      <span className={cn("font-medium", liveTask.status === "overdue" && "text-red-600")}>{liveTask.dueDate}</span>
+                    </div>
+                  </div>
+                  {liveTask.createdDate && (
+                    <div>
+                      <p className="text-muted-foreground mb-1">Created</p>
+                      <span className="font-medium">{liveTask.createdDate}</span>
+                    </div>
+                  )}
+                </div>
+
+                {liveTask.progress > 0 && liveTask.status !== "done" && (
+                  <div>
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{liveTask.progress}%</span>
+                    </div>
+                    <div className="bg-muted rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${liveTask.progress}%` }} />
+                    </div>
+                  </div>
+                )}
+
+                {liveTask.linkedTo && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground border rounded-lg px-3 py-2">
+                    <Link2 className="h-3.5 w-3.5 shrink-0" />
+                    <span className="capitalize">{liveTask.linkedTo.type}:</span>
+                    <span className="font-medium truncate">{liveTask.linkedTo.label}</span>
+                  </div>
+                )}
+
+                {/* Status actions */}
+                {liveTask.status !== "done" && (
+                  <div className="flex gap-2 pt-1">
+                    {liveTask.status !== "in_progress" && (
+                      <Button size="sm" variant="outline" className="gap-1.5 text-xs"
+                        onClick={() => { updateTaskStatus(liveTask.id, "in_progress", Math.max(liveTask.progress, 10)); setSelectedTask(null); }}>
+                        <Clock className="h-3.5 w-3.5 text-blue-500" /> Mark In Progress
+                      </Button>
+                    )}
+                    <Button size="sm" className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700"
+                      onClick={() => { updateTaskStatus(liveTask.id, "done", 100); setSelectedTask(null); }}>
+                      <CheckCircle className="h-3.5 w-3.5" /> Mark Complete
+                    </Button>
+                  </div>
+                )}
+
+                {/* Comments */}
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    Comments {liveTask.comments?.length ? `(${liveTask.comments.length})` : ""}
+                  </p>
+                  {liveTask.comments && liveTask.comments.length > 0 ? (
+                    <div className="space-y-2 mb-3 max-h-40 overflow-y-auto">
+                      {liveTask.comments.map((c, i) => (
+                        <div key={i} className="flex gap-2">
+                          <Avatar className="h-6 w-6 shrink-0">
+                            <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
+                              {c.author.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="bg-muted rounded-lg px-2.5 py-1.5 text-xs flex-1">
+                            <p className="font-semibold">{c.author}</p>
+                            <p className="text-muted-foreground">{c.body}</p>
+                            <p className="text-[10px] text-muted-foreground/70 mt-0.5">{c.timestamp}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mb-3">No comments yet.</p>
+                  )}
+                  <div className="flex gap-2">
+                    <Input
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Add a comment..."
+                      className="text-xs h-8"
+                      onKeyDown={(e) => { if (e.key === "Enter") handleSendComment(); }}
+                    />
+                    <Button size="sm" className="h-8 px-3" onClick={handleSendComment} disabled={!commentText.trim()}>
+                      <Send className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          );
+        })()}
+      </Dialog>
 
       {/* New Task Dialog */}
       <Dialog open={creating} onOpenChange={setCreating}>
@@ -217,6 +423,24 @@ export default function TasksPage() {
                 className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
+
+            {/* Assign to teacher — VP/Admin only */}
+            {(assignableTeachers.length > 0 && activeRole !== "teacher") && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Assign To</label>
+                <select
+                  value={form.assignedToId}
+                  onChange={(e) => setForm((p) => ({ ...p, assignedToId: e.target.value }))}
+                  className="w-full border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="">— Self (me) —</option>
+                  {assignableTeachers.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.subject})</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Priority</label>
@@ -260,17 +484,26 @@ export default function TasksPage() {
   );
 }
 
-function TaskCard({ task, onMarkDone }: { task: Task; onMarkDone: (task: Task, e: React.MouseEvent) => void }) {
+function TaskCard({ task, activeRole, onMarkInProgress, onMarkDone, onClick }: {
+  task: Task;
+  activeRole: string;
+  onMarkInProgress: (task: Task, e: React.MouseEvent) => void;
+  onMarkDone: (task: Task, e: React.MouseEvent) => void;
+  onClick: () => void;
+}) {
   const st = statusStyle[task.status];
   const pr = priorityStyle[task.priority];
   const StIcon = st.icon;
   const catColor = categoryColor[task.category] || "bg-slate-50 text-slate-600";
 
   return (
-    <Card className={cn("hover:shadow-md transition-all",
-      task.status === "overdue" && "border-red-200 bg-red-50/20",
-      task.status === "done" && "opacity-70"
-    )}>
+    <Card
+      className={cn("hover:shadow-md transition-all cursor-pointer",
+        task.status === "overdue" && "border-red-200 bg-red-50/20",
+        task.status === "done" && "opacity-70"
+      )}
+      onClick={onClick}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className={cn("p-1.5 rounded-lg shrink-0", st.bg)}>
@@ -313,6 +546,12 @@ function TaskCard({ task, onMarkDone }: { task: Task; onMarkDone: (task: Task, e
                   <span className="truncate max-w-24">{task.linkedTo.label}</span>
                 </div>
               )}
+              {task.comments && task.comments.length > 0 && (
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <MessageSquare className="h-3 w-3" />
+                  <span>{task.comments.length}</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t">
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -320,13 +559,18 @@ function TaskCard({ task, onMarkDone }: { task: Task; onMarkDone: (task: Task, e
                 <Avatar className="h-4 w-4"><AvatarFallback className="text-[9px] bg-violet-100 text-violet-700">{task.assignedBy.avatar}</AvatarFallback></Avatar>
                 <span>{task.assignedBy.name}</span>
               </div>
-              <div className="ml-auto flex gap-1.5">
-                {task.status !== "done" && (
+              {task.status !== "done" && (
+                <div className="ml-auto flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                  {task.status !== "in_progress" && (
+                    <Button variant="outline" size="sm" className="text-xs h-6 px-2 gap-1" onClick={(e) => onMarkInProgress(task, e)}>
+                      <Clock className="h-3 w-3 text-blue-500" /> In Progress
+                    </Button>
+                  )}
                   <Button variant="outline" size="sm" className="text-xs h-6 px-2 gap-1" onClick={(e) => onMarkDone(task, e)}>
                     <CheckCircle className="h-3 w-3 text-emerald-600" /> Done
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -335,12 +579,21 @@ function TaskCard({ task, onMarkDone }: { task: Task; onMarkDone: (task: Task, e
   );
 }
 
-function TaskCardCompact({ task, onMarkDone }: { task: Task; onMarkDone: (e: React.MouseEvent) => void }) {
+function TaskCardCompact({ task, activeRole, onMarkInProgress, onMarkDone, onClick }: {
+  task: Task;
+  activeRole: string;
+  onMarkInProgress: (e: React.MouseEvent) => void;
+  onMarkDone: (e: React.MouseEvent) => void;
+  onClick: () => void;
+}) {
   const pr = priorityStyle[task.priority];
   return (
-    <Card className={cn("hover:shadow-sm transition-all cursor-pointer",
-      task.status === "overdue" && "border-red-200 bg-red-50/20"
-    )}>
+    <Card
+      className={cn("hover:shadow-sm transition-all cursor-pointer",
+        task.status === "overdue" && "border-red-200 bg-red-50/20"
+      )}
+      onClick={onClick}
+    >
       <CardContent className="p-3 space-y-2">
         <div className="flex items-start justify-between gap-1.5">
           <p className="text-xs font-semibold line-clamp-2">{task.title}</p>
@@ -360,9 +613,16 @@ function TaskCardCompact({ task, onMarkDone }: { task: Task; onMarkDone: (e: Rea
             Due: {task.dueDate}
           </p>
           {task.status !== "done" && (
-            <Button variant="ghost" size="sm" className="text-[10px] h-5 px-1.5 gap-0.5" onClick={onMarkDone}>
-              <CheckCircle className="h-3 w-3 text-emerald-600" /> Done
-            </Button>
+            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+              {task.status !== "in_progress" && (
+                <Button variant="ghost" size="sm" className="text-[10px] h-5 px-1.5 gap-0.5" onClick={onMarkInProgress}>
+                  <Clock className="h-3 w-3 text-blue-500" />
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" className="text-[10px] h-5 px-1.5 gap-0.5" onClick={onMarkDone}>
+                <CheckCircle className="h-3 w-3 text-emerald-600" />
+              </Button>
+            </div>
           )}
         </div>
       </CardContent>

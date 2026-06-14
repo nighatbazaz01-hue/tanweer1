@@ -6,7 +6,7 @@ import {
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
   UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
   Home, FileText, Bell, Megaphone, CheckSquare,
-  Calendar, Mail, Shield, BookUser, GraduationCap, Bus,
+  Calendar, Mail, Shield, BookUser, GraduationCap, Bus, CalendarOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
@@ -51,6 +51,8 @@ const navByRole = {
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
     { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
+    { label: "Leave Approvals",    href: "/vp/leave",            icon: CalendarOff },
+    { label: "Tasks",              href: "/tasks",               icon: CheckSquare },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
@@ -70,6 +72,8 @@ const navByRole = {
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
     { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
+    { label: "Leave Approvals",    href: "/vp/leave",            icon: CalendarOff },
+    { label: "Tasks",              href: "/tasks",               icon: CheckSquare },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
@@ -89,6 +93,8 @@ const navByRole = {
     { label: "My Students",        href: "/directory/students",  icon: Users },
     { label: "Attendance",         href: "/attendance",          icon: ClipboardList },
     { label: "Timetable",          href: "/vp/timetable",        icon: CalendarDays },
+    { label: "Leave Approvals",    href: "/vp/leave",            icon: CalendarOff },
+    { label: "Tasks",              href: "/tasks",               icon: CheckSquare },
     { label: "Transport",          href: "/transport",           icon: Bus },
     { group: "Communication" },
     { label: "Announcements",      href: "/announcements",       icon: Megaphone },
@@ -111,6 +117,7 @@ const navByRole = {
     { label: "Homework",     href: "/teacher/homework",    icon: BookMarked },
     { label: "My Students",  href: "/students",            icon: Users },
     { label: "Performance",  href: "/teacher/performance", icon: TrendingUp },
+    { label: "Leave",        href: "/teacher/leave",       icon: CalendarOff },
     { group: "Communication" },
     { label: "Messages",     href: "/messages",            icon: Mail,       badge: "messages" },
     { label: "Meetings",     href: "/meetings",            icon: Calendar },

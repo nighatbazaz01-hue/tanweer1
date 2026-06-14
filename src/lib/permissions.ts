@@ -174,10 +174,8 @@ export function filterTasksForRole(tasks: Task[], role: AppRole): Task[] {
   if (role === "admin") return tasks;
   if (role === "parent" || role === "student") return [];
   if (role === "teacher") {
-    const teacherNames = [DEMO_TEACHER_NAME, "Mr. Khalid Al-Mutairi", "Mr. Faris Al-Shammari", "Mr. Hassan Al-Shehri"];
-    return tasks.filter(
-      (t) => teacherNames.includes(t.assignedTo.name) || teacherNames.includes(t.assignedBy.name)
-    );
+    // Teacher sees ONLY tasks assigned to them
+    return tasks.filter((t) => t.assignedTo.name === DEMO_TEACHER_NAME);
   }
   // VPs see all tasks
   return tasks;

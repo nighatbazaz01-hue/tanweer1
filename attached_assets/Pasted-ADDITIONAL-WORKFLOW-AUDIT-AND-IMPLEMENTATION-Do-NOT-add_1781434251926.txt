@@ -1,0 +1,239 @@
+ADDITIONAL WORKFLOW AUDIT AND IMPLEMENTATION
+
+Do NOT add random features.
+
+Only implement workflows that are required for a realistic school management demo.
+
+====================================
+1. TEACHER LEAVE MANAGEMENT
+====================================
+
+Current issue:
+
+Teachers have no way to request leave.
+
+Required:
+
+Create Teacher Leave Request workflow.
+
+Teacher can:
+
+- Create leave request
+- Select leave type
+  - Sick Leave
+  - Casual Leave
+  - Emergency Leave
+  - Half Day
+  - Other
+
+- Select:
+  - From Date
+  - To Date
+  - Reason
+
+Status:
+
+- Pending
+- Approved
+- Rejected
+
+Workflow:
+
+Teacher submits request
+
+↓
+
+Assigned VP receives notification
+
+↓
+
+VP reviews
+
+↓
+
+Approve / Reject
+
+↓
+
+Teacher receives notification
+
+Store requirements:
+
+- leaveRequests collection in useDataStore
+- eventLog entries
+- notifications
+
+====================================
+2. VP LEAVE APPROVAL
+====================================
+
+VP dashboard must include:
+
+Leave Management
+
+VP can:
+
+- View pending requests
+- Filter by teacher
+- Filter by date
+- Approve
+- Reject
+- Add remarks
+
+Approval action must:
+
+- Update leave status
+- Create notification
+- Add event log entry
+
+====================================
+3. TASK ASSIGNMENT WORKFLOW
+====================================
+
+Current issue:
+
+Tasks exist but assignment workflow is unclear.
+
+Need full workflow.
+
+VP/Admin creates task
+
+↓
+
+Assign to:
+
+- Individual Teacher
+OR
+- Multiple Teachers
+OR
+- Department
+
+↓
+
+Teacher receives notification
+
+↓
+
+Task appears in Teacher Tasks tab
+
+↓
+
+Teacher updates status
+
+- Not Started
+- In Progress
+- Completed
+
+↓
+
+VP/Admin sees progress
+
+====================================
+4. TASK DATA MODEL
+====================================
+
+Audit current task system.
+
+Verify:
+
+- creator
+- assignee
+- due date
+- status
+- priority
+
+If missing, add them.
+
+Required fields:
+
+Task ID
+Title
+Description
+Created By
+Assigned By
+Assigned To
+Priority
+Due Date
+Status
+Created Date
+Completed Date
+
+====================================
+5. TEACHER TASK PAGE
+====================================
+
+Teacher should ONLY see:
+
+- Tasks assigned to them
+
+Must display:
+
+- Due date
+- Priority
+- Status
+- Assigned by
+
+Teacher actions:
+
+- Mark In Progress
+- Mark Complete
+- Add Comment
+
+====================================
+6. VP TASK MANAGEMENT
+====================================
+
+VP can:
+
+- Create task
+- Assign task
+- Edit task
+- Reassign task
+- View completion %
+
+Dashboard should show:
+
+- Total tasks
+- Pending
+- In Progress
+- Completed
+- Overdue
+
+====================================
+7. DATA CONSISTENCY
+====================================
+
+Tasks must be linked to actual teachers from the unified teacher dataset.
+
+No hardcoded teacher names.
+
+No fake dropdown values.
+
+Use same teacher population source used by:
+
+- My Students
+- Attendance
+- Teacher Dashboard
+
+====================================
+OUTPUT FIRST
+
+Before coding:
+
+Show current task architecture.
+
+Identify missing pieces.
+
+Then implement:
+
+1. Leave workflow
+2. Leave approval workflow
+3. Task assignment workflow
+4. Teacher task visibility
+5. VP task management
+
+Do not redesign UI.
+
+Do not add backend.
+
+Everything must remain store-based and demo-ready.
