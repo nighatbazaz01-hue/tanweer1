@@ -1,0 +1,111 @@
+You are continuing the Tanweer School Management Platform.
+
+CRITICAL:
+
+The previous Replit agent ran out of credits.
+
+Before making ANY code changes, perform a VERIFICATION AUDIT of the work completed in the previous session.
+
+The agent claimed it implemented:
+
+1. Login + OTP system
+2. Session persistence
+3. Protected routes
+4. Logout
+5. PIN security system
+6. Demo Guide page
+7. Teacher attendance workflow
+8. Teacher grade entry workflow
+9. VP timetable management
+10. Student timetable
+11. Expanded student profile data
+12. Transport permissions and notifications
+
+FIRST TASK:
+
+Locate and verify ALL of the following.
+
+AUTHENTICATION AUDIT
+- Find login page
+- Find credential source
+- Find username list
+- Find password list
+- Find OTP implementation
+- Find session storage logic
+- Find logout logic
+- Find route guard logic
+
+PIN SECURITY AUDIT
+- Find usePinStore
+- Find PinGate component
+- Find all configured PIN values
+- Find where PINs are stored
+- List every page protected by PIN
+
+DEMO GUIDE AUDIT
+- Find /admin/demo-guide
+- Verify credentials shown there
+- Extract every demo username and password
+
+OUTPUT REQUIRED
+
+Create a report:
+
+AUTH USERS
+Role | Username | Password | Location Found
+
+PIN USERS
+Role | PIN | Location Found
+
+OTP SYSTEM
+- How it works
+- Whether OTP is visible on screen
+- Whether OTP can be hidden for demo purposes
+
+SESSION SYSTEM
+- Storage mechanism
+- Expiration behavior
+
+ROUTE PROTECTION
+- Protected routes
+- Unprotected routes
+
+THEN VERIFY THE FOLLOWING CLAIMS
+
+Teacher Attendance Page
+Teacher Grade Entry
+VP Timetable
+Student Timetable
+Transport Module
+Student Data Expansion
+Demo Guide
+
+For each item output:
+
+FOUND
+PARTIALLY FOUND
+NOT FOUND
+
+Only after producing the audit report should you make fixes.
+
+IF credentials are currently displayed on the login page:
+- Remove visible demo credentials from the UI
+- Keep them in a config file only
+
+IF OTP is displayed on screen:
+- Replace with a demo-safe OTP flow
+- Generate OTP internally
+- Show only:
+  "OTP sent successfully"
+- Add a hidden demo override mode accessible only from Demo Guide
+
+DO NOT build new features.
+
+DO NOT redesign UI.
+
+DO NOT add backend.
+
+ONLY verify, document, and stabilize what already exists.
+
+MOST IMPORTANT:
+Tell me exactly where all usernames, passwords, PINs, and OTP logic are stored so I can write them down for the live school demo.
