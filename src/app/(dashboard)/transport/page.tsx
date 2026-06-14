@@ -10,8 +10,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { generateTransportRecords, type TransportRecord } from "@/lib/mockData/transport";
+import { type TransportRecord } from "@/lib/mockData/transport";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useDataStore } from "@/store/useDataStore";
+import { DEMO_CHILD_ID } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const BUS_COLORS: Record<string, string> = {
@@ -28,7 +30,6 @@ const PAGE_SIZE = 30;
 export default function TransportPage() {
   const { activeRole } = useRoleStore();
 
-  // Teacher role is blocked from transport
   if (activeRole === "teacher") {
     return (
       <div className="space-y-6">
@@ -54,13 +55,17 @@ export default function TransportPage() {
 }
 
 function TransportContent({ activeRole }: { activeRole: string }) {
-  const [allRecords, setAllRecords] = useState<TransportRecord[]>(() => generateTransportRecords());
+  const { transportRecords, updateTransportRecord } = useDataStore();
 
-  // Parent sees only their child's record
+  const isSingleView = activeRole === "parent" || activeRole === "student";
+
   const records = useMemo(() => {
-    if (activeRole === "parent") return allRecords.slice(0, 1);
-    return allRecords;
-  }, [allRecords, activeRole]);
+    if (activeRole === "parent" || activeRole === "student") {
+      const match = transportRecords.find((r) => r.studentId === DEMO_CHILD_ID);
+      return match ? [match] : transportRecords.slice(0, 1);
+    }
+    return transportRecords;
+  }, [transportRecords, activeRole]);
 
   const [search, setSearch] = useState("");
   const [busFilter, setBusFilter] = useState<string>("all");
@@ -72,7 +77,10 @@ function TransportContent({ activeRole }: { activeRole: string }) {
   const [editContact, setEditContact] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  const busNumbers = useMemo(() => Array.from(new Set(allRecords.map((r) => r.busNumber))).sort(), [allRecords]);
+  const busNumbers = useMemo(
+    () => Array.from(new Set(transportRecords.map((r) => r.busNumber))).sort(),
+    [transportRecords]
+  );
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -111,13 +119,8 @@ function TransportContent({ activeRole }: { activeRole: string }) {
 
   const handleSaveEdit = () => {
     if (!detailRecord) return;
-    setAllRecords((prev) =>
-      prev.map((r) =>
-        r.id === detailRecord.id
-          ? { ...r, address: editAddress, stopLocation: editStop, parentContact: editContact }
-          : r
-      )
-    );
+    const actorName = activeRole === "parent" ? "Parent" : "Admin";
+    updateTransportRecord(detailRecord.id, editAddress, editStop, editContact, actorName);
     showToast(`Transport details updated for ${detailRecord.studentName}`);
     setEditOpen(false);
     setDetailRecord(null);
@@ -137,13 +140,15 @@ function TransportContent({ activeRole }: { activeRole: string }) {
         description={
           activeRole === "parent"
             ? "Your child's bus route and pickup details"
-            : `School bus routes and student transport assignments`
+            : activeRole === "student"
+            ? "Your bus route and pickup details"
+            : "School bus routes and student transport assignments"
         }
         breadcrumbs={[{ label: "Home" }, { label: "Transport" }]}
       />
 
-      {/* Stats */}
-      {activeRole !== "parent" && (
+      {/* Stats — admin/vp only */}
+      {!isSingleView && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {busNumbers.map((bus) => (
             <Card
@@ -165,8 +170,8 @@ function TransportContent({ activeRole }: { activeRole: string }) {
         </div>
       )}
 
-      {/* Filters — only for non-parent */}
-      {activeRole !== "parent" && (
+      {/* Filters — admin/vp only */}
+      {!isSingleView && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="relative flex-1 max-w-sm w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -199,8 +204,8 @@ function TransportContent({ activeRole }: { activeRole: string }) {
         </div>
       )}
 
-      {/* Parent: single card view */}
-      {activeRole === "parent" && records.length > 0 && (
+      {/* Parent / Student: single card view */}
+      {isSingleView && records.length > 0 && (
         <Card className="max-w-lg">
           <CardContent className="p-5 space-y-4">
             <div className="flex items-center gap-3">
@@ -227,15 +232,20 @@ function TransportContent({ activeRole }: { activeRole: string }) {
                 <p className="font-medium text-xs">{records[0].address}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => openEdit(records[0])}>
-              <Edit2 className="h-3.5 w-3.5" /> Update Address / Contact
-            </Button>
+            {activeRole === "parent" && (
+              <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => openEdit(records[0])}>
+                <Edit2 className="h-3.5 w-3.5" /> Update Address / Contact
+              </Button>
+            )}
+            {activeRole === "student" && (
+              <p className="text-xs text-muted-foreground text-center">Contact your parent to update transport details.</p>
+            )}
           </CardContent>
         </Card>
       )}
 
       {/* Table view for admin/vp */}
-      {activeRole !== "parent" && (
+      {!isSingleView && (
         <>
           <div className="space-y-2">
             {paginated.map((record) => (

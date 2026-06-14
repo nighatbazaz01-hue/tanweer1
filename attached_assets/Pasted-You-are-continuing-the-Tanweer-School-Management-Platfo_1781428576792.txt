@@ -1,0 +1,270 @@
+You are continuing the Tanweer School Management Platform (Next.js + TypeScript + Zustand).
+
+CRITICAL CONTEXT
+
+This project has already gone through multiple development sessions.
+
+DO NOT restart, redesign, rewrite, or replace existing systems.
+
+The goal is to FINISH and STABILIZE the existing demo platform.
+
+====================================================
+CURRENT IMPLEMENTED SYSTEMS
+====================================================
+
+Roles:
+- Admin (Principal)
+- VP1 (Grades 1-4)
+- VP2 (Grades 5-8)
+- VP3 (Grades 9-12)
+- Teacher
+- Parent
+- Student
+
+Already built:
+
+- Multi-role dashboards
+- Sidebar + Topbar
+- Unified population generator
+  - 600 students
+  - 50 teachers
+  - parents generated
+- Directories
+  - Students
+  - Teachers
+  - Parents
+- Permission engine
+- Unified Zustand store
+- Event logging system
+- Audit center
+- Messaging
+- Announcements
+- Meetings
+- Tasks
+- Notifications
+- Attendance
+- Fees
+- Admissions
+- Academics
+- AI Assistant
+- AI Study Assistant
+- Transport module (partially implemented)
+- Login + OTP system (partially implemented)
+
+====================================================
+LAST AGENT STATUS
+====================================================
+
+The previous Replit agent:
+
+✓ Built unified store
+✓ Built permission engine
+✓ Built event log
+✓ Added transport page
+✓ Added AI separation
+✓ Started fixing broken buttons
+✓ Started replacing hardcoded arrays
+✓ Started store integration
+
+Credits ran out BEFORE completion.
+
+The final messages indicate:
+
+- Some pages were updated
+- Some pages were NOT completed
+- Validation failed before final merge
+- Transport integration may be incomplete
+- Store integration may be incomplete
+- Login/auth may be incomplete
+
+====================================================
+YOUR FIRST JOB
+====================================================
+
+DO NOT BUILD NEW FEATURES.
+
+DO NOT REDESIGN UI.
+
+DO NOT ADD A BACKEND.
+
+Perform a COMPLETE PROJECT AUDIT FIRST.
+
+====================================================
+AUDIT CHECKLIST
+====================================================
+
+Check every page and report:
+
+1. Buttons that do nothing
+2. Missing onClick handlers
+3. Placeholder buttons
+4. Broken modals
+5. Broken dialogs
+6. Broken forms
+7. Broken routes
+8. Missing routes
+9. Hardcoded arrays
+10. Duplicate mock datasets
+11. Pages not using Zustand store
+12. Pages not using population generator
+13. Dashboard inconsistencies
+14. Role permission leaks
+15. Transport integration gaps
+16. Login issues
+17. OTP issues
+18. Session persistence issues
+19. Logout issues
+20. Protected route issues
+
+====================================================
+VERIFY ROLE DASHBOARDS
+====================================================
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+Verify:
+
+- Dashboard loads
+- Data visible is correct
+- Permissions are correct
+- Counts match population data
+
+====================================================
+VERIFY LOGIN SYSTEM
+====================================================
+
+Check:
+
+- Login page
+- Username/password flow
+- OTP flow
+- Session persistence
+- Logout
+- Protected routes
+- Redirects
+
+====================================================
+VERIFY TRANSPORT
+====================================================
+
+Admin:
+- Access allowed
+
+VP:
+- Access allowed
+
+Parent:
+- Access allowed
+- Can edit transport details
+- Edit generates notification/event for VP
+
+Student:
+- Access allowed
+
+Teacher:
+- Access blocked
+
+Verify all transport data uses store data.
+
+====================================================
+VERIFY COMMUNICATION SYSTEM
+====================================================
+
+Messages
+Announcements
+Meetings
+Tasks
+Notifications
+
+Verify:
+
+- Data stored in Zustand
+- Changes persist during session
+- Cross-role visibility works correctly
+
+Examples:
+
+Admin -> Teacher message
+Teacher -> Parent message
+Parent -> Teacher reply
+
+Announcement visibility follows role permissions.
+
+====================================================
+VERIFY DATA CONSISTENCY
+====================================================
+
+Every module must use the SAME source of truth.
+
+Students:
+600
+
+Teachers:
+50
+
+Parents:
+Generated
+
+Attendance:
+Population-linked
+
+Fees:
+Population-linked
+
+Messages:
+Store
+
+Announcements:
+Store
+
+Meetings:
+Store
+
+Tasks:
+Store
+
+Notifications:
+Store
+
+No duplicate mock arrays allowed.
+
+====================================================
+OUTPUT REQUIRED BEFORE CHANGING CODE
+====================================================
+
+Produce:
+
+1. COMPLETED FEATURES
+2. PARTIAL FEATURES
+3. BROKEN FEATURES
+4. MISSING FEATURES
+
+For each issue include:
+
+- File
+- Problem
+- Severity
+- Fix required
+
+====================================================
+AFTER AUDIT
+====================================================
+
+Fix issues ONLY in this order:
+
+1. Broken functionality
+2. Login/authentication
+3. Store integration
+4. Data consistency
+5. Transport integration
+6. UX polish
+
+Do not add any new modules until all audit findings are resolved.
+
+Start with the audit report.

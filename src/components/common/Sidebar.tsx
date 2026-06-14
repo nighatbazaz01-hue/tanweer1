@@ -144,6 +144,7 @@ const navByRole = {
     { label: "Attendance",      href: "/student-view/attendance", icon: ClipboardList },
     { label: "Projects",        href: "/student-view/projects",   icon: FileText },
     { label: "Timetable",       href: "/student-view/timetable",  icon: CalendarDays },
+    { label: "Transport",       href: "/transport",               icon: Bus },
     { group: "Communication" },
     { label: "Messages",        href: "/messages",                icon: Mail,   badge: "messages" },
     { label: "Notifications",   href: "/notifications",           icon: Bell,   badge: "notif" },

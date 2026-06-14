@@ -14,6 +14,7 @@ import { tasks as initialTasks, type Task, type TaskStatus } from "@/lib/mockDat
 import { allNotifications, type Notification } from "@/lib/mockData/notifications";
 import { mockAdmissionLeads } from "@/lib/mockData";
 import { getAllStudents, type Student } from "@/lib/mockData/population";
+import { generateTransportRecords, type TransportRecord } from "@/lib/mockData/transport";
 import type { AdmissionLead } from "@/types";
 
 // ─── Event System ─────────────────────────────────────────────────────────────
@@ -36,7 +37,8 @@ export type AppEventType =
   | "assignmentAdded"
   | "parentMessageSent"
   | "notificationRead"
-  | "allNotificationsRead";
+  | "allNotificationsRead"
+  | "transportRecordUpdated";
 
 export interface AppEvent {
   id: string;
@@ -97,6 +99,7 @@ interface DataStore {
   notifications: Notification[];
   admissionLeads: AdmissionLead[];
   assignments: Assignment[];
+  transportRecords: TransportRecord[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
@@ -173,19 +176,29 @@ interface DataStore {
     total: number,
     actor: string
   ) => void;
+
+  // ── Transport Actions ──
+  updateTransportRecord: (
+    id: string,
+    address: string,
+    stopLocation: string,
+    parentContact: string,
+    actor: string
+  ) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
 export const useDataStore = create<DataStore>((set) => ({
-  students:       getAllStudents(),
-  threads:        JSON.parse(JSON.stringify(mockThreads)),
-  announcements:  JSON.parse(JSON.stringify(initialAnnouncements)),
-  meetings:       JSON.parse(JSON.stringify(initialMeetings)),
-  tasks:          JSON.parse(JSON.stringify(initialTasks)),
-  notifications:  JSON.parse(JSON.stringify(allNotifications)),
-  admissionLeads: JSON.parse(JSON.stringify(mockAdmissionLeads)),
-  assignments:    [],
-  eventLog:       [],
+  students:         getAllStudents(),
+  threads:          JSON.parse(JSON.stringify(mockThreads)),
+  announcements:    JSON.parse(JSON.stringify(initialAnnouncements)),
+  meetings:         JSON.parse(JSON.stringify(initialMeetings)),
+  tasks:            JSON.parse(JSON.stringify(initialTasks)),
+  notifications:    JSON.parse(JSON.stringify(allNotifications)),
+  admissionLeads:   JSON.parse(JSON.stringify(mockAdmissionLeads)),
+  assignments:      [],
+  transportRecords: generateTransportRecords(),
+  eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────
 
@@ -495,6 +508,40 @@ export const useDataStore = create<DataStore>((set) => ({
       return {
         assignments: [newAssignment, ...state.assignments],
         eventLog:    [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Transport Actions ──────────────────────────────────────────────────
+
+  updateTransportRecord: (id, address, stopLocation, parentContact, actor) =>
+    set((state) => {
+      const record = state.transportRecords.find((r) => r.id === id);
+      const event = makeEvent("transportRecordUpdated", actor, {
+        recordId:       id,
+        studentName:    record?.studentName ?? "",
+        address,
+        stopLocation,
+        parentContact,
+      });
+      const notifId = `N-TRN-${++notifCounter}`;
+      const newNotif: Notification = {
+        id:        notifId,
+        type:      "alert",
+        title:     `Transport Update — ${record?.studentName ?? "Student"}`,
+        body:      `Parent updated transport details: Pickup stop changed to "${stopLocation}".`,
+        timestamp: "Just now",
+        isRead:    false,
+        priority:  "normal",
+        link:      "/transport",
+        actor,
+        roles:     ["admin", "vp1", "vp2", "vp3"],
+      };
+      return {
+        transportRecords: state.transportRecords.map((r) =>
+          r.id === id ? { ...r, address, stopLocation, parentContact } : r
+        ),
+        notifications: [newNotif, ...state.notifications],
+        eventLog:      [event, ...state.eventLog].slice(0, 100),
       };
     }),
 }));
