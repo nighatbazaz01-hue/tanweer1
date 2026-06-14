@@ -98,7 +98,7 @@ export default function TasksPage() {
       if (teacher) {
         assignedTo = {
           name:   teacher.name,
-          role:   `${teacher.subject} Teacher`,
+          role:   "teacher" as const,
           avatar: teacher.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase(),
         };
       }

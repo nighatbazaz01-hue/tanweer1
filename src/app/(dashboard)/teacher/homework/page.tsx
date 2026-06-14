@@ -49,7 +49,7 @@ export default function TeacherHomeworkPage() {
       status: "active",
     };
     setAssignments((prev) => [next, ...prev]);
-    addAssignment({ title: newTitle, subject: "Mathematics", dueDate: newDue, assignedTo: newGrade });
+    addAssignment(newTitle, newGrade, newDue, 10, parseInt(newTotal) || 20, "Teacher");
     setNewTitle(""); setNewGrade("Grade 10-A"); setNewDue(""); setNewTotal("20");
     setCreateOpen(false);
     showToast("Assignment created successfully!");

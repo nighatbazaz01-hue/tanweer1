@@ -83,7 +83,7 @@ export default function TeacherPerformancePage() {
         <Card>
           <CardHeader><CardTitle className="text-base">Grade Distribution</CardTitle></CardHeader>
           <CardContent>
-            <DonutChart data={gradeDistribution} nameKey="grade" valueKey="count" height={200} />
+            <DonutChart data={gradeDistribution.map((d) => ({ name: d.grade, value: d.count, color: d.color }))} height={200} />
           </CardContent>
         </Card>
       </div>

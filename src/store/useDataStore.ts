@@ -15,7 +15,11 @@ import { allNotifications, type Notification } from "@/lib/mockData/notification
 import { initialLeaveRequests, type LeaveRequest, type LeaveStatus } from "@/lib/mockData/leaves";
 import { mockAdmissionLeads } from "@/lib/mockData";
 import { getAllStudents, type Student } from "@/lib/mockData/population";
-import { generateTransportRecords, type TransportRecord } from "@/lib/mockData/transport";
+import {
+  generateTransportRecords, type TransportRecord,
+  initialVehicles, type VehicleRecord, type VehicleStatus, type VehicleType, type FuelType,
+  initialTransportRequests, type TransportRequest, type TransportRequestType, type TransportRequestStatus,
+} from "@/lib/mockData/transport";
 import type { AdmissionLead } from "@/types";
 
 // ─── Event System ─────────────────────────────────────────────────────────────
@@ -40,6 +44,12 @@ export type AppEventType =
   | "notificationRead"
   | "allNotificationsRead"
   | "transportRecordUpdated"
+  | "vehicleAdded"
+  | "vehicleUpdated"
+  | "transportRequestSubmitted"
+  | "transportRequestApproved"
+  | "transportRequestRejected"
+  | "vehicleAssignedToRoute"
   | "leaveSubmitted"
   | "leaveApproved"
   | "leaveRejected";
@@ -79,6 +89,8 @@ let studentCounter = 1000;
 let leadCounter = 1000;
 let assignmentCounter = 1000;
 let leaveCounter = 1000;
+let vehicleCounter = 1000;
+let transportReqCounter = 1000;
 
 // ─── Assignment Type ──────────────────────────────────────────────────────────
 export interface Assignment {
@@ -105,6 +117,8 @@ interface DataStore {
   admissionLeads: AdmissionLead[];
   assignments: Assignment[];
   transportRecords: TransportRecord[];
+  vehicles: VehicleRecord[];
+  transportRequests: TransportRequest[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
@@ -205,6 +219,20 @@ interface DataStore {
     parentContact: string,
     actor: string
   ) => void;
+  addVehicle: (vehicle: Omit<VehicleRecord, "id">, actor: string) => void;
+  updateVehicle: (id: string, updates: Omit<VehicleRecord, "id">, actor: string) => void;
+  assignVehicleToRoute: (routeCode: string, registrationNumber: string, actor: string) => void;
+  submitTransportRequest: (
+    studentId: string,
+    studentName: string,
+    parentName: string,
+    requestType: TransportRequestType,
+    details: string,
+    routeId: string,
+    actor: string
+  ) => void;
+  approveTransportRequest: (id: string, reviewerName: string) => void;
+  rejectTransportRequest: (id: string, reviewerName: string) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
@@ -218,6 +246,8 @@ export const useDataStore = create<DataStore>((set) => ({
   admissionLeads:   JSON.parse(JSON.stringify(mockAdmissionLeads)),
   assignments:      [],
   transportRecords: generateTransportRecords(),
+  vehicles:         JSON.parse(JSON.stringify(initialVehicles)),
+  transportRequests: JSON.parse(JSON.stringify(initialTransportRequests)),
   leaveRequests:    JSON.parse(JSON.stringify(initialLeaveRequests)),
   eventLog:         [],
 
@@ -230,7 +260,7 @@ export const useDataStore = create<DataStore>((set) => ({
         id,
         name,
         grade,
-        section,
+        section: section as "A" | "B" | "C" | "D",
         gpa: 0,
         attendanceRate: 0,
         performanceTier: "average",
@@ -240,6 +270,14 @@ export const useDataStore = create<DataStore>((set) => ({
         gender: "male",
         enrolledYear: 2026,
         avatar: name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase(),
+        nationalId: "",
+        bloodType: "O+",
+        nationality: "Saudi",
+        address: "",
+        phone: "",
+        email: "",
+        interests: [],
+        emergencyContact: { name: parentName, phone: parentPhone, relation: "Parent" },
       };
       const event = makeEvent("studentAdded", actor, { studentId: id, name, grade, section });
       return {
@@ -633,7 +671,112 @@ export const useDataStore = create<DataStore>((set) => ({
       };
     }),
 
-  // ── Transport Actions ──────────────────────────────────────────────────
+  // ── Vehicle / Transport Request Actions ──────────────────────────────────
+
+  addVehicle: (vehicle, actor) =>
+    set((state) => {
+      const id = `VH-NEW-${++vehicleCounter}`;
+      const newVehicle: VehicleRecord = { id, ...vehicle };
+      const event = makeEvent("vehicleAdded", actor, { vehicleId: id, busNumber: vehicle.busNumber, registration: vehicle.registrationNumber });
+      const notif: Notification = {
+        id: `N-VH-${++notifCounter}`, type: "alert",
+        title: `New Vehicle Added — ${vehicle.busNumber}`,
+        body: `${vehicle.registrationNumber} (${vehicle.vehicleType}) has been added to the fleet.`,
+        timestamp: "Just now", isRead: false, priority: "normal", link: "/transport/vehicles",
+        actor, roles: ["admin", "vp1", "vp2", "vp3"],
+      };
+      return { vehicles: [...state.vehicles, newVehicle], notifications: [notif, ...state.notifications], eventLog: [event, ...state.eventLog].slice(0, 100) };
+    }),
+
+  updateVehicle: (id, updates, actor) =>
+    set((state) => {
+      const event = makeEvent("vehicleUpdated", actor, { vehicleId: id, ...updates });
+      const notif: Notification = {
+        id: `N-VH-${++notifCounter}`, type: "alert",
+        title: `Vehicle Updated — ${updates.busNumber}`,
+        body: `${updates.registrationNumber} details have been updated. Status: ${updates.status}.`,
+        timestamp: "Just now", isRead: false, priority: "normal", link: "/transport/vehicles",
+        actor, roles: ["admin", "vp1", "vp2", "vp3"],
+      };
+      return {
+        vehicles: state.vehicles.map((v) => v.id === id ? { ...v, ...updates } : v),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  assignVehicleToRoute: (routeCode, registrationNumber, actor) =>
+    set((state) => {
+      const event = makeEvent("vehicleAssignedToRoute", actor, { routeCode, registrationNumber });
+      const notif: Notification = {
+        id: `N-VH-${++notifCounter}`, type: "alert",
+        title: `Vehicle Assigned to Route ${routeCode}`,
+        body: `${registrationNumber} has been assigned to route ${routeCode}.`,
+        timestamp: "Just now", isRead: false, priority: "normal", link: "/transport/routes",
+        actor, roles: ["admin", "vp1", "vp2", "vp3"],
+      };
+      return { notifications: [notif, ...state.notifications], eventLog: [event, ...state.eventLog].slice(0, 100) };
+    }),
+
+  submitTransportRequest: (studentId, studentName, parentName, requestType, details, routeId, actor) =>
+    set((state) => {
+      const id = `TR-NEW-${++transportReqCounter}`;
+      const newReq: TransportRequest = {
+        id, studentId, studentName, parentName, requestType, details, routeId,
+        status: "pending", submittedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+      };
+      const event = makeEvent("transportRequestSubmitted", actor, { requestId: id, studentName, requestType });
+      const notif: Notification = {
+        id: `N-TR-${++notifCounter}`, type: "alert",
+        title: `Transport Request — ${studentName}`,
+        body: `${parentName} submitted a ${requestType.replace("_", " ")} request for ${studentName}.`,
+        timestamp: "Just now", isRead: false, priority: "high", link: "/transport",
+        actor, roles: ["admin", "vp1", "vp2", "vp3"],
+      };
+      return { transportRequests: [newReq, ...state.transportRequests], notifications: [notif, ...state.notifications], eventLog: [event, ...state.eventLog].slice(0, 100) };
+    }),
+
+  approveTransportRequest: (id, reviewerName) =>
+    set((state) => {
+      const req = state.transportRequests.find((r) => r.id === id);
+      const event = makeEvent("transportRequestApproved", reviewerName, { requestId: id, studentName: req?.studentName ?? "" });
+      const notif: Notification = {
+        id: `N-TR-${++notifCounter}`, type: "alert" as const,
+        title: `Transport Request Approved`,
+        body: `Your ${req?.requestType?.replace("_", " ") ?? "transport"} request for ${req?.studentName ?? "your child"} has been approved.`,
+        timestamp: "Just now", isRead: false, priority: "normal", link: "/transport",
+        actor: reviewerName, roles: ["parent"],
+      };
+      return {
+        transportRequests: state.transportRequests.map((r) =>
+          r.id === id ? { ...r, status: "approved" as const, reviewedBy: reviewerName, reviewedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) } : r
+        ),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  rejectTransportRequest: (id, reviewerName) =>
+    set((state) => {
+      const req = state.transportRequests.find((r) => r.id === id);
+      const event = makeEvent("transportRequestRejected", reviewerName, { requestId: id, studentName: req?.studentName ?? "" });
+      const notif: Notification = {
+        id: `N-TR-${++notifCounter}`, type: "alert",
+        title: `Transport Request Rejected`,
+        body: `Your ${req?.requestType?.replace("_", " ") ?? "transport"} request for ${req?.studentName ?? "your child"} could not be approved at this time.`,
+        timestamp: "Just now", isRead: false, priority: "normal", link: "/transport",
+        actor: reviewerName, roles: ["parent"],
+      };
+      return {
+        transportRequests: state.transportRequests.map((r) =>
+          r.id === id ? { ...r, status: "rejected" as const, reviewedBy: reviewerName, reviewedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) } : r
+        ),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Transport Record Actions ───────────────────────────────────────────────
 
   updateTransportRecord: (id, address, stopLocation, parentContact, actor) =>
     set((state) => {
