@@ -48,10 +48,10 @@ export const admissionFunnel = [
 ];
 
 export const gradeDistribution = [
-  { grade: "Grade 1-3", students: 186, color: "#34d399" },
-  { grade: "Grade 4-6", students: 241, color: "#60a5fa" },
-  { grade: "Grade 7-9", students: 398, color: "#a78bfa" },
-  { grade: "Grade 10-12", students: 422, color: "#f59e0b" },
+  { grade: "Grade 1-3", students: 150, color: "#34d399" },
+  { grade: "Grade 4-6", students: 150, color: "#60a5fa" },
+  { grade: "Grade 7-9", students: 150, color: "#a78bfa" },
+  { grade: "Grade 10-12", students: 150, color: "#f59e0b" },
 ];
 
 export const atRiskStudents = [

@@ -68,15 +68,22 @@ type TabId = typeof tabs[number]["id"];
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function AuditPage() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [lastRefreshed, setLastRefreshed] = useState("Just now");
+
+  const handleRefresh = () => {
+    setRefreshKey((k) => k + 1);
+    setLastRefreshed(new Date().toLocaleTimeString());
+  };
 
   return (
     <div className="space-y-5">
       <PageHeader
         title="Audit & Security Center"
-        description={`${securityMetrics.totalLogs.toLocaleString()} total records · Last updated: Just now`}
+        description={`${securityMetrics.totalLogs.toLocaleString()} total records · Last updated: ${lastRefreshed}`}
         breadcrumbs={[{ label: "Security" }, { label: "Audit Center" }]}
         actions={
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleRefresh}>
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </Button>
         }
@@ -89,7 +96,7 @@ export default function AuditPage() {
           <p className="text-sm text-red-800 font-medium">
             {securityMetrics.criticalAlerts} critical security events detected in the last 30 days — immediate review required.
           </p>
-          <Button size="sm" variant="outline" className="ml-auto text-red-700 border-red-300 hover:bg-red-100 shrink-0 text-xs">
+          <Button size="sm" variant="outline" className="ml-auto text-red-700 border-red-300 hover:bg-red-100 shrink-0 text-xs" onClick={() => setActiveTab("alerts")}>
             View Alerts
           </Button>
         </div>

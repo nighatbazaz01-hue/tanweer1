@@ -1,0 +1,518 @@
+ULTRA-DEEP DEMO READINESS AUDIT
+
+STOP FEATURE DEVELOPMENT.
+
+DO NOT ADD NEW FEATURES.
+
+DO NOT REDESIGN UI.
+
+DO NOT ADD BACKEND.
+
+DO NOT ASSUME ANYTHING IS WORKING.
+
+Your job is now QA ENGINEER, TEST ENGINEER, BUSINESS ANALYST, and DEMO REVIEWER.
+
+====================================================
+OBJECTIVE
+====================================================
+
+Perform the deepest possible audit of the entire Tanweer School Management Platform.
+
+Previous audits have already missed issues that were later found manually:
+
+- Non-working View buttons
+- Broken routes
+- Wrong student counts
+- Attendance count mismatches
+- Empty filters
+- Pages redirecting incorrectly
+- Teacher workflows not connected
+- Missing creation workflows
+
+Therefore:
+
+DO NOT TRUST CODE INSPECTION ALONE.
+
+Verify actual behavior.
+
+====================================================
+TEST ALL ROLES
+====================================================
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+====================================================
+FULL ROUTE INVENTORY
+====================================================
+
+Generate a complete route map.
+
+For every route report:
+
+Route
+Role Access
+Linked From
+Working?
+Redirect?
+404?
+Permission Issue?
+Store Connected?
+
+Example:
+
+/teacher
+/teacher/classes
+/teacher/students
+/teacher/homework
+/teacher/performance
+/teacher/attendance
+/teacher/tasks
+/teacher/leave
+
+etc.
+
+Do this for ALL roles.
+
+====================================================
+CLICK EVERYTHING
+====================================================
+
+Audit every clickable element.
+
+Including:
+
+Buttons
+Links
+Cards
+Tabs
+Dropdowns
+Menus
+Search
+Filters
+Pagination
+Modals
+Dialogs
+Actions
+Badges
+Notifications
+View
+Edit
+Delete
+Details
+Create
+Assign
+Approve
+Reject
+Export
+Download
+Schedule
+
+EVERYTHING.
+
+For every interaction:
+
+1. Can it be clicked?
+2. Does something happen?
+3. Is it useful?
+4. Does it open correct UI?
+5. Does it update state?
+6. Does it throw errors?
+7. Does it silently fail?
+
+====================================================
+TEACHER ROLE DEEP DIVE
+====================================================
+
+This role is known to contain issues.
+
+Verify:
+
+Dashboard
+My Classes
+My Students
+Attendance
+Homework
+Performance
+Tasks
+Leave
+Messages
+Meetings
+
+Specifically validate:
+
+Today's Classes cards
+View buttons
+Start buttons
+Class counts
+Student counts
+Attendance counts
+Homework creation
+Grade entry
+Performance reports
+
+Check consistency:
+
+Teacher dashboard says X students
+
+↓
+
+My Students says X students
+
+↓
+
+Attendance shows X students
+
+↓
+
+Performance shows X students
+
+If any mismatch exists:
+
+Report exact source.
+
+====================================================
+VP ROLE DEEP DIVE
+====================================================
+
+Verify:
+
+Dashboard
+Students
+Attendance
+Tasks
+Leave Approval
+Announcements
+Meetings
+Messages
+Timetable
+
+Confirm:
+
+VP can create timetable
+
+VP can edit timetable
+
+VP can assign tasks
+
+Teachers receive assigned tasks
+
+VP receives leave requests
+
+Approval updates teacher record
+
+Notifications generated
+
+====================================================
+ADMIN ROLE DEEP DIVE
+====================================================
+
+Verify:
+
+Admissions
+Students
+Attendance
+Fees
+Finance
+Transport
+Reports
+Announcements
+Meetings
+Messages
+Tasks
+
+Every View button
+
+Every Details button
+
+Every Edit button
+
+Every Create button
+
+====================================================
+PARENT ROLE DEEP DIVE
+====================================================
+
+Verify:
+
+Child Profile
+
+Attendance
+
+Marks
+
+Homework
+
+Fees
+
+Messages
+
+Meetings
+
+Announcements
+
+Transport
+
+Confirm:
+
+Only own child visible
+
+No other students exposed
+
+Transport edits work
+
+Notifications generated
+
+====================================================
+STUDENT ROLE DEEP DIVE
+====================================================
+
+Verify:
+
+Dashboard
+
+Homework
+
+Attendance
+
+Exams
+
+Grades
+
+Projects
+
+Timetable
+
+AI Study Assistant
+
+Transport
+
+Confirm:
+
+Only own data visible
+
+No access to private student data
+
+No access to teacher/admin functions
+
+====================================================
+LOGIN SYSTEM AUDIT
+====================================================
+
+Verify:
+
+Login page
+
+OTP flow
+
+Session persistence
+
+Logout
+
+Role switching
+
+AuthGuard
+
+Protected routes
+
+Direct URL access
+
+Verify:
+
+Unauthenticated user cannot access dashboard routes.
+
+Verify:
+
+OTP is NOT shown on screen.
+
+Verify:
+
+No demo credentials displayed anywhere.
+
+====================================================
+PIN SECURITY AUDIT
+====================================================
+
+Verify:
+
+Admin PIN
+
+VP1 PIN
+
+VP2 PIN
+
+VP3 PIN
+
+Verify:
+
+Protected data cannot be viewed without PIN.
+
+Verify:
+
+Teacher cannot bypass PIN.
+
+Verify:
+
+Parent cannot bypass PIN.
+
+Verify:
+
+Student cannot bypass PIN.
+
+Verify:
+
+3 failed attempts triggers security event.
+
+====================================================
+DATA CONSISTENCY AUDIT
+====================================================
+
+Trace data source for:
+
+Students
+Teachers
+Parents
+Attendance
+Fees
+Messages
+Meetings
+Announcements
+Tasks
+Notifications
+Transport
+
+For every module:
+
+Identify:
+
+Store source
+
+Population source
+
+Filters applied
+
+Count displayed
+
+Count rendered
+
+Find:
+
+Duplicate arrays
+
+Hardcoded records
+
+Disconnected mock data
+
+Outdated mock files
+
+Role-specific mismatches
+
+====================================================
+TRANSPORT AUDIT
+====================================================
+
+Verify:
+
+Admin access
+
+VP access
+
+Parent access
+
+Student access
+
+Teacher blocked
+
+Verify:
+
+Parent edit
+
+Store update
+
+Notification generation
+
+Event log generation
+
+Cross-role visibility
+
+====================================================
+CONSOLE + RUNTIME AUDIT
+====================================================
+
+Check:
+
+Console errors
+
+Warnings
+
+Hydration issues
+
+TypeScript issues
+
+Runtime exceptions
+
+Undefined access
+
+Dead imports
+
+Unused routes
+
+Broken navigation
+
+====================================================
+FINAL REPORT FORMAT
+====================================================
+
+SECTION 1
+FULL ROUTE INVENTORY
+
+SECTION 2
+BROKEN BUTTONS
+
+SECTION 3
+BROKEN LINKS
+
+SECTION 4
+BROKEN ROUTES
+
+SECTION 5
+BROKEN WORKFLOWS
+
+SECTION 6
+DATA INCONSISTENCIES
+
+SECTION 7
+PERMISSION ISSUES
+
+SECTION 8
+SECURITY ISSUES
+
+SECTION 9
+TRANSPORT ISSUES
+
+SECTION 10
+LOGIN / OTP ISSUES
+
+SECTION 11
+CONSOLE ERRORS
+
+Then fix ALL issues found.
+
+After fixes provide:
+
+Total Routes Audited
+Total Pages Audited
+Total Interactive Elements Audited
+Total Issues Found
+Total Issues Fixed
+Remaining Issues
+Demo Readiness Score (0-100)
+
+Do NOT stop after finding the first issues.
+
+Continue until the entire application has been audited.

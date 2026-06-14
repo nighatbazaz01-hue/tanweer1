@@ -432,7 +432,7 @@ export default function Student360Page() {
       {activeTab === "communication" && (
         <div className="space-y-3">
           <div className="flex justify-end">
-            <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" onClick={() => { if (typeof window !== "undefined") window.location.href = "/messages"; }}>
               <MessageSquare className="h-4 w-4" />
               New Message
             </Button>
