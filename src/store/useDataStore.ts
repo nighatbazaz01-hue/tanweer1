@@ -221,7 +221,7 @@ interface DataStore {
   ) => void;
   addVehicle: (vehicle: Omit<VehicleRecord, "id">, actor: string) => void;
   updateVehicle: (id: string, updates: Omit<VehicleRecord, "id">, actor: string) => void;
-  assignVehicleToRoute: (routeCode: string, registrationNumber: string, actor: string) => void;
+  assignVehicleToRoute: (routeCode: string, busNumber: string, registrationNumber: string, actor: string) => void;
   submitTransportRequest: (
     studentId: string,
     studentName: string,
@@ -229,7 +229,9 @@ interface DataStore {
     requestType: TransportRequestType,
     details: string,
     routeId: string,
-    actor: string
+    actor: string,
+    proposedStop?: string,
+    proposedAddress?: string
   ) => void;
   approveTransportRequest: (id: string, reviewerName: string) => void;
   rejectTransportRequest: (id: string, reviewerName: string) => void;
@@ -705,24 +707,35 @@ export const useDataStore = create<DataStore>((set) => ({
       };
     }),
 
-  assignVehicleToRoute: (routeCode, registrationNumber, actor) =>
+  assignVehicleToRoute: (routeCode, busNumber, registrationNumber, actor) =>
     set((state) => {
-      const event = makeEvent("vehicleAssignedToRoute", actor, { routeCode, registrationNumber });
+      const event = makeEvent("vehicleAssignedToRoute", actor, { routeCode, busNumber, registrationNumber });
       const notif: Notification = {
         id: `N-VH-${++notifCounter}`, type: "alert",
         title: `Vehicle Assigned to Route ${routeCode}`,
-        body: `${registrationNumber} has been assigned to route ${routeCode}.`,
+        body: `${registrationNumber} has been assigned to ${busNumber} (${routeCode}).`,
         timestamp: "Just now", isRead: false, priority: "normal", link: "/transport/routes",
         actor, roles: ["admin", "vp1", "vp2", "vp3"],
       };
-      return { notifications: [notif, ...state.notifications], eventLog: [event, ...state.eventLog].slice(0, 100) };
+      return {
+        vehicles: state.vehicles.map((v) =>
+          v.registrationNumber === registrationNumber
+            ? { ...v, busNumber, routeCode }
+            : v
+        ),
+        notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
     }),
 
-  submitTransportRequest: (studentId, studentName, parentName, requestType, details, routeId, actor) =>
+  submitTransportRequest: (studentId, studentName, parentName, requestType, details, routeId, actor, proposedStop, proposedAddress) =>
     set((state) => {
       const id = `TR-NEW-${++transportReqCounter}`;
       const newReq: TransportRequest = {
-        id, studentId, studentName, parentName, requestType, details, routeId,
+        id, studentId, studentName, parentName, requestType, details,
+        ...(proposedStop    ? { proposedStop }    : {}),
+        ...(proposedAddress ? { proposedAddress } : {}),
+        routeId,
         status: "pending", submittedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
       };
       const event = makeEvent("transportRequestSubmitted", actor, { requestId: id, studentName, requestType });
@@ -739,6 +752,7 @@ export const useDataStore = create<DataStore>((set) => ({
   approveTransportRequest: (id, reviewerName) =>
     set((state) => {
       const req = state.transportRequests.find((r) => r.id === id);
+      const reviewedAt = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
       const event = makeEvent("transportRequestApproved", reviewerName, { requestId: id, studentName: req?.studentName ?? "" });
       const notif: Notification = {
         id: `N-TR-${++notifCounter}`, type: "alert" as const,
@@ -747,10 +761,27 @@ export const useDataStore = create<DataStore>((set) => ({
         timestamp: "Just now", isRead: false, priority: "normal", link: "/transport",
         actor: reviewerName, roles: ["parent"],
       };
+      let updatedTransportRecords = state.transportRecords;
+      if (req) {
+        if (req.requestType === "change_stop" && req.proposedStop) {
+          updatedTransportRecords = state.transportRecords.map((r) =>
+            r.studentId === req.studentId ? { ...r, stopLocation: req.proposedStop! } : r
+          );
+        } else if (req.requestType === "change_address" && req.proposedAddress) {
+          updatedTransportRecords = state.transportRecords.map((r) =>
+            r.studentId === req.studentId ? { ...r, address: req.proposedAddress! } : r
+          );
+        } else if (req.requestType === "temporary" && req.proposedStop) {
+          updatedTransportRecords = state.transportRecords.map((r) =>
+            r.studentId === req.studentId ? { ...r, stopLocation: `[Temp] ${req.proposedStop}` } : r
+          );
+        }
+      }
       return {
         transportRequests: state.transportRequests.map((r) =>
-          r.id === id ? { ...r, status: "approved" as const, reviewedBy: reviewerName, reviewedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) } : r
+          r.id === id ? { ...r, status: "approved" as const, reviewedBy: reviewerName, reviewedAt } : r
         ),
+        transportRecords: updatedTransportRecords,
         notifications: [notif, ...state.notifications],
         eventLog: [event, ...state.eventLog].slice(0, 100),
       };

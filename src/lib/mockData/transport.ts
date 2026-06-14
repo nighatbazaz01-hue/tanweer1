@@ -48,6 +48,8 @@ export interface TransportRequest {
   parentName: string;
   requestType: TransportRequestType;
   details: string;
+  proposedStop?: string;
+  proposedAddress?: string;
   status: TransportRequestStatus;
   submittedAt: string;
   reviewedBy?: string;
@@ -65,15 +67,36 @@ export const BUS_ROUTES = [
   { bus: "Bus 06", routeCode: "RT-06", route: "North-West — Al-Rawdah",     stops: ["Al-Rawdah Villa", "Al-Worood District", "Prince Fawwaz Road", "Side Gate B"], pickupTimes: ["6:35 AM", "6:48 AM", "7:00 AM", "7:12 AM"], dropTimes: ["2:28 PM", "2:41 PM", "2:53 PM", "3:05 PM"] },
 ];
 
-// ─── Initial Vehicles (one per bus route) ──────────────────────────────────────
-export const initialVehicles: VehicleRecord[] = [
-  { id: "VH-01", busNumber: "Bus 01", vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-1045-A", insuranceExpiry: "Dec 2025", fitnessExpiry: "Nov 2025", pollutionExpiry: "Oct 2025", status: "active",      driverName: "Mohammed Al-Rashidi",  conductorName: "Ahmed Al-Zahrani",  routeCode: "RT-01" },
-  { id: "VH-02", busNumber: "Bus 02", vehicleType: "Coach",    capacity: 48, fuelType: "Diesel", registrationNumber: "RYD-2187-B", insuranceExpiry: "Mar 2026", fitnessExpiry: "Feb 2026", pollutionExpiry: "Jan 2026", status: "active",      driverName: "Ibrahim Al-Ghamdi",    conductorName: "Khalid Al-Dosari",  routeCode: "RT-02" },
-  { id: "VH-03", busNumber: "Bus 03", vehicleType: "Mini-Bus", capacity: 35, fuelType: "CNG",    registrationNumber: "RYD-3321-C", insuranceExpiry: "Jun 2026", fitnessExpiry: "May 2026", pollutionExpiry: "Apr 2026", status: "maintenance", driverName: "Faisal Al-Mutairi",    conductorName: "Omar Al-Harbi",     routeCode: "RT-03" },
-  { id: "VH-04", busNumber: "Bus 04", vehicleType: "Coach",    capacity: 52, fuelType: "Diesel", registrationNumber: "RYD-4563-D", insuranceExpiry: "Sep 2025", fitnessExpiry: "Aug 2025", pollutionExpiry: "Jul 2025", status: "active",      driverName: "Saad Al-Anazi",        conductorName: "Bilal Al-Shehri",   routeCode: "RT-04" },
-  { id: "VH-05", busNumber: "Bus 05", vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-5892-E", insuranceExpiry: "Jan 2026", fitnessExpiry: "Dec 2025", pollutionExpiry: "Nov 2025", status: "active",      driverName: "Turki Al-Barrak",      conductorName: "Nawaf Al-Sayed",    routeCode: "RT-05" },
-  { id: "VH-06", busNumber: "Bus 06", vehicleType: "Mini-Bus", capacity: 35, fuelType: "Petrol", registrationNumber: "RYD-6124-F", insuranceExpiry: "Apr 2026", fitnessExpiry: "Mar 2026", pollutionExpiry: "Feb 2026", status: "inactive",    driverName: "Adel Al-Qahtani",      conductorName: "Ziad Al-Farouk",    routeCode: "RT-06" },
+// ─── Vehicle details derived from BUS_ROUTES (one record per route) ───────────
+// Route-specific driver/mechanical data is kept here; identifiers (busNumber,
+// routeCode) are taken directly from BUS_ROUTES so there is a single source of
+// truth for route identity.
+const VEHICLE_EXTRAS: {
+  vehicleType: VehicleType;
+  capacity: number;
+  fuelType: FuelType;
+  registrationNumber: string;
+  insuranceExpiry: string;
+  fitnessExpiry: string;
+  pollutionExpiry: string;
+  status: VehicleStatus;
+  driverName: string;
+  conductorName: string;
+}[] = [
+  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-1045-A", insuranceExpiry: "Dec 2025", fitnessExpiry: "Nov 2025", pollutionExpiry: "Oct 2025", status: "active",      driverName: "Mohammed Al-Rashidi",  conductorName: "Ahmed Al-Zahrani"  },
+  { vehicleType: "Coach",    capacity: 48, fuelType: "Diesel", registrationNumber: "RYD-2187-B", insuranceExpiry: "Mar 2026", fitnessExpiry: "Feb 2026", pollutionExpiry: "Jan 2026", status: "active",      driverName: "Ibrahim Al-Ghamdi",    conductorName: "Khalid Al-Dosari"  },
+  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "CNG",    registrationNumber: "RYD-3321-C", insuranceExpiry: "Jun 2026", fitnessExpiry: "May 2026", pollutionExpiry: "Apr 2026", status: "maintenance", driverName: "Faisal Al-Mutairi",    conductorName: "Omar Al-Harbi"     },
+  { vehicleType: "Coach",    capacity: 52, fuelType: "Diesel", registrationNumber: "RYD-4563-D", insuranceExpiry: "Sep 2025", fitnessExpiry: "Aug 2025", pollutionExpiry: "Jul 2025", status: "active",      driverName: "Saad Al-Anazi",        conductorName: "Bilal Al-Shehri"   },
+  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-5892-E", insuranceExpiry: "Jan 2026", fitnessExpiry: "Dec 2025", pollutionExpiry: "Nov 2025", status: "active",      driverName: "Turki Al-Barrak",      conductorName: "Nawaf Al-Sayed"    },
+  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "Petrol", registrationNumber: "RYD-6124-F", insuranceExpiry: "Apr 2026", fitnessExpiry: "Mar 2026", pollutionExpiry: "Feb 2026", status: "inactive",    driverName: "Adel Al-Qahtani",      conductorName: "Ziad Al-Farouk"    },
 ];
+
+export const initialVehicles: VehicleRecord[] = BUS_ROUTES.map((route, i) => ({
+  id: `VH-0${i + 1}`,
+  busNumber: route.bus,
+  routeCode: route.routeCode,
+  ...VEHICLE_EXTRAS[i],
+}));
 
 // ─── Initial Transport Requests ────────────────────────────────────────────────
 export const initialTransportRequests: TransportRequest[] = [

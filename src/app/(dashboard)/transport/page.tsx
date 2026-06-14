@@ -408,6 +408,8 @@ function TransportContent({ activeRole }: { activeRole: string }) {
   const [requestOpen, setRequestOpen] = useState(false);
   const [requestType, setRequestType] = useState<TransportRequestType>("change_stop");
   const [requestDetails, setRequestDetails] = useState("");
+  const [proposedStop, setProposedStop] = useState("");
+  const [proposedAddress, setProposedAddress] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(null), 3000); };
@@ -436,10 +438,14 @@ function TransportContent({ activeRole }: { activeRole: string }) {
       requestDetails,
       "RT-01",
       "Parent",
+      proposedStop.trim() || undefined,
+      proposedAddress.trim() || undefined,
     );
     showToast("Request submitted. Admin will review shortly.");
     setRequestOpen(false);
     setRequestDetails("");
+    setProposedStop("");
+    setProposedAddress("");
   };
 
   return (
@@ -528,8 +534,26 @@ function TransportContent({ activeRole }: { activeRole: string }) {
                 ))}
               </div>
             </div>
+            {requestType === "change_stop" && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">New Pickup Stop</label>
+                <Input placeholder="e.g. Malaz Square" value={proposedStop} onChange={(e) => setProposedStop(e.target.value)} />
+              </div>
+            )}
+            {requestType === "change_address" && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">New Home Address</label>
+                <Input placeholder="e.g. Villa 45, Al-Ruwais District, Riyadh" value={proposedAddress} onChange={(e) => setProposedAddress(e.target.value)} />
+              </div>
+            )}
+            {requestType === "temporary" && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Temporary Pickup Location</label>
+                <Input placeholder="e.g. Prince Fawwaz Road (Grandmother's house)" value={proposedStop} onChange={(e) => setProposedStop(e.target.value)} />
+              </div>
+            )}
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">Details</label>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Additional Details</label>
               <textarea
                 className="w-full rounded-md border px-3 py-2 text-sm bg-background resize-none min-h-[80px]"
                 placeholder="Please describe your request in detail..."

@@ -67,7 +67,7 @@ function RoutesContent() {
     if (!assignOpen || !selectedVehicle) return;
     const route = BUS_ROUTES.find((r) => r.routeCode === assignOpen);
     if (!route) return;
-    assignVehicleToRoute(route.routeCode, selectedVehicle, "Admin");
+    assignVehicleToRoute(route.routeCode, route.bus, selectedVehicle, "Admin");
     showToast(`Vehicle ${selectedVehicle} assigned to ${route.route}`);
     setAssignOpen(null);
     setSelectedVehicle("");
