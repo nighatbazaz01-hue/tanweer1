@@ -27,6 +27,7 @@ export default function TeacherHomeworkPage() {
   const [assignments, setAssignments] = useState<Assignment[]>(homeworkAssignments);
   const [createOpen, setCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
+  const [newSubject, setNewSubject] = useState("Mathematics");
   const [newGrade, setNewGrade] = useState("Grade 10-A");
   const [newDue, setNewDue] = useState("");
   const [newTotal, setNewTotal] = useState("20");
@@ -49,8 +50,8 @@ export default function TeacherHomeworkPage() {
       status: "active",
     };
     setAssignments((prev) => [next, ...prev]);
-    addAssignment(newTitle, newGrade, newDue, 10, parseInt(newTotal) || 20, "Teacher");
-    setNewTitle(""); setNewGrade("Grade 10-A"); setNewDue(""); setNewTotal("20");
+    addAssignment(newTitle, newSubject, newGrade, newDue, 10, parseInt(newTotal) || 20, "Teacher");
+    setNewTitle(""); setNewSubject("Mathematics"); setNewGrade("Grade 10-A"); setNewDue(""); setNewTotal("20");
     setCreateOpen(false);
     showToast("Assignment created successfully!");
   };
@@ -170,6 +171,17 @@ export default function TeacherHomeworkPage() {
             <div>
               <label className="text-sm font-medium mb-1 block">Title</label>
               <Input placeholder="e.g. Chapter 6 Exercises" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Subject</label>
+              <select className="w-full rounded-md border px-3 py-2 text-sm bg-background" value={newSubject} onChange={(e) => setNewSubject(e.target.value)}>
+                <option>Mathematics</option>
+                <option>English</option>
+                <option>Physics</option>
+                <option>Chemistry</option>
+                <option>Arabic</option>
+                <option>Computer Science</option>
+              </select>
             </div>
             <div>
               <label className="text-sm font-medium mb-1 block">Section</label>

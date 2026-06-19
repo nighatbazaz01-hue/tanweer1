@@ -23,7 +23,7 @@ const DEMO_TEACHER_SUBJECT = "Mathematics";
 
 const initialGrades = classAttendanceToday.map((s, i) => ({
   ...s,
-  score: [82, 87, 45, 78, 91, 63, 71, 88][i] ?? 75,
+  score: [82, 87, 45, 78, 91, 63, 71, 88, 76, 84, 55, 79][i] ?? 75,
 }));
 
 // Map classAttendanceToday student name → real store studentId

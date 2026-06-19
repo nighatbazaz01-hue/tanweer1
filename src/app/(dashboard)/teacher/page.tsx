@@ -20,6 +20,7 @@ import {
   teacherProfile, todaysClasses, classAttendanceToday, homeworkAssignments,
   studentPerformance, gradeDistribution, classRiskStudents,
 } from "@/lib/mockData/teacher";
+import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME } from "@/lib/permissions";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -39,7 +40,7 @@ const attendanceStatusStyle: Record<string, { label: string; color: string; icon
 
 export default function TeacherDashboard() {
   const { toggleAiDrawer } = useUIStore();
-  const { saveAttendance, addAssignment, createThread } = useDataStore();
+  const { saveAttendance, addAssignment, createThread, bulkSetGradeRecords } = useDataStore();
   const { user } = useAuthStore();
 
   const presentCount  = classAttendanceToday.filter((s) => s.status === "present").length;
@@ -64,7 +65,24 @@ export default function TeacherDashboard() {
   const getLetterGrade = (mark: number) =>
     mark >= 90 ? "A+" : mark >= 85 ? "A" : mark >= 80 ? "B+" : mark >= 75 ? "B" : mark >= 70 ? "C+" : mark >= 65 ? "C" : mark >= 60 ? "D" : "F";
   const handleSaveGrades = () => {
-    const saved = Object.keys(gradeMarks).filter((id) => gradeMarks[id] !== "").length;
+    const filledEntries = classAttendanceToday
+      .map((s) => ({
+        studentId:   s.name === DEMO_CHILD_NAME ? DEMO_CHILD_ID : `CLASS-${s.id}`,
+        studentName: s.name,
+        marks:       parseInt(gradeMarks[s.id] || "0", 10),
+      }))
+      .filter((g) => g.marks > 0);
+
+    if (filledEntries.length > 0) {
+      bulkSetGradeRecords(
+        "Mathematics",
+        filledEntries,
+        DEMO_TEACHER_NAME,
+        user?.name ?? DEMO_TEACHER_NAME,
+      );
+    }
+
+    const saved = filledEntries.length;
     setGradeOpen(false);
     setGradeMarks({});
     showToast(`Grades saved for ${saved} student${saved !== 1 ? "s" : ""} — ${gradeAssessment}`);
@@ -84,7 +102,7 @@ export default function TeacherDashboard() {
     if (!hwTitle.trim()) return;
     const title = hwTitle.trim();
     const points = parseInt(hwPoints) || 20;
-    addAssignment(title, "Grade 10-A", hwDue || "TBD", points, classAttendanceToday.length, user?.name || teacherProfile.name);
+    addAssignment(title, "Mathematics", "Grade 10-A", hwDue || "TBD", points, classAttendanceToday.length, user?.name || teacherProfile.name);
     setHwOpen(false);
     setHwTitle(""); setHwDue(""); setHwPoints("20");
     showToast(`"${title}" assigned to Grade 10-A`);

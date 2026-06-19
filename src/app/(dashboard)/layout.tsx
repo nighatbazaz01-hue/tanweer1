@@ -4,6 +4,7 @@ import { AIDrawer } from "@/components/common/AIDrawer";
 import { StartupValidator } from "@/components/common/StartupValidator";
 import { WelcomePanel } from "@/components/common/WelcomePanel";
 import { AuthGuard } from "@/components/common/AuthGuard";
+import { RouteGuard } from "@/components/common/RouteGuard";
 
 export default function DashboardLayout({
   children,
@@ -18,7 +19,9 @@ export default function DashboardLayout({
           <Topbar />
           <main className="flex-1 overflow-y-auto p-6">
             <WelcomePanel />
-            {children}
+            <RouteGuard>
+              {children}
+            </RouteGuard>
           </main>
         </div>
         <AIDrawer />

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BookOpen, CheckCircle, Clock, AlertCircle, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/store/useUIStore";
+import { useDataStore } from "@/store/useDataStore";
 import { homeworkStatus } from "@/lib/mockData/student";
 import { cn } from "@/lib/utils";
 
@@ -27,12 +28,28 @@ const subjectColor: Record<string, string> = {
 
 export default function StudentHomeworkPage() {
   const { toggleAiDrawer } = useUIStore();
+  const { assignments } = useDataStore();
   const [filter, setFilter] = useState<"all" | "pending" | "submitted" | "in_progress">("all");
 
-  const filtered = filter === "all" ? homeworkStatus : homeworkStatus.filter((h) => h.status === filter);
-  const pending = homeworkStatus.filter((h) => h.status === "pending").length;
-  const submitted = homeworkStatus.filter((h) => h.status === "submitted").length;
-  const inProgress = homeworkStatus.filter((h) => h.status === "in_progress").length;
+  // Merge teacher-created assignments (store) with static historical records
+  const allHomework = useMemo(() => {
+    const storeItems = assignments
+      .filter((a) => a.grade === "Grade 10-A" && a.status === "active")
+      .map((a) => ({
+        subject: a.subject || "General",
+        title:   a.title,
+        dueDate: a.dueDate,
+        status:  "pending" as const,
+        score:   null as number | null,
+        total:   a.total,
+      }));
+    return [...storeItems, ...homeworkStatus];
+  }, [assignments]);
+
+  const filtered   = filter === "all" ? allHomework : allHomework.filter((h) => h.status === filter);
+  const pending    = allHomework.filter((h) => h.status === "pending").length;
+  const submitted  = allHomework.filter((h) => h.status === "submitted").length;
+  const inProgress = allHomework.filter((h) => h.status === "in_progress").length;
 
   return (
     <div className="space-y-6">
@@ -52,7 +69,7 @@ export default function StudentHomeworkPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total", value: homeworkStatus.length, icon: BookOpen, color: "blue" },
+          { label: "Total", value: allHomework.length, icon: BookOpen, color: "blue" },
           { label: "Submitted", value: submitted, icon: CheckCircle, color: "emerald" },
           { label: "In Progress", value: inProgress, icon: Clock, color: "amber" },
           { label: "Pending", value: pending, icon: AlertCircle, color: "red" },

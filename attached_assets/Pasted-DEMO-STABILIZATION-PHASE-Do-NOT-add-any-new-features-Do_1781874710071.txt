@@ -1,0 +1,201 @@
+DEMO STABILIZATION PHASE
+
+Do NOT add any new features.
+
+Do NOT redesign the UI.
+
+Do NOT create new modules.
+
+Focus only on fixing the highest-priority defects identified in the latest QA audit.
+
+PRIORITY 1 — SECURITY
+
+Fix C-002.
+
+Implement true role-based route protection.
+
+Current behavior:
+
+* AuthGuard only checks isAuthenticated.
+* Any authenticated user can manually access pages by URL.
+
+Required behavior:
+
+Admin:
+
+* Full access.
+
+VP1/VP2/VP3:
+
+* Only VP, shared school modules, transport, communication.
+
+Teacher:
+
+* Teacher pages only.
+* No admin pages.
+* No admissions.
+* No AI Insights admin view.
+
+Parent:
+
+* Parent pages only.
+
+Student:
+
+* Student pages only.
+
+Unauthorized access must:
+
+* Redirect to the user's own dashboard.
+* Log an event in Event Log.
+* Show "Access Denied".
+
+Audit every route under:
+
+/admin
+/vp
+/teacher
+/parent
+/student-view
+/admissions
+/audit
+/fees
+/transport
+/ai-insights
+
+Verify all route guards.
+
+---
+
+PRIORITY 2 — LOGOUT
+
+Fix C-003.
+
+Add Logout button to authenticated UI.
+
+Requirements:
+
+* Visible in Sidebar footer.
+* Calls useAuthStore.logout().
+* Clears role state.
+* Clears PIN session state.
+* Redirects to /login.
+* Works for all roles.
+
+Verify:
+Admin → Logout
+VP → Logout
+Teacher → Logout
+Parent → Logout
+Student → Logout
+
+---
+
+PRIORITY 3 — HOMEWORK DATA FLOW
+
+Fix C-001.
+
+Current issue:
+Teacher writes homework to:
+useDataStore.assignments
+
+Student reads:
+student.ts → homeworkStatus
+
+Result:
+Teacher-created homework never appears.
+
+Required:
+
+Student Homework page must read from:
+useDataStore.assignments
+
+Teacher-created assignments must appear immediately.
+
+Verify:
+
+Teacher creates homework.
+Student sees homework.
+Completion status updates correctly.
+
+No duplicate homework arrays.
+
+---
+
+PRIORITY 4 — GRADE ENTRY
+
+Fix H-001.
+
+Teacher Dashboard quick grade panel currently only fires a toast.
+
+Choose ONE:
+
+Option A (preferred):
+Wire it to bulkSetGradeRecords()
+
+OR
+
+Option B:
+Remove quick grade panel and redirect teachers to:
+Teacher → Performance
+
+No fake save actions allowed.
+
+---
+
+PRIORITY 5 — DATA CONSISTENCY
+
+Fix:
+
+M-001
+M-002
+CN-001
+CN-002
+CN-003
+CN-004
+
+Requirements:
+
+* One source of truth.
+* No hardcoded fallback scores.
+* No KPI mismatch.
+* No roster mismatch.
+* No class-size mismatch.
+
+Every displayed count must come from store data.
+
+---
+
+FINAL QA
+
+After implementation:
+
+Run a complete regression test.
+
+Click every:
+
+* Button
+* Link
+* Card action
+* Dialog action
+* Dropdown action
+* Save action
+* View action
+
+For all roles:
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+Output:
+
+FIXED ISSUES
+REMAINING ISSUES
+KNOWN LIMITATIONS
+
+Do not implement any new functionality beyond these fixes.

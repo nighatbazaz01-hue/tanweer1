@@ -86,7 +86,7 @@ export default function AdminDashboard() {
     { title: "Teacher Attendance", value: `${adminStats.teacherAttendanceRate}%`, sub: `${adminStats.totalTeachers} total teachers`, icon: GraduationCap, color: "bg-sky-500", trend: { v: 0.5, up: true } },
     { title: "Parent Satisfaction", value: `${adminStats.parentSatisfaction}/5`, sub: "Avg rating this month", icon: Heart, color: "bg-pink-500", trend: { v: 0.2, up: true } },
     { title: "New Admissions", value: adminStats.newLeadsThisMonth, sub: `${adminStats.enrolledThisMonth} enrolled`, icon: TrendingUp, color: "bg-indigo-500", trend: { v: 12, up: true } },
-    { title: "At-Risk Students", value: adminStats.atRiskStudents, sub: "Needs intervention", icon: AlertTriangle, color: "bg-red-500", trend: { v: 4, up: false } },
+    { title: "At-Risk Students", value: extendedAtRiskList.length, sub: "Needs intervention", icon: AlertTriangle, color: "bg-red-500", trend: { v: 4, up: false } },
   ];
 
   const [atRiskOpen, setAtRiskOpen] = useState(false);

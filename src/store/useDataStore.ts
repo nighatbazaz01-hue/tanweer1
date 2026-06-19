@@ -159,6 +159,7 @@ export interface GradeRecord {
 export interface Assignment {
   id: string;
   title: string;
+  subject: string;
   grade: string;
   dueDate: string;
   points: number;
@@ -277,12 +278,16 @@ interface DataStore {
   // ── Assignment Actions ──
   addAssignment: (
     title: string,
+    subject: string,
     grade: string,
     dueDate: string,
     points: number,
     total: number,
     actor: string
   ) => void;
+
+  // ── Security / Audit Actions ──
+  logSecurityEvent: (role: string, path: string, actor: string) => void;
 
   // ── Transport Actions ──
   updateTransportRecord: (
@@ -737,12 +742,13 @@ export const useDataStore = create<DataStore>((set) => ({
 
   // ── Assignment Actions ──────────────────────────────────────────────────
 
-  addAssignment: (title, grade, dueDate, points, total, actor) =>
+  addAssignment: (title, subject, grade, dueDate, points, total, actor) =>
     set((state) => {
       const id = `ASN-${++assignmentCounter}`;
       const newAssignment: Assignment = {
         id,
         title,
+        subject,
         grade,
         dueDate,
         points,
@@ -751,11 +757,17 @@ export const useDataStore = create<DataStore>((set) => ({
         status:    "active",
         createdAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       };
-      const event = makeEvent("assignmentAdded", actor, { assignmentId: id, title, grade, dueDate });
+      const event = makeEvent("assignmentAdded", actor, { assignmentId: id, title, subject, grade, dueDate });
       return {
         assignments: [newAssignment, ...state.assignments],
         eventLog:    [event, ...state.eventLog].slice(0, 100),
       };
+    }),
+
+  logSecurityEvent: (role, path, actor) =>
+    set((state) => {
+      const event = makeEvent("unauthorizedAccess", actor, { role, path, blocked: true });
+      return { eventLog: [event, ...state.eventLog].slice(0, 100) };
     }),
 
   // ── Leave Actions ────────────────────────────────────────────────────

@@ -1,17 +1,20 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, BookOpen, DollarSign,
   ClipboardList, Sparkles, Settings, ChevronLeft, ChevronRight,
   UserCheck, BookMarked, CalendarDays, TrendingUp, Award,
   Home, FileText, Bell, Megaphone, CheckSquare,
   Calendar, Mail, Shield, BookUser, GraduationCap, Bus, CalendarOff,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore, roleConfig } from "@/store/useRoleStore";
 import { useDataStore } from "@/store/useDataStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { usePinStore } from "@/store/usePinStore";
 import { Button } from "@/components/ui/button";
 import { getUnreadCount } from "@/lib/mockData/notifications";
 import { filterThreadsForRole } from "@/lib/permissions";
@@ -171,10 +174,20 @@ type NavItem =
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
-  const { activeRole } = useRoleStore();
+  const { activeRole, setRole } = useRoleStore();
   const { threads } = useDataStore();
+  const { logout } = useAuthStore();
+  const { lock } = usePinStore();
   const cfg = roleConfig[activeRole];
+
+  const handleLogout = () => {
+    lock();
+    setRole("admin");
+    logout();
+    router.replace("/login");
+  };
   const navItems = (navByRole[activeRole] ?? navByRole.admin) as NavItem[];
   const notifCount = getUnreadCount(activeRole);
   const msgCount = filterThreadsForRole(threads, activeRole)
@@ -273,6 +286,21 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Footer — Sign Out */}
+      <div className="border-t p-2 shrink-0">
+        <button
+          onClick={handleLogout}
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-all w-full",
+            sidebarCollapsed && "justify-center px-2"
+          )}
+          title={sidebarCollapsed ? "Sign Out" : undefined}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {!sidebarCollapsed && <span>Sign Out</span>}
+        </button>
+      </div>
 
       {/* Collapse toggle */}
       <Button
