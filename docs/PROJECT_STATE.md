@@ -1,250 +1,286 @@
 # Tanweer — Project State Document
-> Living document. Updated after each major development cycle.
-> A new agent should read this file + `docs/DEMO_CREDENTIALS.md` to understand the full system without re-auditing the codebase.
+
+> Living document. A new agent should read this + `docs/DEMO_CREDENTIALS.md` + `docs/AGENT_HANDOFF.md` to understand the full system.
+> Last updated: June 19, 2026
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript (strict) |
-| UI | Shadcn UI + Radix UI + Tailwind CSS |
-| State | Zustand (`useDataStore`, `useAuthStore`, `useRoleStore`, `useUIStore`, `usePinStore`) |
-| Server State | TanStack React Query (wired, no real API yet) |
-| Forms | React Hook Form + Zod |
-| Icons | Lucide React |
-| Theme | next-themes (dark/light ready) |
-| Data | 100% mock data — no backend connected |
-| Port | 5000 (`npm run dev`) |
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| Framework | Next.js 15 (App Router) | `src/app/` — layouts + pages |
+| Language | TypeScript | Strict mode |
+| UI | Shadcn UI + Radix UI + Tailwind CSS | Components in `src/components/ui/` |
+| Global State | Zustand | 5 stores in `src/store/` |
+| Server State | TanStack React Query | Wired but no real API yet |
+| Forms | React Hook Form + Zod | Used in modals/dialogs |
+| Icons | Lucide React | |
+| Theme | next-themes | Dark/light mode ready |
+| Data | Mock only | No backend connected |
+| Dev Port | 5000 | `npm run dev` |
 
 ---
 
 ## Completed Features
 
-### Authentication & Roles
-- Login page with email + password (7 demo accounts)
-- OTP demo flow (UI-only, always accepts any 6 digits)
-- Role-based routing: each role lands on its own dashboard
-- Role switcher in sidebar (development convenience — shows all accessible roles for the active user)
-- Session-level PIN gate (`PinGate` component) protecting sensitive student fields
-  - 3-failure lockout, fires admin notification via `useDataStore.addNotification`
+### Authentication System
+- Login page (`/login`) with email + password — validates against `MOCK_CREDENTIALS` in `credentials.ts`
+- OTP demo flow — UI only, accepts any 6-digit code
+- Role-based routing — each account lands on its own dashboard route
+- Role switcher in sidebar — cycles through all roles accessible to the logged-in user
+- Logout clears auth and role state, redirects to `/login`
 
-### Global Layout
-- Sidebar with role-filtered navigation links
-- Topbar with school logo, global search (client-side), notification bell, dark-mode toggle, user menu
-- AI Assistant drawer (`AIDrawer`) — accessible from all pages via `useUIStore.toggleAiDrawer`
-- Breadcrumb navigation on all interior pages via `PageHeader` component
+### PIN Security System
+- Session-level `PinGate` component wraps sensitive tabs on Student 360 profile
+- 3-failure lockout → fires `addNotification` to admin via `useDataStore`
+- `usePinStore` manages attempt count, locked state, and per-role PIN validation
+- PIN verified against `getPinForRole(appRole)` — sourced from `credentials.ts`
+
+### Permission Engine (`src/lib/permissions.ts`)
+- Single source of truth for all role-based data filtering
+- Functions: `filterStudentsForRole`, `filterTeachersForRole`, `filterParentsForRole`, `filterAttendanceForRole`, `filterFeesForRole`, `filterThreadsForRole`, `filterAnnouncementsForRole`, `filterMeetingsForRole`, `filterTasksForRole`, `filterNotificationsForRole`, `filterAdmissionLeadsForRole`
+- `ROLE_PERMISSIONS` matrix — 11 boolean flags per role
+- `VP_GRADE_RANGES`: vp1=[1,4], vp2=[5,8], vp3=[9,12]
 
 ### Admin Role (`/admin`)
-- Dashboard: 8 live KPI cards (student count now reads from `useDataStore.students.length`)
-- School health score banner with trend indicators
-- At-risk student list (merged from mock admin data + live population filter)
-- Activity timeline feed
-- Fee collection trend chart (Recharts)
+- 8 KPI cards — "Total Students" now reads `students.length` from `useDataStore` (live, not hardcoded)
+- School health score banner (87/100) with trend badge
+- At-risk student list — merged from mock admin data + live population (`performanceTier === "at-risk"`)
+- Activity timeline feed (20 items, expandable to 50)
+- Fee collection trend chart (Recharts area chart)
 - Student demographic breakdown chart
-- Expandable modals for full at-risk list and full activity timeline
-- Alert/notification panel with severity badges
+- Expandable modals for full at-risk list and full timeline
 
-### VP Role (`/vp`) — Three VP accounts, grade-scoped
+### VP Role (`/vp`) — 3 accounts, grade-scoped
 - VP dashboard: grade-scoped KPI cards, attendance charts, class performance overview
-- Timetable management (`/vp/timetable`): full CRUD — add, edit, delete periods; persisted to `useDataStore.timetableEntries`; filtered by VP's grade range
-- Teacher leave approvals (`/vp/leave`): approve/reject/request-info workflow with status badges
+- Timetable management (`/vp/timetable`): full CRUD (add, edit, delete); **persisted to `useDataStore.timetableEntries`**; filtered by VP's grade range via `VP_GRADE_RANGES`; 22 seed entries across grades 1, 5, 9, 10, 12
+- Teacher leave approvals (`/vp/leave`): approve / reject / request-info workflow
 
 ### Teacher Role (`/teacher`)
-- Teacher dashboard: today's schedule card, upcoming homework, quick stats
-- My Classes (`/teacher/classes`): live roster from `useDataStore.students` filtered to Grade 10-A; attendance status from `useDataStore.attendanceRecords`
-- Attendance (`/teacher/attendance`): section-scoped attendance with status editing
-- Homework (`/teacher/homework`): create/view homework assignments
+- Teacher dashboard: today's schedule, upcoming homework, quick stats
+- My Classes (`/teacher/classes`): roster from **live `useDataStore.students`** filtered by `filterStudentsForRole("teacher")` (Grade 10-A); attendance status from **live `useDataStore.attendanceRecords`**
+- Section attendance (`/teacher/attendance`): attendance management for assigned section
+- Homework management (`/teacher/homework`): create and view assignments
 - Leave requests (`/teacher/leave`): submit, track, cancel leave requests
-- Performance (`/teacher/performance`): grade entry interface
+- Grade entry (`/teacher/performance`): marks entry interface
 
 ### Parent Role (`/parent`)
 - Parent dashboard: child info card, attendance summary donuts, recent activity
-- Attendance (`/parent/attendance`): child's attendance log
-- Marks (`/parent/marks`): subject-by-subject grade breakdown
-- Timetable (`/parent/timetable`): read-only view of child's class schedule
+- Child attendance log (`/parent/attendance`)
+- Subject-by-subject grade breakdown (`/parent/marks`)
+- Read-only timetable (`/parent/timetable`)
 
 ### Student Role (`/student-view`)
 - Student dashboard: homework summary, exam countdown, attendance donuts
-- Marks, Homework, Projects, Timetable sub-pages
+- Sub-pages: `/student-view/marks`, `/student-view/homework`, `/student-view/projects`, `/student-view/timetable`, `/student-view/attendance`, `/student-view/exams`
 
-### Shared Modules (multi-role access)
-- **Students** (`/students`): searchable, filterable list; add student modal; role-scoped via `filterStudentsForRole`
-- **Student 360** (`/students/[id]`): tabbed profile — Overview, Academic, Attendance, Finance, Notes, Communications; sensitive sections behind PIN gate
-- **Directory** (`/directory`): Students / Teachers / Parents tabs
-- **Attendance** (`/attendance`): full role-scoped attendance management; bulk mark + per-record edit; persisted to `useDataStore.attendanceRecords`
-- **Admissions** (`/admissions`): Kanban lead pipeline with 5 stages; add/move leads
-- **Academics** (`/academics`): subjects list, class counts, timetable overview
-- **Fees** (`/fees`): invoice list, payment status badges, collection summary
-- **AI Insights** (`/ai-insights`): predictive risk alerts, trend charts, "Take Action" stubs
-- **Announcements** (`/announcements`): create/view school-wide announcements; role-based audience targeting
-- **Messages** (`/messages`): threaded chat UI; compose/reply; file attach stub
-- **Tasks** (`/tasks`): personal task manager with priority and due-date tracking
+### Shared Modules
+- **Students** (`/students`): searchable/filterable list with add-student modal; role-scoped
+- **Student 360** (`/students/[id]`): tabbed profile — Overview, Academic, Attendance, Finance, Notes, Communications; Finance/Notes behind `PinGate`
+- **Directory** (`/directory/students`, `/directory/teachers`, `/directory/parents`)
+- **Attendance** (`/attendance`): role-scoped records from `useDataStore.attendanceRecords`; per-record edit and bulk-mark; **persisted to store**
+- **Admissions** (`/admissions`): Kanban pipeline with 5 stages; add/move leads
+- **Academics** (`/academics`): subjects list, class counts
+- **Fees** (`/fees`): invoice list, payment status, collection summary
+- **AI Insights** (`/ai-insights`): risk alerts, trend charts, recommended actions
+- **Announcements** (`/announcements`): create/view; role-based audience targeting
+- **Messages** (`/messages`): threaded chat; compose/reply
+- **Tasks** (`/tasks`): personal task manager
 - **Meetings** (`/meetings`): meeting scheduler with attendee selection
-- **Notifications** (`/notifications`): notification center with read/unread state
-- **Transport** (`/transport`, `/transport/vehicles`, `/transport/routes`, `/transport/reports`): read-only fleet and route management
-- **Settings** (`/settings`): school info, notification preferences, security (UI stubs — not persisted)
+- **Notifications** (`/notifications`): notification centre with read/unread state
+- **Transport** (`/transport`, `/transport/vehicles`, `/transport/routes`, `/transport/reports`): fleet and route management
+- **Settings** (`/settings`): school info, notification prefs, security
 - **Audit Log** (`/audit`): admin-only security event log
+- **Demo Guide** (`/admin/demo-guide`): in-app walkthrough page
+- **System Health** (`/system-health`): dev-only architecture validator
 
-### Architecture & DX
-- `useDataStore` — single Zustand store; all mutations emit structured `AppEvent` to `eventLog`
-- `src/lib/permissions.ts` — all role-based data filtering centralised here; never inline
-- `src/lib/systemHealth.ts` + `/system-health` — dev-only architecture validator page
-- `src/lib/architectureRules.ts` + `devGuard.ts` + `StartupValidator.tsx` — runtime architecture enforcement
+### Data Store (`useDataStore`)
+- Single Zustand store — students (600), attendance records (600), timetable entries (22 seed), threads, announcements, meetings, tasks, notifications, admission leads, assignments, transport records, vehicles, transport requests, leave requests
+- Every mutation emits a structured `AppEvent` to `eventLog` (capped at 100)
+- Event types include: student CRUD, attendance updates, timetable CRUD, thread/announcement/meeting/task CRUD, leave request actions, transport request actions
 
 ---
 
 ## Partial / Stub Features
 
-| Feature | Status | Detail |
-|---------|--------|--------|
-| AI Insights "Take Action" | Stub | Buttons show toast; no workflow triggered |
-| File Attachments (Messages, Announcements) | Stub | Shows "Not available in demo mode" toast |
-| Settings persistence | Stub | Changes show success toast but reset on page refresh |
-| Settings — Change Password | Stub | UI only, no auth mutation |
-| Settings — Enable 2FA | Stub | UI only |
-| OTP verification | Stub | Accepts any 6-digit code |
-| Transport GPS tracking | Stub | Map card is a placeholder; no live location |
-| Fees — payment processing | Stub | No payment gateway wired |
+| Feature | Location | Behaviour |
+|---------|----------|-----------|
+| AI Insights "Take Action" buttons | `/ai-insights` | Shows success toast; no store mutation |
+| File attachments | `/messages`, `/announcements` | "Not available in demo mode" toast |
+| Settings persistence | `/settings` | Values reset on page refresh |
+| Change Password | `/settings` | UI only — no auth mutation |
+| Enable 2FA | `/settings` | UI only |
+| OTP verification | `/login` | Accepts any 6-digit code |
+| Transport GPS map | `/transport` | Placeholder card — no live location |
+| Fees payment processing | `/fees` | No payment gateway wired |
+| AI Insights risk count | `/ai-insights` | Static strings, not derived from live population |
 
 ---
 
 ## Known Issues
 
-> From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026). Severity: C = Critical, H = High, M = Medium, L = Low.
+From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026):
 
-| ID | Severity | Role | Description | Status |
-|----|----------|------|-------------|--------|
-| AD-01 | ~~Critical~~ | Admin | `totalStudents` KPI was hardcoded 600 | **FIXED** — now reads `students.length` |
-| VP-01 | ~~High~~ | VP | Timetable edits not persisted to store | **FIXED** — wired to `useDataStore.timetableEntries` |
-| AT-01 | ~~High~~ | All | Attendance edits reset on navigation | **FIXED** — wired to `useDataStore.attendanceRecords` |
-| TC-01 | ~~High~~ | Teacher | Class roster hardcoded, not from population | **FIXED** — reads live `useDataStore.students` |
-| AD-04 | Medium | Admin | Settings page values not persisted | Open |
-| PA-01 | Medium | Parent | Attendance log has hardcoded 2024 dates | Open |
-| AI-01 | Medium | Admin | AI Insights risk count doesn't match at-risk population | Open |
-| AI-02 | Medium | Admin | AI Insights KPIs are static strings | Open |
-| P-01 | Medium | Teacher | `filterParentsForRole` returns whole grade, not section | Open |
-| AD-02 | Medium | Admin | Fee collection rate is a static mock string | Open |
-| ST-01 | Low | Student | `/ai-insights` briefly flashes admin page before redirect | Open |
-| VP-02 | Low | VP | VP dashboard attendance chart uses static data | Open |
-| TC-02 | Low | Teacher | Homework list in teacher dashboard is static | Open |
+| ID | Severity | Description | Status |
+|----|----------|-------------|--------|
+| AD-01 | Critical | `totalStudents` KPI hardcoded 600, not dynamic | **FIXED** — reads `students.length` |
+| VP-01 | High | Timetable edits not persisted across navigation | **FIXED** — wired to `useDataStore.timetableEntries` |
+| AT-01 | High | Attendance edits reset on navigation | **FIXED** — wired to `useDataStore.attendanceRecords` |
+| TC-01 | High | Teacher class roster was hardcoded stubs | **FIXED** — reads live `useDataStore.students` |
+| AD-04 | Medium | Settings page values not persisted | Open |
+| PA-01 | Medium | Parent attendance log has hardcoded 2024 dates | Open |
+| AI-01 | Medium | AI Insights risk count doesn't match live at-risk population | Open |
+| AI-02 | Medium | AI Insights KPIs are static strings | Open |
+| P-01 | Medium | `filterParentsForRole("teacher")` returns whole grade, not section | Open |
+| AD-02 | Medium | Fee collection rate is a static mock string | Open |
+| ST-01 | Low | `/ai-insights` briefly flashes admin page before redirect for student role | Open |
+| VP-02 | Low | VP dashboard attendance chart uses static data | Open |
+| TC-02 | Low | Homework list on teacher dashboard is static | Open |
 
 ---
 
 ## Pending Work
 
-- Connect real PostgreSQL + NestJS backend (architecture is designed for this)
-- Replace all `useState` stubs in Settings with `useDataStore` persistence
-- Replace parent attendance hardcoded dates with dynamic population data
-- Fix scope leak in `filterParentsForRole` for teacher role
+- Connect real PostgreSQL + NestJS backend (architecture already designed for this)
+- Replace `useState` stubs in Settings with `useDataStore` persistence
+- Fix parent attendance hardcoded 2024 dates to use `generateAttendanceRecords` dates
+- Fix `filterParentsForRole("teacher")` to filter by section, not just grade (P-01)
+- Wire AI Insights stats to live population data
 - Add real file upload to Messages and Announcements
-- Wire AI Insights "Take Action" buttons to real store mutations
+- Wire AI Insights "Take Action" buttons to store mutations
 - Add transport GPS map (replace placeholder)
-- Implement real payment processing in Fees module
+- Implement real payment processing in Fees
 - Multi-tenancy: tenant switching, school-level config isolation
+- Real backend: PostgreSQL (planned schema exists), NestJS API layer
 
 ---
 
 ## Demo Checklist
 
-Use this to verify the demo is working before a presentation:
-
-- [ ] Login as `admin@school.edu` / `Admin123!` — lands on `/admin`
-- [ ] Admin KPI "Total Students" shows dynamic count (same number as Students list)
-- [ ] Navigate to `/students` — student list loads with 600+ entries and search works
-- [ ] Open any student profile → sensitive tabs (Finance, Notes) require PIN `1234`
+- [ ] Login `admin@school.edu` / `Admin123!` → lands on `/admin`
+- [ ] Admin "Total Students" KPI matches count in `/students` list
+- [ ] Open any student → Finance tab requires PIN `1234`
+- [ ] 3 wrong PINs → lockout toast; admin notification appears
 - [ ] Switch role to VP1 → `/vp` dashboard shows only Grades 1–4 data
-- [ ] Go to `/vp/timetable` → add a period, navigate away, return — entry persists
-- [ ] Login as `teacher@school.edu` / `Teacher123!` → `/teacher`
-- [ ] Go to `/teacher/classes` → roster shows real student names (not stubs)
-- [ ] Go to `/attendance` → edit a student's status, navigate away, return — status persists
-- [ ] Bulk-mark all students "Present" → all rows update
-- [ ] Login as `parent@school.edu` / `Parent123!` → `/parent` shows Ahmed Al-Rashidi's data
-- [ ] Login as `student@school.edu` / `Student123!` → `/student-view` dashboard loads
+- [ ] `/vp/timetable` → add a period, navigate away, return → entry persists
+- [ ] `/attendance` → edit one student status → navigate away → status persists on return
+- [ ] Bulk-mark all students "Absent" → all rows update, counter reflects change
+- [ ] Login `teacher@school.edu` / `Teacher123!` → `/teacher/classes` shows real student names
+- [ ] Login `parent@school.edu` / `Parent123!` → `/parent` shows Ahmed Al-Rashidi's data
+- [ ] Login `student@school.edu` / `Student123!` → `/student-view` loads
 - [ ] Dark mode toggle works across all pages
-- [ ] AI Assistant drawer opens from any page (Sparkles button or sidebar)
-- [ ] `/system-health` loads with no architecture violations (dev only)
+- [ ] AI Assistant drawer opens from any page
+- [ ] `/system-health` shows no architecture violations
 
 ---
 
-## Important Routes Reference
+## Important Test Accounts
 
-| Route | Access | Description |
-|-------|--------|-------------|
+See `docs/DEMO_CREDENTIALS.md` for full credential details.
+
+| Purpose | Email | Role |
+|---------|-------|------|
+| Full admin access | `admin@school.edu` | admin |
+| PIN gate testing | `admin@school.edu` | admin — PIN: `1234` |
+| Grade-scoped view (low grades) | `vp1@school.edu` | vp1 — Grades 1–4 |
+| Grade-scoped view (high grades) | `vp3@school.edu` | vp3 — Grades 9–12 |
+| Teacher class roster | `teacher@school.edu` | teacher — Grade 10-A |
+| Parent child view | `parent@school.edu` | parent — child: STU-0451 |
+| Student self-view | `student@school.edu` | student — STU-0451 |
+
+---
+
+## Important Routes
+
+45 pages total (confirmed by `find src/app/(dashboard) -name "page.tsx"`):
+
+| Route | Roles | Description |
+|-------|-------|-------------|
 | `/login` | Public | Auth entry point |
-| `/admin` | Admin | Principal dashboard |
-| `/vp` | VP1/VP2/VP3 | Grade-scoped VP dashboard |
-| `/vp/timetable` | VP | Timetable CRUD |
-| `/vp/leave` | VP | Teacher leave approvals |
-| `/teacher` | Teacher | Teacher dashboard |
-| `/teacher/classes` | Teacher | Live class roster |
-| `/teacher/attendance` | Teacher | Section attendance |
-| `/teacher/homework` | Teacher | Homework management |
-| `/teacher/leave` | Teacher | Leave requests |
-| `/teacher/performance` | Teacher | Grade entry |
-| `/parent` | Parent | Parent dashboard |
-| `/parent/attendance` | Parent | Child attendance log |
-| `/parent/marks` | Parent | Child marks |
-| `/parent/timetable` | Parent | Child timetable |
-| `/student-view` | Student | Student dashboard |
-| `/students` | Admin/VP/Teacher | Student directory |
-| `/students/[id]` | Admin/VP/Teacher | Student 360 profile |
-| `/directory` | Admin/VP/Teacher | Staff + parent directory |
+| `/dashboard` | All | Generic landing (redirects by role) |
+| `/admin` | admin | Principal dashboard |
+| `/admin/demo-guide` | admin | In-app demo walkthrough |
+| `/vp` | vp1, vp2, vp3 | Grade-scoped VP dashboard |
+| `/vp/timetable` | vp1, vp2, vp3 | Timetable CRUD (persisted) |
+| `/vp/leave` | vp1, vp2, vp3 | Teacher leave approvals |
+| `/teacher` | teacher | Teacher dashboard |
+| `/teacher/classes` | teacher | Live class roster |
+| `/teacher/attendance` | teacher | Section attendance |
+| `/teacher/homework` | teacher | Homework management |
+| `/teacher/leave` | teacher | Leave requests |
+| `/teacher/performance` | teacher | Grade entry |
+| `/parent` | parent | Parent dashboard |
+| `/parent/attendance` | parent | Child attendance log |
+| `/parent/marks` | parent | Child marks |
+| `/parent/timetable` | parent | Child timetable |
+| `/student-view` | student | Student dashboard |
+| `/student-view/attendance` | student | Own attendance |
+| `/student-view/exams` | student | Exam schedule |
+| `/student-view/homework` | student | Homework list |
+| `/student-view/marks` | student | Own marks |
+| `/student-view/projects` | student | Projects |
+| `/student-view/timetable` | student | Own timetable |
+| `/students` | admin, vp*, teacher | Student directory |
+| `/students/[id]` | admin, vp*, teacher | Student 360 profile |
+| `/directory/students` | admin, vp*, teacher | Student directory tab |
+| `/directory/teachers` | admin, vp*, teacher | Teacher directory tab |
+| `/directory/parents` | admin, vp*, teacher | Parent directory tab |
 | `/attendance` | All (scoped) | Shared attendance management |
-| `/admissions` | Admin/VP | Lead pipeline |
-| `/academics` | Admin/VP/Teacher | Subjects + timetable |
-| `/fees` | Admin/VP | Fee invoices |
-| `/ai-insights` | Admin/VP | AI risk analytics |
+| `/admissions` | admin | Lead pipeline Kanban |
+| `/academics` | admin, vp*, teacher | Subjects + class counts |
+| `/fees` | admin, vp* | Fee invoices |
+| `/ai-insights` | admin, vp* | AI risk analytics |
 | `/announcements` | All | School announcements |
 | `/messages` | All | Threaded messaging |
-| `/tasks` | All | Personal task manager |
+| `/tasks` | admin, vp*, teacher | Task manager |
 | `/meetings` | All | Meeting scheduler |
 | `/notifications` | All | Notification centre |
-| `/transport` | Admin/VP | Fleet overview |
-| `/transport/vehicles` | Admin | Vehicle list |
-| `/transport/routes` | Admin | Route management |
-| `/transport/reports` | Admin | Transport reports |
-| `/settings` | Admin | School settings |
-| `/audit` | Admin | Security audit log |
+| `/transport` | admin, vp* | Fleet overview |
+| `/transport/vehicles` | admin | Vehicle list |
+| `/transport/routes` | admin | Route management |
+| `/transport/reports` | admin | Transport reports |
+| `/settings` | admin | School settings |
+| `/audit` | admin | Security audit log |
 | `/system-health` | Dev only | Architecture validator |
-| `/admin/demo-guide` | Admin | In-app demo guide |
 
 ---
 
-## Architecture Summary
+## Recent Major Changes
 
-```
-src/
-├── app/                     # Next.js App Router
-│   ├── (auth)/login/        # Public auth page
-│   └── (dashboard)/         # Protected layout + all role pages
-├── components/
-│   ├── ui/                  # Shadcn/Radix primitives
-│   └── common/              # Sidebar, Topbar, AIDrawer, PageHeader, etc.
-├── features/                # Feature-specific sub-components
-├── lib/
-│   ├── mockData/            # All seed data (credentials, population, transport, etc.)
-│   ├── permissions.ts       # SINGLE SOURCE for all role-based data filtering
-│   ├── systemHealth.ts      # Architecture validator (pure fn)
-│   └── utils.ts             # cn(), formatters
-├── store/                   # Zustand stores
-│   ├── useDataStore.ts      # Master store — students, attendance, timetable, events
-│   ├── useAuthStore.ts      # Session / user
-│   ├── useRoleStore.ts      # Active role for role-switcher
-│   ├── useUIStore.ts        # AI drawer, sidebar open state
-│   └── usePinStore.ts       # PIN gate + lockout
-└── types/                   # Global TypeScript types
-```
-
-**Key architectural rules (enforced by `architectureRules.ts` + `devGuard.ts`):**
-1. All role-based filtering goes through `src/lib/permissions.ts` — never ad-hoc inline.
-2. `useDataStore` is the single source of truth; every mutation emits an `AppEvent`.
-3. No component imports directly from another component's internal files.
+| Date | Change | Files |
+|------|--------|-------|
+| Jun 19, 2026 | Fix AD-01: Admin KPI "Total Students" now reads `students.length` | `admin/page.tsx` |
+| Jun 19, 2026 | Fix VP-01: VP timetable persisted to `useDataStore.timetableEntries` | `vp/timetable/page.tsx`, `useDataStore.ts` |
+| Jun 19, 2026 | Fix AT-01: Attendance edits persisted to `useDataStore.attendanceRecords` | `attendance/page.tsx`, `useDataStore.ts` |
+| Jun 19, 2026 | Fix TC-01: Teacher class roster uses live `useDataStore.students` | `teacher/classes/page.tsx` |
+| Jun 19, 2026 | Store additions: `TimetableEntry` type, 22 seed entries, `timetableEntries`/`attendanceRecords` state, 5 new actions | `useDataStore.ts` |
+| Jun 19, 2026 | QA Audit completed: 22 routes × 7 roles, 1 critical + 3 high + 10 medium + 17 low issues | `plan/QA_AUDIT_REPORT.md` |
 
 ---
 
-## Last Updated
+## Current Architecture Summary
 
-June 19, 2026 — After QA Audit Phase; fixes AD-01, VP-01, AT-01, TC-01 applied and verified.
+### Auth System
+Login via `useAuthStore.login()` → `findCredential(email, password)` in `credentials.ts` → sets `user`, `appRole`, redirects to `targetRoute`. No real server — purely client-side mock.
+
+### OTP Flow
+After login, a simulated OTP screen appears. Accepts any 6-digit code. No real SMS/email sending.
+
+### PIN System
+`usePinStore` exposes `verifyPin(role, input)` → compares against `getPinForRole(appRole)` from `credentials.ts`. The `PinGate` component wraps sensitive content. 3 failures → `isLocked = true`, admin notification via `useDataStore.addNotification`.
+
+### Permission Engine
+All data filtering runs through `src/lib/permissions.ts`. Pages call `filterXForRole(data, activeRole)`. Direct access to raw mock arrays without filtering is an architecture violation (checked by `devGuard.ts`).
+
+### Zustand Store (`useDataStore`)
+Single store with full CRUD for: students, timetableEntries, attendanceRecords, threads, announcements, meetings, tasks, notifications, admissionLeads, assignments, transportRecords, vehicles, transportRequests, leaveRequests. Every mutation appends to `eventLog[]` (capped at 100).
+
+### Event Log
+`AppEvent = { id, type, actor, timestamp, payload }`. Types include 20+ event categories. All mutations use `makeEvent()` helper inside `useDataStore.ts`. Viewable at `/audit` (admin only).
+
+### Transport Module
+Read-only mock. `BUS_ROUTES` array (6 routes) + `VEHICLE_EXTRAS` (6 vehicles) combined into `initialVehicles` in `transport.ts`. Transport request CRUD is in the store (`transportRequests`). No GPS integration.
+
+### AI Modules
+`/ai-insights` is a visual demo — risk scores, trend charts, and alerts are static strings from `src/lib/mockData/admin.ts`. "Take Action" buttons show toast confirmations only. No ML model connected.

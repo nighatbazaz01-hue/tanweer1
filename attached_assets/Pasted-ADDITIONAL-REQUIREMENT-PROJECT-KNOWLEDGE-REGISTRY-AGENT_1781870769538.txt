@@ -1,0 +1,236 @@
+ADDITIONAL REQUIREMENT — PROJECT KNOWLEDGE REGISTRY & AGENT HANDOFF
+
+Before making ANY further code changes, create and populate the following documentation files from the ACTUAL current codebase.
+
+IMPORTANT
+
+Do not invent values.
+
+Read the source code and verify every credential, route, role, PIN, seeded user, transport record, and demo account before documenting it.
+
+These files will become the permanent project knowledge base and must be kept updated whenever related code changes.
+
+---
+
+## FILE 1
+
+Create:
+
+docs/DEMO_CREDENTIALS.md
+
+Purpose:
+
+Single source of truth for all demo accounts.
+
+Include:
+
+# Login Accounts
+
+For every available login account:
+
+* Role
+* Name
+* Email
+* Password
+* Default Route
+
+Include:
+
+* Admin
+* VP1
+* VP2
+* VP3
+* Teacher
+* Parent
+* Student
+* Transport Manager
+* Transport Admin
+* Any seeded users found in the codebase
+
+---
+
+# PIN Accounts
+
+Show:
+
+Role
+PIN
+
+Admin
+VP1
+VP2
+VP3
+
+---
+
+# Demo Student
+
+Show:
+
+Student ID
+Name
+Grade
+Section
+
+---
+
+# Demo Parent
+
+Show:
+
+Parent Name
+Linked Student
+
+---
+
+# Demo Teacher
+
+Show:
+
+Teacher Name
+Assigned Classes
+
+---
+
+# Transport Demo Data
+
+Show:
+
+Routes
+Vehicles
+Drivers
+
+---
+
+# Last Updated
+
+Timestamp
+
+RULES
+
+1. Credentials must NEVER appear on the login page.
+2. Credentials must NEVER appear on OTP screens.
+3. Credentials must NEVER appear anywhere in production UI.
+4. This file is development/demo documentation only.
+5. Whenever credentials are changed in code, this file must be updated.
+
+---
+
+## FILE 2
+
+Create:
+
+docs/PROJECT_STATE.md
+
+Purpose:
+
+Project status snapshot.
+
+Include:
+
+# Completed Features
+
+# Partial Features
+
+# Known Issues
+
+# Pending Work
+
+# Demo Checklist
+
+# Important Test Accounts
+
+# Important Routes
+
+# Recent Major Changes
+
+# Current Architecture Summary
+
+Summarize:
+
+* Auth system
+* OTP flow
+* PIN system
+* Permission engine
+* Zustand store
+* Event log
+* Transport module
+* AI modules
+
+---
+
+## FILE 3
+
+Create:
+
+docs/AGENT_HANDOFF.md
+
+Purpose:
+
+Allow a brand-new Replit agent to continue development instantly after credit exhaustion.
+
+Include:
+
+# Project Overview
+
+# Tech Stack
+
+# Folder Structure
+
+# Auth Architecture
+
+# Permission Architecture
+
+# Store Architecture
+
+# Event System
+
+# Dashboard Architecture
+
+# Transport Architecture
+
+# AI Architecture
+
+# Completed Audits
+
+# Known Bugs
+
+# Workflow Gaps
+
+# High Priority Fixes
+
+# Recommended Next Development Order
+
+# Important Files
+
+List key files and explain their purpose.
+
+---
+
+## VALIDATION REQUIRED
+
+After creating all 3 files:
+
+1. Verify every credential against source code.
+2. Verify every PIN against source code.
+3. Verify every documented route exists.
+4. Verify every documented role exists.
+5. Verify every transport route documented exists.
+6. Verify every demo account documented exists.
+
+OUTPUT
+
+Provide:
+
+1. Files created
+2. Verification results
+3. Missing documentation discovered
+4. Any mismatches found between code and documentation
+
+Do not add new features.
+
+Do not refactor.
+
+Do not redesign.
+
+Only create and validate project documentation from the current system state.
