@@ -8,7 +8,7 @@ export const teacherProfile = {
 };
 
 export const todaysClasses = [
-  { id: 1, time: "07:30", subject: "Mathematics", grade: "Grade 10-A", room: "Room 204", students: 32, status: "completed", topic: "Quadratic Equations" },
+  { id: 1, time: "07:30", subject: "Mathematics", grade: "Grade 10-A", room: "Room 204", students: 8, status: "completed", topic: "Quadratic Equations" },
   { id: 2, time: "09:15", subject: "Mathematics", grade: "Grade 10-B", room: "Room 204", students: 30, status: "ongoing", topic: "Quadratic Equations" },
   { id: 3, time: "11:00", subject: "Advanced Math", grade: "Grade 11-A", room: "Room 301", students: 28, status: "upcoming", topic: "Calculus Introduction" },
   { id: 4, time: "13:30", subject: "Math Club", grade: "Mixed", room: "Room 102", students: 15, status: "upcoming", topic: "Competition Prep" },
@@ -26,10 +26,10 @@ export const classAttendanceToday = [
 ];
 
 export const homeworkAssignments = [
-  { id: 1, title: "Ch. 5 Exercises: Quadratic Equations", grade: "Grade 10-A", dueDate: "Jun 15", submitted: 28, total: 32, status: "active" },
+  { id: 1, title: "Ch. 5 Exercises: Quadratic Equations", grade: "Grade 10-A", dueDate: "Jun 15", submitted: 7, total: 8, status: "active" },
   { id: 2, title: "Practice Problems: Quadratic Equations", grade: "Grade 10-B", dueDate: "Jun 15", submitted: 22, total: 30, status: "active" },
   { id: 3, title: "Mid-Term Revision Sheet", grade: "Grade 11-A", dueDate: "Jun 18", submitted: 25, total: 28, status: "active" },
-  { id: 4, title: "Problem Set 4: Trigonometry", grade: "Grade 10-A", dueDate: "Jun 10", submitted: 32, total: 32, status: "completed" },
+  { id: 4, title: "Problem Set 4: Trigonometry", grade: "Grade 10-A", dueDate: "Jun 10", submitted: 8, total: 8, status: "completed" },
 ];
 
 export const studentPerformance = [

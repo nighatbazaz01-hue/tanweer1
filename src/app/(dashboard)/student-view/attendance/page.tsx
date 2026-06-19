@@ -11,21 +11,21 @@ import { childAttendanceTrend } from "@/lib/mockData/parent";
 import { cn } from "@/lib/utils";
 
 const attendanceLog = [
-  { date: "Jun 13, 2024", day: "Thursday", status: "present" },
-  { date: "Jun 12, 2024", day: "Wednesday", status: "present" },
-  { date: "Jun 11, 2024", day: "Tuesday", status: "present" },
-  { date: "Jun 10, 2024", day: "Monday", status: "late" },
-  { date: "Jun 9, 2024", day: "Sunday", status: "present" },
-  { date: "Jun 6, 2024", day: "Thursday", status: "present" },
-  { date: "Jun 5, 2024", day: "Wednesday", status: "present" },
-  { date: "Jun 4, 2024", day: "Tuesday", status: "absent" },
-  { date: "Jun 3, 2024", day: "Monday", status: "present" },
-  { date: "Jun 2, 2024", day: "Sunday", status: "present" },
-  { date: "May 30, 2024", day: "Thursday", status: "present" },
-  { date: "May 29, 2024", day: "Wednesday", status: "absent" },
-  { date: "May 28, 2024", day: "Tuesday", status: "present" },
-  { date: "May 27, 2024", day: "Monday", status: "present" },
-  { date: "May 26, 2024", day: "Sunday", status: "present" },
+  { date: "Jun 19, 2026", day: "Friday", status: "present" },
+  { date: "Jun 18, 2026", day: "Thursday", status: "present" },
+  { date: "Jun 17, 2026", day: "Wednesday", status: "present" },
+  { date: "Jun 16, 2026", day: "Tuesday", status: "late" },
+  { date: "Jun 15, 2026", day: "Monday", status: "present" },
+  { date: "Jun 12, 2026", day: "Friday", status: "present" },
+  { date: "Jun 11, 2026", day: "Thursday", status: "present" },
+  { date: "Jun 10, 2026", day: "Wednesday", status: "absent" },
+  { date: "Jun 9, 2026", day: "Tuesday", status: "present" },
+  { date: "Jun 8, 2026", day: "Monday", status: "present" },
+  { date: "Jun 5, 2026", day: "Friday", status: "present" },
+  { date: "Jun 4, 2026", day: "Thursday", status: "absent" },
+  { date: "Jun 3, 2026", day: "Wednesday", status: "present" },
+  { date: "Jun 2, 2026", day: "Tuesday", status: "present" },
+  { date: "Jun 1, 2026", day: "Monday", status: "present" },
 ];
 
 const statusConfig: Record<string, { label: string; icon: React.ElementType; cls: string; dot: string }> = {

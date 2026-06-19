@@ -2,8 +2,10 @@
 import {
   Clock, CheckCircle, XCircle, BookOpen, AlertTriangle,
   TrendingUp, Sparkles, ChevronRight, X, Check, Mail, GraduationCap,
+  ClipboardList, Users,
 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +84,7 @@ export default function TeacherDashboard() {
     if (!hwTitle.trim()) return;
     const title = hwTitle.trim();
     const points = parseInt(hwPoints) || 20;
-    addAssignment(title, "Grade 10-A", hwDue || "TBD", points, 32, user?.name || teacherProfile.name);
+    addAssignment(title, "Grade 10-A", hwDue || "TBD", points, classAttendanceToday.length, user?.name || teacherProfile.name);
     setHwOpen(false);
     setHwTitle(""); setHwDue(""); setHwPoints("20");
     showToast(`"${title}" assigned to Grade 10-A`);
@@ -185,7 +187,7 @@ export default function TeacherDashboard() {
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs shrink-0 gap-1"
                     onClick={() => { setActiveClass(cls); setClassActionOpen(true); }}>
-                    {cls.status === "upcoming" ? "Start" : "View"} <ChevronRight className="h-3 w-3" />
+                    View Details <ChevronRight className="h-3 w-3" />
                   </Button>
                 </div>
               ))}
@@ -463,7 +465,7 @@ export default function TeacherDashboard() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-primary" />
-              {activeClass?.status === "upcoming" ? "Start Class" : "Class Details"}
+              Class Details
             </DialogTitle>
           </DialogHeader>
           {activeClass && (
@@ -481,25 +483,35 @@ export default function TeacherDashboard() {
                 </div>
                 <p className="text-xs font-medium text-foreground">Topic: {activeClass.topic}</p>
               </div>
-              {activeClass.status === "upcoming" && (
-                <p className="text-xs text-muted-foreground bg-blue-50 border border-blue-100 rounded-lg p-3">
-                  Starting this class will notify all students and begin the session timer.
-                </p>
-              )}
+              <div className="grid grid-cols-1 gap-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Actions</p>
+                <Link href="/teacher/attendance" onClick={() => setClassActionOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full justify-start gap-2 text-xs">
+                    <ClipboardList className="h-4 w-4 text-blue-500" /> Take Attendance
+                  </Button>
+                </Link>
+                <Link href="/teacher/homework" onClick={() => setClassActionOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full justify-start gap-2 text-xs">
+                    <BookOpen className="h-4 w-4 text-amber-500" /> Assign Homework
+                  </Button>
+                </Link>
+                <Link href="/teacher/performance" onClick={() => setClassActionOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full justify-start gap-2 text-xs">
+                    <TrendingUp className="h-4 w-4 text-emerald-500" /> View Performance
+                  </Button>
+                </Link>
+                <Link href="/students" onClick={() => setClassActionOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full justify-start gap-2 text-xs">
+                    <Users className="h-4 w-4 text-purple-500" /> View Student Roster
+                  </Button>
+                </Link>
+              </div>
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setClassActionOpen(false)}>
               <X className="h-4 w-4 mr-1" /> Close
             </Button>
-            {activeClass?.status === "upcoming" && (
-              <Button onClick={() => {
-                setClassActionOpen(false);
-                showToast(`Class started — ${activeClass.subject} · ${activeClass.room}`);
-              }} className="gap-1">
-                <Check className="h-4 w-4" /> Start Class
-              </Button>
-            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

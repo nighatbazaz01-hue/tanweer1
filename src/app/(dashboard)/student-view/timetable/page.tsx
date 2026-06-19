@@ -116,7 +116,7 @@ export default function TimetablePage() {
       <PageHeader
         title="My Timetable"
         description="Grade 10-A weekly class schedule"
-        breadcrumbs={[{ label: "Home" }, { label: "Timetable" }]}
+        breadcrumbs={[{ label: "Dashboard", href: "/student-view" }, { label: "Timetable" }]}
       />
 
       {/* Day selector */}

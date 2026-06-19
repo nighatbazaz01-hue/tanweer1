@@ -4,6 +4,7 @@ import {
   Award, Calendar, Sparkles, TrendingUp, TrendingDown,
   Clock, Flame, ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -205,8 +206,9 @@ export default function StudentDashboard() {
                   </p>
                 </div>
                 {hw.status !== "submitted" && (
-                  <Button variant="outline" size="sm" className="text-xs h-7 shrink-0"
-                    onClick={() => toggleAiDrawer()}>Start</Button>
+                  <Link href="/student-view/homework">
+                    <Button variant="outline" size="sm" className="text-xs h-7 shrink-0">View</Button>
+                  </Link>
                 )}
               </div>
             ))}

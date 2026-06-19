@@ -1,0 +1,251 @@
+NEXT PRIORITY AUDIT — COMPLETE USER JOURNEY & CLICK-PATH VALIDATION
+
+Do NOT add new features.
+
+Do NOT add AI analytics improvements.
+
+Do NOT add dashboards.
+
+Do NOT redesign UI.
+
+Perform a complete workflow audit across every role.
+
+Goal:
+
+A user should never encounter:
+
+* a button that does nothing
+* a view button that opens nothing
+* a start button that makes no sense
+* a page that redirects unexpectedly
+* inconsistent record counts
+* a workflow that cannot be completed
+
+---
+
+## PHASE 1 — CLICK TEST
+
+Traverse every role:
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+For each role:
+
+1. Open every sidebar item
+2. Open every tab
+3. Open every card
+4. Click every button
+5. Click every action menu
+6. Click every View button
+7. Click every Edit button
+8. Click every Start button
+9. Click every Create button
+10. Click every Details button
+
+Produce a report:
+
+WORKING
+BROKEN
+PLACEHOLDER
+REDUNDANT
+MISLEADING
+
+---
+
+## PHASE 2 — TEACHER AUDIT
+
+Specifically verify:
+
+Teacher Dashboard
+
+Today's Classes
+
+Current issue:
+
+Classes are physical.
+
+A "Start Class" button makes no sense.
+
+Audit every action.
+
+Determine:
+
+Should action be:
+
+* View Class
+* Take Attendance
+* Open Homework
+* Open Performance
+* Open Class Details
+
+If Start Class is not meaningful:
+
+Remove it.
+
+---
+
+## PHASE 3 — TEACHER DATA CONSISTENCY
+
+Verify:
+
+Teacher Dashboard
+
+My Classes
+
+My Students
+
+Attendance
+
+Homework
+
+Performance
+
+All must reference the same teacher assignment.
+
+Current expectation:
+
+Teacher = Class Teacher of Grade 10-A
+
+Verify:
+
+Student counts match everywhere.
+
+Class counts match everywhere.
+
+Attendance counts match everywhere.
+
+No page should show:
+
+10A = 13 students
+
+while another page shows:
+
+10A = 8 students
+
+Produce exact mismatch report.
+
+Fix all mismatches.
+
+---
+
+## PHASE 4 — ROUTE VALIDATION
+
+Verify these routes actually exist:
+
+Teacher
+
+* Homework
+* Performance
+* My Classes
+* Attendance
+* Tasks
+* Leave
+
+Current issue reported:
+
+Homework redirects to dashboard
+
+Performance redirects to dashboard
+
+My Classes redirects to dashboard
+
+Audit every teacher route.
+
+Fix broken routes.
+
+---
+
+## PHASE 5 — ROLE WORKFLOW COMPLETENESS
+
+Teacher
+
+Can:
+
+* Take attendance
+* Enter grades
+* Upload homework
+* View students
+* Request leave
+* View assigned tasks
+
+Verify all exist.
+
+If a menu item exists but workflow does not:
+
+Flag it.
+
+---
+
+VP
+
+Can:
+
+* Assign tasks to teachers
+* Approve leave
+* Manage timetable
+* View assigned grades
+
+Verify each workflow is complete.
+
+---
+
+Parent
+
+Can:
+
+* View attendance
+* View marks
+* View timetable
+* View transport
+
+Verify all use live store data.
+
+---
+
+Student
+
+Can:
+
+* View marks
+* View timetable
+* View homework
+
+Verify all use live store data.
+
+---
+
+## PHASE 6 — REPORT
+
+Output:
+
+CRITICAL ISSUES
+HIGH ISSUES
+MEDIUM ISSUES
+LOW ISSUES
+
+For every issue include:
+
+* location
+* root cause
+* impact
+* fix applied
+
+---
+
+## STOP CONDITION
+
+Do NOT build anything new.
+
+Do NOT improve AI.
+
+Do NOT improve analytics.
+
+Do NOT improve reports.
+
+Only stabilize existing workflows until every visible user journey works end-to-end.
