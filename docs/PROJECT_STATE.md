@@ -129,7 +129,7 @@ From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026):
 | AT-01 | High | Attendance edits reset on navigation | **FIXED** — wired to `useDataStore.attendanceRecords` |
 | TC-01 | High | Teacher class roster was hardcoded stubs | **FIXED** — reads live `useDataStore.students` |
 | AD-04 | Medium | Settings page values not persisted | Open |
-| PA-01 | Medium | Parent attendance log has hardcoded 2024 dates | Open |
+| PA-01 | Medium | Parent portal entirely disconnected from store | **FIXED** — attendance, timetable, fee KPI, today's schedule all live from store |
 | AI-01 | Medium | AI Insights risk count doesn't match live at-risk population | Open |
 | AI-02 | Medium | AI Insights KPIs are static strings | Open |
 | P-01 | Medium | `filterParentsForRole("teacher")` returned whole grade, not section | **FIXED** — added `&& childSection === DEMO_TEACHER_SECTION` |
