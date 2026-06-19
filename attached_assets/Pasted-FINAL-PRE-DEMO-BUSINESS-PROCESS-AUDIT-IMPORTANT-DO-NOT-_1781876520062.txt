@@ -1,0 +1,236 @@
+FINAL PRE-DEMO BUSINESS PROCESS AUDIT
+
+IMPORTANT
+
+DO NOT ADD FEATURES.
+
+DO NOT REDESIGN UI.
+
+DO NOT REFACTOR.
+
+This is NOT a technical QA audit.
+
+This is a SCHOOL OPERATIONS AUDIT.
+
+The goal is to identify places where a school administrator, principal, VP, teacher, parent, or board member would ask:
+
+"How is this actually done in the system?"
+
+---
+
+PHASE 1 — ROLE RESPONSIBILITY AUDIT
+
+For each role:
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+Transport Admin
+Transport Manager
+
+List:
+
+What can they VIEW?
+What can they CREATE?
+What can they EDIT?
+What can they APPROVE?
+What can they DELETE?
+
+Identify gaps.
+
+Example:
+
+Teacher can view attendance.
+Teacher can mark attendance.
+Teacher cannot create timetable.
+
+Good.
+
+Example:
+
+Teacher sees Homework page.
+Teacher cannot upload homework.
+
+Gap.
+
+---
+
+PHASE 2 — WORKFLOW COMPLETENESS AUDIT
+
+Verify these real-world workflows:
+
+STUDENT LIFE CYCLE
+
+Admission
+Enrollment
+Class Assignment
+Attendance
+Homework
+Grades
+Promotion
+
+Can every step actually be performed?
+
+---
+
+ACADEMIC LIFE CYCLE
+
+VP creates timetable
+
+Teacher sees timetable
+
+Teacher teaches class
+
+Teacher marks attendance
+
+Teacher uploads homework
+
+Student views homework
+
+Teacher enters grades
+
+Parent sees grades
+
+Student sees grades
+
+Can every step actually be performed?
+
+---
+
+STAFF MANAGEMENT
+
+Teacher leave request
+
+VP approval
+
+Teacher notification
+
+Can the workflow fully complete?
+
+---
+
+TRANSPORT
+
+Route creation
+
+Vehicle assignment
+
+Student assignment
+
+Parent transport request
+
+Approval
+
+Reporting
+
+Can every step actually be performed?
+
+---
+
+PHASE 3 — EMPTY PAGE AUDIT
+
+Identify pages that exist but feel empty.
+
+Examples:
+
+No create button.
+
+No edit button.
+
+No save path.
+
+No workflow.
+
+No meaningful action.
+
+List:
+
+Page
+Purpose
+Missing capability
+
+---
+
+PHASE 4 — BOARD DEMO AUDIT
+
+Assume a board member asks:
+
+"Show me how a teacher assigns homework."
+
+Can it be demonstrated?
+
+YES / NO
+
+"Show me how attendance reaches parents."
+
+YES / NO
+
+"Show me how timetable changes reach students."
+
+YES / NO
+
+"Show me transport requests."
+
+YES / NO
+
+"Show me teacher leave approval."
+
+YES / NO
+
+Generate a list of demo-ready stories.
+
+---
+
+PHASE 5 — FUTURE PHASE GAP LIST
+
+Do NOT implement.
+
+Only document.
+
+List features that are expected in a real school but currently missing.
+
+Examples:
+
+Exam management
+
+Report cards
+
+Academic transcripts
+
+Fee payment gateway
+
+Library
+
+Inventory
+
+Hostel
+
+Discipline
+
+Medical records
+
+Certificate generation
+
+etc.
+
+---
+
+OUTPUT
+
+1. Fully Implemented Workflows
+2. Partially Implemented Workflows
+3. Missing Workflows
+4. Empty/Weak Pages
+5. Demo Risks
+6. Board Questions You Cannot Yet Answer
+7. Recommended Next Development Phase
+
+Do NOT write code.
+
+Do NOT add features.
+
+Only produce the audit report.
