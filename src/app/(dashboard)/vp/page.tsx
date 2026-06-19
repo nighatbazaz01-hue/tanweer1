@@ -10,6 +10,7 @@ import { TrendArea, GroupedBar } from "@/components/charts";
 import { useRoleStore } from "@/store/useRoleStore";
 import { getVPProfile, getGradeGroupStats, getStudentsByGradeGroup, getTeachersByGradeGroup } from "@/lib/mockData/population";
 import { useUIStore } from "@/store/useUIStore";
+import { useDataStore } from "@/store/useDataStore";
 import { cn } from "@/lib/utils";
 
 function getStartGrade(role: string): 1 | 5 | 9 {
@@ -60,6 +61,7 @@ const upcomingMeetings = [
 export default function VPDashboard() {
   const { activeRole } = useRoleStore();
   const { toggleAiDrawer } = useUIStore();
+  const { schoolConfig } = useDataStore();
 
   const vpRole = (["vp1", "vp2", "vp3"].includes(activeRole) ? activeRole : "vp3") as "vp1" | "vp2" | "vp3";
   const startGrade = getStartGrade(vpRole);
@@ -125,7 +127,7 @@ export default function VPDashboard() {
     <div className="space-y-6">
       <PageHeader
         title={`VP Dashboard — ${profile.gradeGroupLabel}`}
-        description={`${profile.name} · Al-Noor Academy`}
+        description={`${profile.name} · ${schoolConfig.name}`}
         breadcrumbs={[{ label: "VP" }, { label: profile.gradeGroupLabel }]}
         actions={
           <Button onClick={toggleAiDrawer} size="sm" className="gap-2" style={{ background: accentColor }}>

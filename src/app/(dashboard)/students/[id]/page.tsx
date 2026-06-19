@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   User, BookOpen, ClipboardList, FileText, MessageSquare,
   DollarSign, Sparkles, Star, TrendingUp, TrendingDown,
@@ -7,9 +7,11 @@ import {
 } from "lucide-react";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useDataStore } from "@/store/useDataStore";
 import { PinGate } from "@/components/common/PinGate";
 import { getPinForRole } from "@/lib/mockData/credentials";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +49,21 @@ export default function Student360Page() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
   const correctPin = getPinForRole(activeRole as Parameters<typeof getPinForRole>[0]) ?? "";
+  const params = useParams();
+  const studentId = Array.isArray(params.id) ? params.id[0] : (params.id ?? "");
+  const { feeRecords } = useDataStore();
+
+  const feeSummary = useMemo(() => {
+    const recs = feeRecords.filter((r) => r.studentId === studentId);
+    if (recs.length > 0) {
+      const totalPaid   = recs.reduce((s, r) => s + r.paidAmount, 0);
+      const outstanding = Math.max(0, recs.reduce((s, r) => s + r.amount, 0) - totalPaid);
+      const unpaid      = recs.find((r) => r.status !== "paid");
+      return { totalPaid, outstanding, nextDue: unpaid?.dueDate ?? "Oct 30, 2026" };
+    }
+    const totalPaid = feeHistory.reduce((s, f) => s + f.amount, 0);
+    return { totalPaid, outstanding: 0, nextDue: "Oct 30, 2026" };
+  }, [feeRecords, studentId]);
 
   return (
     <div className="space-y-5">
@@ -467,9 +484,9 @@ export default function Student360Page() {
         <div className="space-y-5">
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "Total Paid (Lifetime)", value: "SAR 58,000", color: "text-emerald-600", icon: CheckCircle },
-              { label: "Outstanding Balance", value: "SAR 0", color: "text-blue-600", icon: DollarSign },
-              { label: "Next Due", value: "Oct 30, 2024", color: "text-amber-600", icon: Award },
+              { label: "Total Paid (Lifetime)", value: `SAR ${feeSummary.totalPaid.toLocaleString()}`,      color: "text-emerald-600", icon: CheckCircle },
+              { label: "Outstanding Balance",   value: `SAR ${feeSummary.outstanding.toLocaleString()}`,    color: "text-blue-600",    icon: DollarSign  },
+              { label: "Next Due",              value: feeSummary.nextDue,                                  color: "text-amber-600",   icon: Award       },
             ].map((s) => (
               <Card key={s.label}>
                 <CardContent className="p-4 flex items-center gap-3">

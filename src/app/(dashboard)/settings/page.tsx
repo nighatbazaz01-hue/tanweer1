@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useDataStore } from "@/store/useDataStore";
 import { cn } from "@/lib/utils";
 
 const defaultPrefs = [
@@ -23,10 +24,11 @@ export default function SettingsPage() {
   const { logout } = useAuthStore();
   const { setRole } = useRoleStore();
 
-  const [schoolName, setSchoolName] = useState("Al-Noor Academy");
-  const [address, setAddress] = useState("123 Education District, Riyadh, Saudi Arabia");
-  const [email, setEmail] = useState("admin@alnoor.edu.sa");
-  const [phone, setPhone] = useState("+966 11 123 4567");
+  const { schoolConfig, updateSchoolConfig } = useDataStore();
+  const [schoolName, setSchoolName] = useState(schoolConfig.name);
+  const [address, setAddress]       = useState(schoolConfig.address);
+  const [email, setEmail]           = useState(schoolConfig.email);
+  const [phone, setPhone]           = useState(schoolConfig.phone);
   const [prefs, setPrefs] = useState(defaultPrefs);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -35,7 +37,10 @@ export default function SettingsPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleSave = () => showToast("School information saved successfully!");
+  const handleSave = () => {
+    updateSchoolConfig({ name: schoolName, address, email, phone });
+    showToast("School information saved successfully!");
+  };
 
   const handleToggle = (id: string) => {
     setPrefs((prev) => prev.map((p) => p.id === id ? { ...p, enabled: !p.enabled } : p));

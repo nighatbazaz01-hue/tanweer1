@@ -8,10 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TrendArea, DonutChart } from "@/components/charts";
-import { studentPerformance, gradeDistribution, classRiskStudents, classAttendanceToday } from "@/lib/mockData/teacher";
+import { studentPerformance, gradeDistribution, classRiskStudents } from "@/lib/mockData/teacher";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useDataStore } from "@/store/useDataStore";
-import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME } from "@/lib/permissions";
+import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME, filterStudentsForRole } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const gradeColor  = (s: number) => s >= 90 ? "text-emerald-600" : s >= 80 ? "text-blue-600" : s >= 70 ? "text-amber-600" : "text-red-600";
@@ -21,22 +21,16 @@ const SUBJECTS = ["Mathematics", "English", "Physics", "Chemistry", "Arabic", "C
 
 const DEMO_TEACHER_SUBJECT = "Mathematics";
 
-const initialGrades = classAttendanceToday.map((s, i) => ({
-  ...s,
-  score: [82, 87, 45, 78, 91, 63, 71, 88, 76, 84, 55, 79][i] ?? 75,
-}));
-
-// Map classAttendanceToday student name → real store studentId
-function resolveStudentId(name: string, fallbackId: string): string {
-  if (name === DEMO_CHILD_NAME) return DEMO_CHILD_ID;
-  return `CLASS-${fallbackId}`;
-}
+const DEFAULT_SCORES = [82, 87, 45, 78, 91, 63, 71, 88, 76, 84, 55, 79, 73];
 
 export default function TeacherPerformancePage() {
-  const { gradeRecords, bulkSetGradeRecords } = useDataStore();
+  const { gradeRecords, bulkSetGradeRecords, students: allStudents } = useDataStore();
+  const classStudents = useMemo(() => filterStudentsForRole(allStudents, "teacher"), [allStudents]);
   const [gradeOpen, setGradeOpen] = useState(false);
   const [subject, setSubject]     = useState(DEMO_TEACHER_SUBJECT);
-  const [grades, setGrades]       = useState(initialGrades);
+  const [grades, setGrades]       = useState<{ id: string; name: string; score: number }[]>(
+    () => classStudents.map((s, i) => ({ id: s.id, name: s.name, score: DEFAULT_SCORES[i] ?? 75 }))
+  );
   const [toast, setToast]         = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
@@ -51,7 +45,7 @@ export default function TeacherPerformancePage() {
     bulkSetGradeRecords(
       subject,
       grades.map((g) => ({
-        studentId:   resolveStudentId(g.name, g.id),
+        studentId:   g.id,
         studentName: g.name,
         marks:       g.score,
       })),
@@ -158,8 +152,7 @@ export default function TeacherPerformancePage() {
         <CardContent>
           <div className="space-y-2">
             {grades.map((s) => {
-              const realId = resolveStudentId(s.name, s.id);
-              const storeMark = gradeRecords.find((r) => r.studentId === realId && r.subject === subject);
+              const storeMark = gradeRecords.find((r) => r.studentId === s.id && r.subject === subject);
               const displayScore = storeMark?.marks ?? s.score;
               return (
                 <div key={s.id} className={cn(

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Megaphone, Pin, Clock, Paperclip, Plus,
   Eye, Search, Calendar, Tag, AlertCircle,
@@ -45,7 +45,8 @@ const cats: (AnnouncementCategory | "all")[] = ["all", "urgent", "academic", "ev
 export default function AnnouncementsPage() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
-  const { announcements, addAnnouncement } = useDataStore();
+  const { announcements, addAnnouncement, students } = useDataStore();
+  const totalAudience = useMemo(() => students.length * 2, [students]);
 
   const roleAnnouncements = filterAnnouncementsForRole(announcements, activeRole);
 
@@ -79,7 +80,7 @@ export default function AnnouncementsPage() {
       audience: form.audience as any,
       isPinned: form.isPinned,
       isScheduled: false,
-      totalAudience: 1247,
+      totalAudience,
       author: { name: user?.name || "Admin", role: activeRole, avatar: user?.name?.slice(0, 2).toUpperCase() || "AD" },
       tags: [form.category],
       attachments: [],
@@ -108,7 +109,7 @@ export default function AnnouncementsPage() {
           { label: "Published", value: roleAnnouncements.filter((a) => !a.isScheduled).length, color: "bg-blue-50 text-blue-700" },
           { label: "Pinned",    value: roleAnnouncements.filter((a) => a.isPinned).length,      color: "bg-amber-50 text-amber-700" },
           { label: "Scheduled", value: roleAnnouncements.filter((a) => a.isScheduled).length,   color: "bg-violet-50 text-violet-700" },
-          { label: "Total Reach", value: "1,247",                                                color: "bg-emerald-50 text-emerald-700" },
+          { label: "Total Reach", value: totalAudience.toLocaleString(),                          color: "bg-emerald-50 text-emerald-700" },
         ].map((s) => (
           <Card key={s.label} className={s.color}>
             <CardContent className="p-4">

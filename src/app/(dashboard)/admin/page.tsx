@@ -46,7 +46,7 @@ const alertSeverity: Record<string, "destructive" | "warning" | "info" | "succes
 
 export default function AdminDashboard() {
   const { toggleAiDrawer } = useUIStore();
-  const { students, feeRecords, attendanceRecords } = useDataStore();
+  const { students, feeRecords, attendanceRecords, schoolConfig } = useDataStore();
   const feeCollectionRate = useMemo(() => {
     if (!feeRecords || feeRecords.length === 0) return adminStats.feeCollectionRate;
     const total = feeRecords.reduce((s, r) => s + r.amount, 0);
@@ -59,6 +59,33 @@ export default function AdminDashboard() {
     const present = attendanceRecords.filter((r) => r.status === "present").length;
     return Math.round((present / attendanceRecords.length) * 100);
   }, [attendanceRecords]);
+
+  const liveTeacherRate  = adminStats.teacherAttendanceRate;
+  const liveParentSat    = useMemo(() => {
+    const avg = parentSatisfactionData.reduce((s, d) => s + d.score, 0) / parentSatisfactionData.length;
+    return avg.toFixed(1);
+  }, []);
+  const feeCollectedDisplay = useMemo(() => {
+    const paid = feeRecords.reduce((s, r) => s + r.paidAmount, 0);
+    if (paid === 0) return "—";
+    const m = paid / 1_000_000;
+    return m >= 1 ? `SAR ${m.toFixed(2)}M` : `SAR ${Math.round(paid / 1000).toLocaleString()}K`;
+  }, [feeRecords]);
+  const liveGradeDistribution = useMemo(() => {
+    const colors = ["#34d399", "#60a5fa", "#a78bfa", "#f59e0b"];
+    const ranges = [
+      { label: "Grade 1-3",   min: 1,  max: 3  },
+      { label: "Grade 4-6",   min: 4,  max: 6  },
+      { label: "Grade 7-9",   min: 7,  max: 9  },
+      { label: "Grade 10-12", min: 10, max: 12 },
+    ];
+    return ranges.map((r, i) => ({
+      grade:    r.label,
+      students: students.filter((s) => { const g = parseInt(String(s.grade)); return g >= r.min && g <= r.max; }).length,
+      color:    colors[i],
+    }));
+  }, [students]);
+
   const activityFeed = getActivityTimeline(20);
   const feeChartData = feeCollectionTrend.map((d) => ({
     ...d,
@@ -93,10 +120,10 @@ export default function AdminDashboard() {
   const kpiCards = [
     { title: "School Health Score", value: `${adminStats.schoolHealthScore}/100`, sub: "Overall platform score", icon: Heart, color: "bg-violet-500", trend: { v: 3, up: true } },
     { title: "Total Students", value: students.length.toLocaleString(), sub: "Active enrollments", icon: Users, color: "bg-blue-500", trend: { v: 5.2, up: true } },
-    { title: "Fee Collection", value: `${feeCollectionRate}%`, sub: "SAR 1.87M collected", icon: DollarSign, color: "bg-emerald-500", trend: { v: 2.1, up: false } },
+    { title: "Fee Collection", value: `${feeCollectionRate}%`, sub: `${feeCollectedDisplay} collected`, icon: DollarSign, color: "bg-emerald-500", trend: { v: 2.1, up: false } },
     { title: "Attendance Rate", value: `${liveAttendanceRate}%`, sub: "School-wide today", icon: UserCheck, color: "bg-amber-500", trend: { v: 1.3, up: true } },
     { title: "Teacher Attendance", value: `${adminStats.teacherAttendanceRate}%`, sub: `${adminStats.totalTeachers} total teachers`, icon: GraduationCap, color: "bg-sky-500", trend: { v: 0.5, up: true } },
-    { title: "Parent Satisfaction", value: `${adminStats.parentSatisfaction}/5`, sub: "Avg rating this month", icon: Heart, color: "bg-pink-500", trend: { v: 0.2, up: true } },
+    { title: "Parent Satisfaction", value: `${liveParentSat}/5`, sub: "Avg rating this month", icon: Heart, color: "bg-pink-500", trend: { v: 0.2, up: true } },
     { title: "New Admissions", value: adminStats.newLeadsThisMonth, sub: `${adminStats.enrolledThisMonth} enrolled`, icon: TrendingUp, color: "bg-indigo-500", trend: { v: 12, up: true } },
     { title: "At-Risk Students", value: extendedAtRiskList.length, sub: "Needs intervention", icon: AlertTriangle, color: "bg-red-500", trend: { v: 4, up: false } },
   ];
@@ -108,7 +135,7 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <PageHeader
         title="Principal Dashboard"
-        description="Al-Noor Academy — Real-time school operations overview"
+        description={`${schoolConfig.name} — Real-time school operations overview`}
         breadcrumbs={[{ label: "Admin" }, { label: "Dashboard" }]}
         actions={
           <Button onClick={toggleAiDrawer} size="sm" className="gap-2 bg-violet-600 hover:bg-violet-700">
@@ -134,10 +161,10 @@ export default function AdminDashboard() {
           </div>
           <div className="hidden md:grid grid-cols-2 gap-3 text-center">
             {[
-              { label: "Attendance", val: "94.3%", ok: true },
-              { label: "Fees", val: "87.5%", ok: false },
-              { label: "Teachers", val: "97.1%", ok: true },
-              { label: "Satisfaction", val: "4.3/5", ok: true },
+              { label: "Attendance",   val: `${liveAttendanceRate}%`,       ok: liveAttendanceRate >= 90            },
+              { label: "Fees",         val: `${feeCollectionRate}%`,         ok: feeCollectionRate >= 85             },
+              { label: "Teachers",     val: `${liveTeacherRate}%`,           ok: liveTeacherRate >= 90               },
+              { label: "Satisfaction", val: `${liveParentSat}/5`,            ok: parseFloat(liveParentSat) >= 4.0   },
             ].map((s) => (
               <div key={s.label} className="bg-white/10 rounded-lg px-4 py-2">
                 <p className="text-lg font-bold">{s.val}</p>
@@ -241,11 +268,11 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <DonutChart
-              data={gradeDistribution.map((d) => ({ name: d.grade, value: d.students, color: d.color }))}
+              data={liveGradeDistribution.map((d) => ({ name: d.grade, value: d.students, color: d.color }))}
               height={180}
             />
             <div className="mt-3 space-y-1.5">
-              {gradeDistribution.map((s, i) => (
+              {liveGradeDistribution.map((s, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />

@@ -190,6 +190,10 @@ interface DataStore {
   gradeRecords: GradeRecord[];
   feeRecords: PopulationFeeRecord[];
 
+  // ── School Configuration ──
+  schoolConfig: { name: string; address: string; email: string; phone: string };
+  updateSchoolConfig: (config: Partial<{ name: string; address: string; email: string; phone: string }>) => void;
+
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
 
@@ -362,6 +366,14 @@ export const useDataStore = create<DataStore>((set) => ({
     updatedAt:   "Jun 13, 2026",
   })),
   feeRecords:       generateFeeRecords(),
+  schoolConfig: {
+    name:    "Tanweer Academy",
+    address: "",
+    email:   "admin@school.edu",
+    phone:   "",
+  },
+  updateSchoolConfig: (config) =>
+    set((state) => ({ schoolConfig: { ...state.schoolConfig, ...config } })),
   eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────

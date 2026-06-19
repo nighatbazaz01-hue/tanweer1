@@ -192,7 +192,7 @@ export default function MessagesPage() {
               className="w-full text-sm bg-muted/30 rounded-xl p-4 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <div className="flex items-center justify-between pt-2 border-t">
-              <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => showToast("File attachment is not available in demo mode")}>
+              <Button variant="outline" size="sm" className="gap-2 text-xs">
                 <Paperclip className="h-3.5 w-3.5" /> Attach File
               </Button>
               <div className="flex gap-2">
@@ -292,7 +292,7 @@ export default function MessagesPage() {
                   <div className="mt-3 flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-100 w-fit">
                     <Paperclip className="h-4 w-4 text-blue-600" />
                     <span className="text-xs font-medium text-blue-700">{msg.attachmentName}</span>
-                    <Button variant="ghost" size="sm" className="text-xs h-6 text-blue-600" onClick={() => showToast("File download is not available in demo mode")}>Download</Button>
+                    <Button variant="ghost" size="sm" className="text-xs h-6 text-blue-600">Download</Button>
                   </div>
                 )}
 
@@ -327,7 +327,7 @@ export default function MessagesPage() {
               className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30 mb-3"
             />
             <div className="flex justify-between items-center">
-              <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => showToast("File attachment is not available in demo mode")}>
+              <Button variant="outline" size="sm" className="gap-2 text-xs">
                 <Paperclip className="h-3.5 w-3.5" /> Attach
               </Button>
               <Button size="sm" className="gap-2" onClick={handleSendReply} disabled={!replyBody.trim()}>

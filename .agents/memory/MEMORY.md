@@ -10,3 +10,4 @@
 - [Fee Records Store](fee-records-store.md) — feeRecords slice in useDataStore seeded from generateFeeRecords(); recordFeePayment action mutates store; fees/page.tsx reads storeRecords; admin KPI computed live from store
 - [Assignments Store Seeding](assignments-seeding.md) — assignments slice seeded with 4 initial ASN-001–ASN-004 records (totals = 13 for 10-A entries); teacher/page.tsx homework widget reads from store so new assignments appear immediately
 - [Grade 10-A Student Count](grade10a-count.md) — 13 students (STU-0451–STU-0463); teacher pages now derive roster from filterStudentsForRole; todaysClasses[0].students fixed to 13; grade entry dialog uses classStudents with real IDs
+- [School Config Store](school-config-store.md) — schoolConfig slice in useDataStore (name/address/email/phone); defaults to "Tanweer Academy"; updateSchoolConfig action; settings page reads/writes store; admin + VP page headers use schoolConfig.name
