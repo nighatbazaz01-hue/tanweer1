@@ -463,6 +463,7 @@ export default function Student360Page() {
 
       {/* ── FEES ── */}
       {activeTab === "fees" && (
+        <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Fee History">
         <div className="space-y-5">
           <div className="grid grid-cols-3 gap-4">
             {[
@@ -502,6 +503,7 @@ export default function Student360Page() {
             </CardContent>
           </Card>
         </div>
+        </PinGate>
       )}
 
       {/* ── AI SUMMARY ── */}

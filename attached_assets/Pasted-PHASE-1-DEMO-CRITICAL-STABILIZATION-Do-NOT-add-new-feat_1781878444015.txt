@@ -1,0 +1,170 @@
+PHASE 1 – DEMO CRITICAL STABILIZATION
+
+Do NOT add new features.
+
+Do NOT redesign UI.
+
+Do NOT create placeholders.
+
+Focus only on fixing the following production-breaking issues.
+
+==================================================
+CRIT-01
+Student 360 Fee History Security
+================================
+
+Route:
+students/[id]
+
+Problem:
+Fee History tab is fully visible without PIN verification.
+
+Requirement:
+
+* Apply PinGate to the entire Fee History tab.
+* Same protection level as sensitive profile data.
+* Teachers without PIN access must see restricted message.
+* Admin and VP roles must authenticate via PIN.
+* Log all successful and failed PIN access attempts.
+
+==================================================
+HIGH-01
+Fee Payments Not Persisted
+==========================
+
+Route:
+fees
+
+Problem:
+Payments are stored in local component state.
+
+Requirement:
+
+* Move all fee payment mutations into useDataStore.
+* Add proper store actions.
+* Persist payments across navigation.
+* Dashboard fee KPIs must read from live fee records.
+* Refreshing page must not lose payment history.
+
+==================================================
+HIGH-02
+Meeting Attendee Selection
+==========================
+
+Route:
+meetings
+
+Problem:
+New meetings are created with attendees: []
+
+Requirement:
+
+* Add attendee selector.
+
+* Allow selecting:
+
+  * Teachers
+  * Admin
+  * VP users
+
+* Store selected attendees.
+
+* Meeting detail view must show attendees.
+
+* RSVP progress must calculate correctly.
+
+==================================================
+HIGH-03
+Teacher Attendance IDs
+======================
+
+Route:
+teacher/attendance
+
+Problem:
+Teacher mock roster uses STU-001 style IDs.
+Store uses STU-0001 style IDs.
+
+Requirement:
+
+* Eliminate fake IDs.
+* Teacher roster must come from real store students.
+* Every attendance action must update valid attendanceRecords.
+* Admin, VP, Parent and Student views must all reflect changes.
+
+==================================================
+HIGH-04
+Teacher Dashboard Homework
+==========================
+
+Route:
+teacher
+
+Problem:
+Dashboard homework widget uses static homeworkAssignments.
+
+Requirement:
+
+* Replace static data with useDataStore assignments.
+* Newly created homework must appear immediately.
+* Counts must stay synchronized.
+
+==================================================
+HIGH-05
+Student Count Consistency
+=========================
+
+Problem:
+Teacher sees 12 students.
+Population contains 13.
+
+Requirement:
+
+* Single source of truth.
+* Teacher dashboard.
+* Teacher attendance.
+* Teacher classes.
+* Student counts.
+
+Must all match exactly.
+
+==================================================
+VALIDATION
+==========
+
+After fixes:
+
+Run exhaustive verification.
+
+Test:
+
+Teacher attendance ->
+Admin attendance
+
+Teacher attendance ->
+Parent attendance
+
+Teacher attendance ->
+Student attendance
+
+Teacher homework ->
+Student homework
+
+Fee payment ->
+Dashboard KPI
+
+Meeting creation ->
+Attendee list ->
+RSVP calculation
+
+Verify every count matches.
+
+Output:
+
+1. Files changed
+2. Root cause
+3. Fix applied
+4. Validation evidence
+5. Remaining issues
+
+Do not claim success unless verified.

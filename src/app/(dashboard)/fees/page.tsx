@@ -11,8 +11,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
-import { generateFeeRecords, type PopulationFeeRecord, type FeeStatus } from "@/lib/mockData/population";
+import { type PopulationFeeRecord, type FeeStatus } from "@/lib/mockData/population";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useDataStore } from "@/store/useDataStore";
 import { filterFeesForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,8 @@ const PAGE_SIZE = 30;
 
 export default function FeesPage() {
   const { activeRole } = useRoleStore();
-  const baseRecords = useMemo(() => filterFeesForRole(generateFeeRecords(), activeRole), [activeRole]);
+  const { feeRecords: storeRecords, recordFeePayment } = useDataStore();
+  const baseRecords = useMemo(() => filterFeesForRole(storeRecords, activeRole), [storeRecords, activeRole]);
   const [records, setRecords] = useState<PopulationFeeRecord[]>(baseRecords);
   useEffect(() => { setRecords(baseRecords); setPage(1); }, [baseRecords]);
   const [search, setSearch] = useState("");
@@ -64,12 +66,7 @@ export default function FeesPage() {
     if (!selected) return;
     const amt = parseFloat(payAmount);
     if (isNaN(amt) || amt <= 0) return;
-    setRecords((prev) => prev.map((r) => {
-      if (r.id !== selected.id) return r;
-      const newPaid = Math.min(r.amount, r.paidAmount + amt);
-      const newStatus: FeeStatus = newPaid >= r.amount ? "paid" : newPaid > 0 ? "partial" : r.status;
-      return { ...r, paidAmount: newPaid, status: newStatus };
-    }));
+    recordFeePayment(selected.id, amt, "Admin");
     setSelected(null);
     setPayAmount("");
     setPaying(false);

@@ -55,6 +55,15 @@ const statusStyle: Record<string, string> = {
 
 const ROOMS = ["Main Conference Room", "Board Room", "Hall A", "Room 201", "Room 305", "Online — Zoom", "Library Meeting Room"];
 
+const STAFF_ROSTER = [
+  { name: "Dr. Sarah Al-Hamdan",  role: "Math Teacher",      avatar: "SA" },
+  { name: "Mr. Khalid Al-Mutairi", role: "Physics Teacher",  avatar: "KM" },
+  { name: "Ms. Reem Al-Harbi",    role: "English Teacher",   avatar: "RH" },
+  { name: "Dr. Layla Al-Anazi",   role: "Arabic Teacher",    avatar: "LA" },
+  { name: "Mr. Faris Al-Shammari", role: "Chemistry Teacher", avatar: "FS" },
+  { name: "Mr. Hassan Al-Shehri", role: "CS Teacher",        avatar: "HS" },
+];
+
 export default function MeetingsPage() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
@@ -70,6 +79,7 @@ export default function MeetingsPage() {
     room: ROOMS[0], description: "", type: "staff" as Meeting["type"],
   });
   const [myRSVP, setMyRSVP] = useState<Record<string, RSVPStatus>>({});
+  const [formAttendees, setFormAttendees] = useState<string[]>([]);
 
   const filtered = roleMeetings.filter((m) => {
     if (viewFilter === "upcoming") return ["upcoming", "ongoing"].includes(m.status);
@@ -95,6 +105,13 @@ export default function MeetingsPage() {
   const handleSchedule = () => {
     if (!form.title.trim() || !form.date.trim()) return;
     const myName = user?.name || "Admin";
+    const myAttendee = { name: myName, role: activeRole, avatar: myName.slice(0, 2).toUpperCase(), rsvp: "accepted" as RSVPStatus };
+    const extraAttendees = formAttendees
+      .map((n) => {
+        const s = STAFF_ROSTER.find((sr) => sr.name === n);
+        return s ? { name: s.name, role: s.role, avatar: s.avatar, rsvp: "pending" as RSVPStatus } : null;
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
     addMeeting({
       title: form.title,
       date: form.date,
@@ -105,12 +122,13 @@ export default function MeetingsPage() {
       type: form.type,
       status: "upcoming",
       organizer: { name: myName, role: activeRole, avatar: myName.slice(0, 2).toUpperCase() },
-      attendees: [{ name: myName, role: activeRole, avatar: myName.slice(0, 2).toUpperCase(), rsvp: "accepted" }],
+      attendees: [myAttendee, ...extraAttendees],
       agenda: [form.description || "Meeting agenda to be confirmed"],
       isRecurring: false,
       attachments: [],
     });
     setScheduling(false);
+    setFormAttendees([]);
     setForm({ title: "", date: "", time: "09:00 AM", endTime: "10:00 AM", room: ROOMS[0], description: "", type: "staff" });
   };
 
@@ -412,6 +430,32 @@ export default function MeetingsPage() {
                 rows={3}
                 className="w-full text-sm bg-muted/30 rounded-xl p-3 resize-none border border-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                Invite Staff {formAttendees.length > 0 && <span className="text-primary">({formAttendees.length} selected)</span>}
+              </label>
+              <div className="space-y-1 max-h-36 overflow-y-auto border rounded-lg p-2 bg-muted/20">
+                {STAFF_ROSTER.map((s) => (
+                  <label key={s.name} className="flex items-center gap-2.5 cursor-pointer px-2 py-1.5 rounded hover:bg-muted/60 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={formAttendees.includes(s.name)}
+                      onChange={(e) => setFormAttendees((prev) =>
+                        e.target.checked ? [...prev, s.name] : prev.filter((n) => n !== s.name)
+                      )}
+                      className="h-3.5 w-3.5 rounded accent-primary"
+                    />
+                    <Avatar className="h-6 w-6 shrink-0">
+                      <AvatarFallback className="text-[10px] bg-blue-100 text-blue-700">{s.avatar}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{s.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{s.role}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
           <DialogFooter>

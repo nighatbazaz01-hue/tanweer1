@@ -8,7 +8,7 @@ export const teacherProfile = {
 };
 
 export const todaysClasses = [
-  { id: 1, time: "07:30", subject: "Mathematics", grade: "Grade 10-A", room: "Room 204", students: 12, status: "completed", topic: "Quadratic Equations" },
+  { id: 1, time: "07:30", subject: "Mathematics", grade: "Grade 10-A", room: "Room 204", students: 13, status: "completed", topic: "Quadratic Equations" },
   { id: 2, time: "09:15", subject: "Mathematics", grade: "Grade 10-B", room: "Room 204", students: 30, status: "ongoing", topic: "Quadratic Equations" },
   { id: 3, time: "11:00", subject: "Advanced Math", grade: "Grade 11-A", room: "Room 301", students: 28, status: "upcoming", topic: "Calculus Introduction" },
   { id: 4, time: "13:30", subject: "Math Club", grade: "Mixed", room: "Room 102", students: 15, status: "upcoming", topic: "Competition Prep" },

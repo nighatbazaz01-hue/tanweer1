@@ -4,7 +4,7 @@ import {
   TrendingUp, Sparkles, ChevronRight, X, Check, Mail, GraduationCap,
   ClipboardList, Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,10 +17,10 @@ import { useUIStore } from "@/store/useUIStore";
 import { useDataStore } from "@/store/useDataStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
-  teacherProfile, todaysClasses, classAttendanceToday, homeworkAssignments,
+  teacherProfile, todaysClasses,
   studentPerformance, gradeDistribution, classRiskStudents,
 } from "@/lib/mockData/teacher";
-import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME } from "@/lib/permissions";
+import { filterStudentsForRole, DEMO_TEACHER_NAME } from "@/lib/permissions";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -40,13 +40,17 @@ const attendanceStatusStyle: Record<string, { label: string; color: string; icon
 
 export default function TeacherDashboard() {
   const { toggleAiDrawer } = useUIStore();
-  const { saveAttendance, addAssignment, createThread, bulkSetGradeRecords } = useDataStore();
+  const { saveAttendance, addAssignment, createThread, bulkSetGradeRecords, students: allStudents, assignments, attendanceRecords: allAttendance } = useDataStore();
   const { user } = useAuthStore();
 
-  const presentCount  = classAttendanceToday.filter((s) => s.status === "present").length;
-  const absentCount   = classAttendanceToday.filter((s) => s.status === "absent").length;
-  const lateCount     = classAttendanceToday.filter((s) => s.status === "late").length;
-  const attendanceRate = Math.round((presentCount / classAttendanceToday.length) * 100);
+  const classStudents = useMemo(() => filterStudentsForRole(allStudents, "teacher"), [allStudents]);
+  const classStudentIds = useMemo(() => new Set(classStudents.map((s) => s.id)), [classStudents]);
+  const classAttendance = useMemo(() => allAttendance.filter((r) => classStudentIds.has(r.studentId)), [allAttendance, classStudentIds]);
+
+  const presentCount   = classAttendance.filter((r) => r.status === "present").length;
+  const absentCount    = classAttendance.filter((r) => r.status === "absent").length;
+  const lateCount      = classAttendance.filter((r) => r.status === "late").length;
+  const attendanceRate = classStudents.length > 0 ? Math.round((presentCount / classStudents.length) * 100) : 0;
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [classActionOpen, setClassActionOpen] = useState(false);
@@ -65,9 +69,9 @@ export default function TeacherDashboard() {
   const getLetterGrade = (mark: number) =>
     mark >= 90 ? "A+" : mark >= 85 ? "A" : mark >= 80 ? "B+" : mark >= 75 ? "B" : mark >= 70 ? "C+" : mark >= 65 ? "C" : mark >= 60 ? "D" : "F";
   const handleSaveGrades = () => {
-    const filledEntries = classAttendanceToday
+    const filledEntries = classStudents
       .map((s) => ({
-        studentId:   s.name === DEMO_CHILD_NAME ? DEMO_CHILD_ID : `CLASS-${s.id}`,
+        studentId:   s.id,
         studentName: s.name,
         marks:       parseInt(gradeMarks[s.id] || "0", 10),
       }))
@@ -300,7 +304,10 @@ export default function TeacherDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {homeworkAssignments.map((hw) => {
+            {assignments.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-4">No assignments yet. Create one above.</p>
+            )}
+            {assignments.map((hw) => {
               const pct = Math.round((hw.submitted / hw.total) * 100);
               return (
                 <div key={hw.id} className="space-y-1.5">
@@ -437,7 +444,7 @@ export default function TeacherDashboard() {
               Enter marks out of 100. Letter grade calculated automatically.
             </div>
             <div className="space-y-2">
-              {classAttendanceToday.map((s) => {
+              {classStudents.map((s) => {
                 const mark = parseInt(gradeMarks[s.id] ?? "");
                 const letter = !isNaN(mark) && mark >= 0 && mark <= 100 ? getLetterGrade(mark) : null;
                 const markColor = !letter ? "" : mark >= 80 ? "text-emerald-600" : mark >= 60 ? "text-amber-600" : "text-red-600";

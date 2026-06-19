@@ -15,8 +15,9 @@ import { allNotifications, type Notification } from "@/lib/mockData/notification
 import { initialLeaveRequests, type LeaveRequest, type LeaveStatus } from "@/lib/mockData/leaves";
 import { mockAdmissionLeads } from "@/lib/mockData";
 import {
-  getAllStudents, generateAttendanceRecords,
+  getAllStudents, generateAttendanceRecords, generateFeeRecords,
   type Student, type PopulationAttendanceRecord, type AttendanceStatus,
+  type PopulationFeeRecord, type FeeStatus,
 } from "@/lib/mockData/population";
 import { subjectMarks as SEED_SUBJECT_MARKS } from "@/lib/mockData/student";
 import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME } from "@/lib/permissions";
@@ -63,7 +64,8 @@ export type AppEventType =
   | "leaveSubmitted"
   | "leaveApproved"
   | "leaveRejected"
-  | "gradesUpdated";
+  | "gradesUpdated"
+  | "feePaymentRecorded";
 
 export interface AppEvent {
   id: string;
@@ -186,6 +188,7 @@ interface DataStore {
   timetableEntries: TimetableEntry[];
   attendanceRecords: PopulationAttendanceRecord[];
   gradeRecords: GradeRecord[];
+  feeRecords: PopulationFeeRecord[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
@@ -321,6 +324,9 @@ interface DataStore {
     teacher: string,
     actor: string
   ) => void;
+
+  // ── Fee Actions ──
+  recordFeePayment: (recordId: string, amount: number, actor: string) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
@@ -332,7 +338,12 @@ export const useDataStore = create<DataStore>((set) => ({
   tasks:            JSON.parse(JSON.stringify(initialTasks)),
   notifications:    JSON.parse(JSON.stringify(allNotifications)),
   admissionLeads:   JSON.parse(JSON.stringify(mockAdmissionLeads)),
-  assignments:      [],
+  assignments: [
+    { id: "ASN-001", title: "Ch. 5 Exercises: Quadratic Equations", subject: "Mathematics", grade: "Grade 10-A", dueDate: "Jun 15, 2026", points: 20, submitted: 10, total: 13, status: "active" as const, createdAt: "Jun 1, 2026" },
+    { id: "ASN-002", title: "Practice Problems: Quadratic Equations", subject: "Mathematics", grade: "Grade 10-B", dueDate: "Jun 15, 2026", points: 20, submitted: 22, total: 30, status: "active" as const, createdAt: "Jun 1, 2026" },
+    { id: "ASN-003", title: "Mid-Term Revision Sheet",               subject: "Mathematics", grade: "Grade 11-A", dueDate: "Jun 18, 2026", points: 20, submitted: 25, total: 28, status: "active" as const, createdAt: "Jun 1, 2026" },
+    { id: "ASN-004", title: "Problem Set 4: Trigonometry",           subject: "Mathematics", grade: "Grade 10-A", dueDate: "Jun 10, 2026", points: 20, submitted: 13, total: 13, status: "completed" as const, createdAt: "May 28, 2026" },
+  ],
   transportRecords: generateTransportRecords(),
   vehicles:         JSON.parse(JSON.stringify(initialVehicles)),
   transportRequests: JSON.parse(JSON.stringify(initialTransportRequests)),
@@ -350,6 +361,7 @@ export const useDataStore = create<DataStore>((set) => ({
     teacher:     m.teacher,
     updatedAt:   "Jun 13, 2026",
   })),
+  feeRecords:       generateFeeRecords(),
   eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────
@@ -1073,6 +1085,23 @@ export const useDataStore = create<DataStore>((set) => ({
         ),
         notifications: [newNotif, ...state.notifications],
         eventLog:      [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Fee Actions ──────────────────────────────────────────────────────────
+
+  recordFeePayment: (recordId, amount, actor) =>
+    set((state) => {
+      const event = makeEvent("feePaymentRecorded", actor, { recordId, amount });
+      return {
+        feeRecords: state.feeRecords.map((r) => {
+          if (r.id !== recordId) return r;
+          const newPaid = Math.min(r.amount, r.paidAmount + amount);
+          const newStatus: FeeStatus =
+            newPaid >= r.amount ? "paid" : newPaid > 0 ? "partial" : r.status;
+          return { ...r, paidAmount: newPaid, status: newStatus };
+        }),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
       };
     }),
 }));
