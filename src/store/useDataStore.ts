@@ -18,6 +18,8 @@ import {
   getAllStudents, generateAttendanceRecords,
   type Student, type PopulationAttendanceRecord, type AttendanceStatus,
 } from "@/lib/mockData/population";
+import { subjectMarks as SEED_SUBJECT_MARKS } from "@/lib/mockData/student";
+import { DEMO_CHILD_ID, DEMO_CHILD_NAME, DEMO_TEACHER_NAME } from "@/lib/permissions";
 import {
   generateTransportRecords, type TransportRecord,
   initialVehicles, type VehicleRecord, type VehicleStatus, type VehicleType, type FuelType,
@@ -60,7 +62,8 @@ export type AppEventType =
   | "vehicleAssignedToRoute"
   | "leaveSubmitted"
   | "leaveApproved"
-  | "leaveRejected";
+  | "leaveRejected"
+  | "gradesUpdated";
 
 export interface AppEvent {
   id: string;
@@ -139,6 +142,19 @@ const DEFAULT_TIMETABLE_ENTRIES: TimetableEntry[] = [
   { id: "TE-022", day: "Sunday",    period: "P2", grade: "12", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
 ];
 
+// ─── Grade Record Type ────────────────────────────────────────────────────────
+export interface GradeRecord {
+  studentId:   string;
+  studentName: string;
+  subject:     string;
+  marks:       number;
+  total:       number;
+  grade:       string;
+  change:      number;
+  teacher:     string;
+  updatedAt:   string;
+}
+
 // ─── Assignment Type ──────────────────────────────────────────────────────────
 export interface Assignment {
   id: string;
@@ -168,6 +184,7 @@ interface DataStore {
   transportRequests: TransportRequest[];
   timetableEntries: TimetableEntry[];
   attendanceRecords: PopulationAttendanceRecord[];
+  gradeRecords: GradeRecord[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
@@ -291,6 +308,14 @@ interface DataStore {
   ) => void;
   approveTransportRequest: (id: string, reviewerName: string) => void;
   rejectTransportRequest: (id: string, reviewerName: string) => void;
+
+  // ── Grade Actions ──
+  bulkSetGradeRecords: (
+    subject: string,
+    studentGrades: Array<{ studentId: string; studentName: string; marks: number }>,
+    teacher: string,
+    actor: string
+  ) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
@@ -309,6 +334,17 @@ export const useDataStore = create<DataStore>((set) => ({
   leaveRequests:    JSON.parse(JSON.stringify(initialLeaveRequests)),
   timetableEntries: JSON.parse(JSON.stringify(DEFAULT_TIMETABLE_ENTRIES)),
   attendanceRecords: generateAttendanceRecords(),
+  gradeRecords: SEED_SUBJECT_MARKS.map((m) => ({
+    studentId:   DEMO_CHILD_ID,
+    studentName: DEMO_CHILD_NAME,
+    subject:     m.subject,
+    marks:       m.marks,
+    total:       m.total,
+    grade:       m.grade,
+    change:      m.change,
+    teacher:     m.teacher,
+    updatedAt:   "Jun 13, 2026",
+  })),
   eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────
@@ -944,6 +980,52 @@ export const useDataStore = create<DataStore>((set) => ({
           r.id === id ? { ...r, status: "rejected" as const, reviewedBy: reviewerName, reviewedAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) } : r
         ),
         notifications: [notif, ...state.notifications],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Transport Record Actions ───────────────────────────────────────────────
+
+  // ── Grade Actions ─────────────────────────────────────────────────────────
+
+  bulkSetGradeRecords: (subject, studentGrades, teacher, actor) =>
+    set((state) => {
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const updated: GradeRecord[] = studentGrades.map((sg) => {
+        const prev = state.gradeRecords.find(
+          (r) => r.studentId === sg.studentId && r.subject === subject
+        );
+        const prevMarks = prev?.marks ?? sg.marks;
+        const change    = sg.marks - prevMarks;
+        const score     = sg.marks;
+        const grade =
+          score >= 90 ? "A+" : score >= 85 ? "A" : score >= 80 ? "B+" :
+          score >= 75 ? "B"  : score >= 70 ? "C+" : score >= 65 ? "C" :
+          score >= 60 ? "D"  : "F";
+        return {
+          studentId:   sg.studentId,
+          studentName: sg.studentName,
+          subject,
+          marks:  sg.marks,
+          total:  100,
+          grade,
+          change,
+          teacher,
+          updatedAt: now,
+        };
+      });
+      const event = makeEvent("gradesUpdated", actor, {
+        subject,
+        count: updated.length,
+        teacher,
+      });
+      return {
+        gradeRecords: [
+          ...state.gradeRecords.filter(
+            (r) => !(updated.some((u) => u.studentId === r.studentId && u.subject === r.subject))
+          ),
+          ...updated,
+        ],
         eventLog: [event, ...state.eventLog].slice(0, 100),
       };
     }),

@@ -130,6 +130,7 @@ From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026):
 | TC-01 | High | Teacher class roster was hardcoded stubs | **FIXED** — reads live `useDataStore.students` |
 | AD-04 | Medium | Settings page values not persisted | Open |
 | PA-01 | Medium | Parent portal entirely disconnected from store | **FIXED** — attendance, timetable, fee KPI, today's schedule all live from store |
+| PA-MED-04 | Medium | `subjectMarks` static — no grades store existed | **FIXED** — `gradeRecords` slice added to store; teacher grade entry persists to store; parent & student marks overlay live scores with "live" badge |
 | AI-01 | Medium | AI Insights risk count doesn't match live at-risk population | Open |
 | AI-02 | Medium | AI Insights KPIs are static strings | Open |
 | P-01 | Medium | `filterParentsForRole("teacher")` returned whole grade, not section | **FIXED** — added `&& childSection === DEMO_TEACHER_SECTION` |
@@ -144,8 +145,7 @@ From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026):
 
 - Connect real PostgreSQL + NestJS backend (architecture already designed for this)
 - Replace `useState` stubs in Settings with `useDataStore` persistence
-- Fix parent attendance hardcoded 2024 dates to use `generateAttendanceRecords` dates
-- Fix `filterParentsForRole("teacher")` to filter by section, not just grade (P-01)
+- Fix `filterParentsForRole("teacher")` to filter by section, not just grade — **DONE**
 - Wire AI Insights stats to live population data
 - Add real file upload to Messages and Announcements
 - Wire AI Insights "Take Action" buttons to store mutations
