@@ -21,6 +21,7 @@ import {
   studentPerformance, gradeDistribution, classRiskStudents,
 } from "@/lib/mockData/teacher";
 import { filterStudentsForRole, DEMO_TEACHER_NAME } from "@/lib/permissions";
+
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -36,6 +37,7 @@ const attendanceStatusStyle: Record<string, { label: string; color: string; icon
   present: { label: "Present", color: "text-emerald-600", icon: CheckCircle },
   absent:  { label: "Absent",  color: "text-red-600",     icon: XCircle },
   late:    { label: "Late",    color: "text-amber-600",   icon: Clock },
+  excused: { label: "Excused", color: "text-blue-600",    icon: CheckCircle },
 };
 
 export default function TeacherDashboard() {
@@ -51,6 +53,12 @@ export default function TeacherDashboard() {
   const absentCount    = classAttendance.filter((r) => r.status === "absent").length;
   const lateCount      = classAttendance.filter((r) => r.status === "late").length;
   const attendanceRate = classStudents.length > 0 ? Math.round((presentCount / classStudents.length) * 100) : 0;
+
+  // Live homework count from store — filtered to this teacher's active assignments
+  const activeTeacherAssignments = useMemo(
+    () => assignments.filter((a) => a.status === "active"),
+    [assignments]
+  );
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [classActionOpen, setClassActionOpen] = useState(false);
@@ -106,7 +114,7 @@ export default function TeacherDashboard() {
     if (!hwTitle.trim()) return;
     const title = hwTitle.trim();
     const points = parseInt(hwPoints) || 20;
-    addAssignment(title, "Mathematics", "Grade 10-A", hwDue || "TBD", points, classAttendanceToday.length, user?.name || teacherProfile.name);
+    addAssignment(title, "Mathematics", "Grade 10-A", hwDue || "TBD", points, classStudents.length, user?.name || teacherProfile.name);
     setHwOpen(false);
     setHwTitle(""); setHwDue(""); setHwPoints("20");
     showToast(`"${title}" assigned to Grade 10-A`);
@@ -161,8 +169,8 @@ export default function TeacherDashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Classes Today",  value: todaysClasses.length,                                                       sub: "2 remaining",               icon: BookOpen,     color: "bg-blue-500" },
-          { label: "Present Today",  value: `${attendanceRate}%`,                                                       sub: `${presentCount}/${classAttendanceToday.length} students`, icon: CheckCircle,  color: "bg-emerald-500" },
-          { label: "Homework Due",   value: homeworkAssignments.filter((h) => h.status === "active").length,             sub: "Active assignments",          icon: BookOpen,     color: "bg-amber-500" },
+          { label: "Present Today",  value: `${attendanceRate}%`,                                                       sub: `${presentCount}/${classStudents.length} students`, icon: CheckCircle,  color: "bg-emerald-500" },
+          { label: "Homework Due",   value: activeTeacherAssignments.length,                                             sub: "Active assignments",          icon: BookOpen,     color: "bg-amber-500" },
           { label: "At-Risk",        value: classRiskStudents.length,                                                   sub: "Needs attention",            icon: AlertTriangle, color: "bg-red-500" },
         ].map((s) => (
           <Card key={s.label} className="hover:shadow-md transition-shadow">
@@ -260,13 +268,13 @@ export default function TeacherDashboard() {
                 />
               </div>
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                {classAttendanceToday.map((s) => {
-                  const st = attendanceStatusStyle[s.status];
+                {classAttendance.map((r) => {
+                  const st = attendanceStatusStyle[r.status] ?? attendanceStatusStyle.present;
                   const Icon = st.icon;
                   return (
-                    <div key={s.id} className="flex items-center gap-2 text-xs">
+                    <div key={r.id} className="flex items-center gap-2 text-xs">
                       <Icon className={cn("h-3.5 w-3.5 shrink-0", st.color)} />
-                      <span className="flex-1 truncate">{s.name}</span>
+                      <span className="flex-1 truncate">{r.studentName}</span>
                       <span className={cn("font-medium", st.color)}>{st.label}</span>
                     </div>
                   );

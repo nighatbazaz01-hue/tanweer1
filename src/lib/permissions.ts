@@ -132,19 +132,22 @@ export function filterFeesForRole(records: PopulationFeeRecord[], role: AppRole)
 
 export function filterThreadsForRole(threads: Thread[], role: AppRole): Thread[] {
   if (role === "admin") return threads;
-  const roleKeywords: Record<string, string[]> = {
-    vp1:     ["admin", "vice principal", "teacher", "principal"],
-    vp2:     ["admin", "vice principal", "teacher", "principal"],
-    vp3:     ["admin", "vice principal", "teacher", "principal"],
-    teacher: ["admin", "teacher", "principal", "vice principal", "parent"],
-    parent:  ["parent", "teacher", "admin", "principal"],
+  // Allowed participant roles per viewer role.
+  // Each entry covers both enum values (e.g. "vp1") and display names (e.g. "vice principal").
+  const allowedRoles: Record<string, string[]> = {
+    vp1:     ["admin", "vp1", "vp2", "vp3", "vice principal", "principal", "teacher"],
+    vp2:     ["admin", "vp1", "vp2", "vp3", "vice principal", "principal", "teacher"],
+    vp3:     ["admin", "vp1", "vp2", "vp3", "vice principal", "principal", "teacher"],
+    teacher: ["admin", "vp1", "vp2", "vp3", "vice principal", "principal", "teacher", "parent"],
+    parent:  ["parent", "teacher", "admin", "vp1", "vp2", "vp3", "principal"],
     student: ["student", "teacher"],
   };
-  const keywords = (roleKeywords[role] || []).map((k) => k.toLowerCase());
+  const allowed = (allowedRoles[role] || []).map((r) => r.toLowerCase());
   return threads.filter((t) =>
-    t.participants.some((p) =>
-      keywords.some((k) => p.role.toLowerCase().includes(k))
-    )
+    t.participants.some((p) => {
+      const pr = p.role.toLowerCase();
+      return allowed.some((a) => pr === a || pr.startsWith(a));
+    })
   );
 }
 
@@ -174,8 +177,11 @@ export function filterTasksForRole(tasks: Task[], role: AppRole): Task[] {
   if (role === "admin") return tasks;
   if (role === "parent" || role === "student") return [];
   if (role === "teacher") {
-    // Teacher sees ONLY tasks assigned to them
-    return tasks.filter((t) => t.assignedTo.name === DEMO_TEACHER_NAME);
+    // Teacher sees ONLY tasks assigned to them — match by ID when present, fall back to name
+    return tasks.filter((t) =>
+      (t as Task & { assignedToId?: string }).assignedToId === DEMO_TEACHER_ID ||
+      t.assignedTo.name === DEMO_TEACHER_NAME
+    );
   }
   // VPs see all tasks
   return tasks;

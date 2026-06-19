@@ -46,13 +46,19 @@ const alertSeverity: Record<string, "destructive" | "warning" | "info" | "succes
 
 export default function AdminDashboard() {
   const { toggleAiDrawer } = useUIStore();
-  const { students, feeRecords } = useDataStore();
+  const { students, feeRecords, attendanceRecords } = useDataStore();
   const feeCollectionRate = useMemo(() => {
     if (!feeRecords || feeRecords.length === 0) return adminStats.feeCollectionRate;
     const total = feeRecords.reduce((s, r) => s + r.amount, 0);
     const paid  = feeRecords.reduce((s, r) => s + r.paidAmount, 0);
     return total > 0 ? Math.round((paid / total) * 100) : adminStats.feeCollectionRate;
   }, [feeRecords]);
+
+  const liveAttendanceRate = useMemo(() => {
+    if (!attendanceRecords || attendanceRecords.length === 0) return adminStats.attendanceRate;
+    const present = attendanceRecords.filter((r) => r.status === "present").length;
+    return Math.round((present / attendanceRecords.length) * 100);
+  }, [attendanceRecords]);
   const activityFeed = getActivityTimeline(20);
   const feeChartData = feeCollectionTrend.map((d) => ({
     ...d,
@@ -88,7 +94,7 @@ export default function AdminDashboard() {
     { title: "School Health Score", value: `${adminStats.schoolHealthScore}/100`, sub: "Overall platform score", icon: Heart, color: "bg-violet-500", trend: { v: 3, up: true } },
     { title: "Total Students", value: students.length.toLocaleString(), sub: "Active enrollments", icon: Users, color: "bg-blue-500", trend: { v: 5.2, up: true } },
     { title: "Fee Collection", value: `${feeCollectionRate}%`, sub: "SAR 1.87M collected", icon: DollarSign, color: "bg-emerald-500", trend: { v: 2.1, up: false } },
-    { title: "Attendance Rate", value: `${adminStats.attendanceRate}%`, sub: "School-wide today", icon: UserCheck, color: "bg-amber-500", trend: { v: 1.3, up: true } },
+    { title: "Attendance Rate", value: `${liveAttendanceRate}%`, sub: "School-wide today", icon: UserCheck, color: "bg-amber-500", trend: { v: 1.3, up: true } },
     { title: "Teacher Attendance", value: `${adminStats.teacherAttendanceRate}%`, sub: `${adminStats.totalTeachers} total teachers`, icon: GraduationCap, color: "bg-sky-500", trend: { v: 0.5, up: true } },
     { title: "Parent Satisfaction", value: `${adminStats.parentSatisfaction}/5`, sub: "Avg rating this month", icon: Heart, color: "bg-pink-500", trend: { v: 0.2, up: true } },
     { title: "New Admissions", value: adminStats.newLeadsThisMonth, sub: `${adminStats.enrolledThisMonth} enrolled`, icon: TrendingUp, color: "bg-indigo-500", trend: { v: 12, up: true } },

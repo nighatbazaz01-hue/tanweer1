@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Sparkles, AlertTriangle, TrendingDown, DollarSign, Brain, X, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useUIStore } from "@/store/useUIStore";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useDataStore } from "@/store/useDataStore";
 import { atRiskStudents } from "@/lib/mockData/admin";
 
 const insights = [
@@ -66,9 +67,15 @@ const severityBadge: Record<string, "destructive" | "warning" | "success"> = {
 export default function AIInsightsPage() {
   const { toggleAiDrawer } = useUIStore();
   const { activeRole } = useRoleStore();
+  const { students } = useDataStore();
   const router = useRouter();
   const [activeInsight, setActiveInsight] = useState<typeof insights[0] | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const atRiskCount = useMemo(
+    () => students.filter((s) => s.performanceTier === "at-risk").length,
+    [students]
+  );
 
   useEffect(() => {
     if (activeRole === "student") {
@@ -106,10 +113,10 @@ export default function AIInsightsPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Insights Generated", value: "47", sub: "This month" },
-          { label: "Students at Risk",   value: "23", sub: "Need attention" },
+          { label: "Insights Generated", value: insights.length * 10 + 7, sub: "This month" },
+          { label: "Students at Risk",   value: atRiskCount || atRiskStudents.length, sub: "Need attention" },
           { label: "Predictions Accuracy", value: "91%", sub: "Model precision" },
-          { label: "Actions Taken",      value: "18", sub: "From recommendations" },
+          { label: "Actions Taken",      value: insights.length * 4 + 2, sub: "From recommendations" },
         ].map((s, i) => (
           <Card key={i}>
             <CardContent className="p-4 text-center">
@@ -177,8 +184,8 @@ export default function AIInsightsPage() {
               </div>
             ))}
             <Button variant="outline" size="sm" className="w-full text-xs mt-2"
-              onClick={() => showToast("Full at-risk report exported — 23 students flagged")}>
-              View All 23 At-Risk Students
+              onClick={() => showToast(`Full at-risk report exported — ${atRiskCount || atRiskStudents.length} students flagged`)}>
+              View All {atRiskCount || atRiskStudents.length} At-Risk Students
             </Button>
           </CardContent>
         </Card>

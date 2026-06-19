@@ -8,23 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { homeworkAssignments } from "@/lib/mockData/teacher";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useDataStore } from "@/store/useDataStore";
 
-type Assignment = {
-  id: number;
-  title: string;
-  grade: string;
-  dueDate: string;
-  submitted: number;
-  total: number;
-  status: string;
-};
-
 export default function TeacherHomeworkPage() {
-  const { addAssignment } = useDataStore();
-  const [assignments, setAssignments] = useState<Assignment[]>(homeworkAssignments);
+  const { addAssignment, assignments } = useDataStore();
   const [createOpen, setCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSubject, setNewSubject] = useState("Mathematics");
@@ -40,16 +28,6 @@ export default function TeacherHomeworkPage() {
 
   const handleCreate = () => {
     if (!newTitle.trim() || !newDue.trim()) return;
-    const next: Assignment = {
-      id: Date.now(),
-      title: newTitle,
-      grade: newGrade,
-      dueDate: newDue,
-      submitted: 0,
-      total: parseInt(newTotal) || 20,
-      status: "active",
-    };
-    setAssignments((prev) => [next, ...prev]);
     addAssignment(newTitle, newSubject, newGrade, newDue, 10, parseInt(newTotal) || 20, "Teacher");
     setNewTitle(""); setNewSubject("Mathematics"); setNewGrade("Grade 10-A"); setNewDue(""); setNewTotal("20");
     setCreateOpen(false);
@@ -58,8 +36,8 @@ export default function TeacherHomeworkPage() {
 
   const active = assignments.filter((a) => a.status === "active");
   const completed = assignments.filter((a) => a.status === "completed");
-  const totalSubmitted = assignments.reduce((s, a) => s + a.submitted, 0);
-  const totalStudents = assignments.reduce((s, a) => s + a.total, 0);
+  const totalSubmitted = assignments.reduce((s, a) => s + (a.submitted ?? 0), 0);
+  const totalStudents = assignments.reduce((s, a) => s + (a.total ?? 0), 0);
 
   return (
     <div className="space-y-6">
