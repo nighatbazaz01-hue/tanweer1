@@ -1,0 +1,127 @@
+SYSTEM WIDE QA + WORKFLOW COMPLETION AUDIT
+
+The application now runs successfully in Replit.
+
+Before adding any new modules, perform the deepest audit possible.
+
+GOAL
+
+Act as a QA engineer, business analyst, principal, VP, teacher, parent, and student.
+
+Navigate the ENTIRE application.
+
+Do not only inspect code.
+
+Actually trace every workflow.
+
+For every role:
+
+ADMIN
+VP1
+VP2
+VP3
+TEACHER
+PARENT
+STUDENT
+
+Verify:
+
+1. Every sidebar item opens a valid page.
+2. Every button has a working action.
+3. Every View button shows data.
+4. Every Edit button updates data.
+5. Every Create button persists data.
+6. Every Delete action updates state correctly.
+7. Every form has Save functionality.
+8. Every dashboard metric matches underlying data.
+9. Every page uses the unified store.
+10. Every page respects permissions.
+
+DEEP WORKFLOW TESTING
+
+Teacher:
+
+- Mark attendance
+- Enter grades
+- Assign homework
+- View assigned classes
+- View assigned students
+- Request leave
+- View tasks assigned by VP
+- Send message to parents
+
+VP:
+
+- Create timetable
+- Approve leave
+- Assign tasks to teachers
+- Create announcements
+- Schedule meetings
+- View attendance analytics
+- View grade analytics
+
+Admin:
+
+- Access all modules
+- Access transport
+- Access admissions
+- Access finance
+- Access security protected data
+
+Parent:
+
+- View child data
+- View attendance
+- View grades
+- View transport
+- Submit transport change request
+- Message teacher
+
+Student:
+
+- View timetable
+- View homework
+- View grades
+- View transport
+- Use AI Study Assistant
+
+SPECIAL CHECK
+
+Find any examples where:
+
+- Dashboard says 90 students but page shows 13
+- Teacher sees classes not assigned to them
+- Empty filters appear
+- Pages redirect incorrectly
+- Missing routes exist
+- Dead-end navigation exists
+- Counts don't match actual records
+
+AUTH CHECK
+
+Verify:
+
+- Login
+- OTP
+- Session persistence
+- Logout
+- Route protection
+- PIN protection
+
+OUTPUT
+
+Provide 5 sections:
+
+1. WORKING FEATURES
+2. PARTIALLY WORKING FEATURES
+3. BROKEN FEATURES
+4. MISSING BUSINESS WORKFLOWS
+5. RECOMMENDED FIX ORDER
+
+IMPORTANT
+
+Do NOT change code yet.
+
+First produce a complete audit report.
+
+The report should be exhaustive enough that a school principal could use it as a UAT (User Acceptance Testing) document.
