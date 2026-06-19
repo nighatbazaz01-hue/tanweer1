@@ -1,0 +1,343 @@
+You are entering STRICT QA / TEST ENGINEER MODE.
+
+DO NOT BUILD FEATURES.
+
+DO NOT REFACTOR.
+
+DO NOT IMPROVE UI.
+
+DO NOT ADD ENHANCEMENTS.
+
+Your ONLY objective is to find defects.
+
+The previous audits missed multiple real issues.
+
+I want a DEEP END-TO-END VALIDATION of the entire Tanweer School Management Platform.
+
+====================================================
+TESTING RULES
+=============
+
+Act like a human QA engineer.
+
+Do not assume anything works because:
+
+* code compiles
+* route loads
+* button exists
+* toast appears
+
+Actually verify behavior.
+
+====================================================
+PHASE 1 — CLICK EVERYTHING
+==========================
+
+For EVERY ROLE:
+
+* Admin
+* VP1
+* VP2
+* VP3
+* Teacher
+* Parent
+* Student
+* Transport Admin
+* Transport Manager
+
+Open every page.
+
+Click:
+
+* every button
+* every action
+* every menu item
+* every dropdown
+* every dialog
+* every card action
+* every tab
+* every link
+* every badge that is clickable
+* every table action
+* every context menu
+
+Report:
+
+BROKEN BUTTONS
+
+Example:
+
+Teacher Dashboard
+Button: View
+Result: Does nothing
+
+====================================================
+PHASE 2 — ROUTE VALIDATION
+==========================
+
+Verify every sidebar item.
+
+For each:
+
+Record:
+
+Route
+Expected page
+Actual page
+
+Find:
+
+* redirects
+* wrong destinations
+* loops
+* 404s
+* dashboard fallbacks
+
+Example:
+
+Teacher → Homework
+Expected: /teacher/homework
+Actual: redirected to dashboard
+
+====================================================
+PHASE 3 — DATA CONSISTENCY AUDIT
+================================
+
+Verify every module uses the same data source.
+
+Check:
+
+students
+teachers
+parents
+attendance
+grades
+fees
+tasks
+messages
+meetings
+announcements
+notifications
+transport
+
+Find:
+
+* duplicate arrays
+* mock arrays
+* disconnected datasets
+* local useState copies
+* stale hardcoded data
+
+Report exact file locations.
+
+====================================================
+PHASE 4 — COUNT CONSISTENCY AUDIT
+=================================
+
+For every dashboard KPI:
+
+Verify counts match source data.
+
+Examples:
+
+Teacher dashboard:
+
+Today's Classes
+My Students
+Attendance
+Homework
+
+Must match:
+
+Students page
+Attendance page
+Homework page
+
+Flag every mismatch.
+
+Example:
+
+Dashboard:
+13 students
+
+Attendance:
+12 students
+
+Result:
+BUG
+
+====================================================
+PHASE 5 — ROLE SECURITY AUDIT
+=============================
+
+Verify permissions.
+
+Teacher must NOT see:
+
+* other sections
+* admin pages
+* VP pages
+* hidden parent data
+
+Parent must NOT see:
+
+* other students
+* other parents
+
+Student must NOT see:
+
+* admin data
+* parent data
+
+Verify every protected route.
+
+Attempt direct URL access.
+
+Report leaks.
+
+====================================================
+PHASE 6 — WORKFLOW COMPLETENESS AUDIT
+=====================================
+
+Verify complete workflows.
+
+Teacher:
+
+Attendance:
+Can mark?
+Can save?
+Does parent see change?
+Does student see change?
+
+Homework:
+Can create?
+Can edit?
+Can student see it?
+
+Grades:
+Can enter?
+Can save?
+Can parent see?
+Can student see?
+
+Leave:
+Can request?
+Can VP approve?
+Does teacher see approval?
+
+Tasks:
+Can receive?
+Can update?
+Can comment?
+
+====================================================
+PHASE 7 — TRANSPORT AUDIT
+=========================
+
+Verify:
+
+Admin
+VP
+Parent
+Student
+Transport Admin
+Transport Manager
+
+Check:
+
+vehicles
+routes
+stops
+allocations
+requests
+reports
+
+Verify all actions persist.
+
+====================================================
+PHASE 8 — LOGIN & AUTH AUDIT
+============================
+
+Verify:
+
+Login
+OTP
+Logout
+Session persistence
+PIN protection
+Protected routes
+
+Check:
+
+1. OTP visible anywhere?
+2. Credentials visible anywhere?
+3. Demo guide visible to non-admins?
+4. PIN bypass possible?
+5. Refresh behavior?
+6. Logout behavior?
+
+====================================================
+PHASE 9 — EMPTY STATE AUDIT
+===========================
+
+Find:
+
+pages with no real functionality
+
+Examples:
+
+button exists
+dialog opens
+nothing happens
+
+OR
+
+page exists
+no way to create/edit data
+
+OR
+
+workflow incomplete
+
+Example:
+
+Teacher can view homework
+but cannot create homework
+
+Flag as:
+
+PARTIAL FEATURE
+
+====================================================
+OUTPUT FORMAT
+=============
+
+DO NOT FIX ANYTHING YET.
+
+Produce ONLY:
+
+1. CRITICAL BUGS
+2. HIGH BUGS
+3. MEDIUM BUGS
+4. LOW BUGS
+
+Then:
+
+5. PARTIAL FEATURES
+6. MISSING WORKFLOWS
+7. SECURITY ISSUES
+8. DATA CONSISTENCY ISSUES
+9. COUNT MISMATCHES
+10. BROKEN BUTTONS
+11. DEAD ROUTES
+
+For every issue provide:
+
+Severity
+Role
+Page
+Steps to reproduce
+Root cause
+Recommended fix
+
+Do not claim a feature works unless you actually validated the entire workflow end-to-end.
