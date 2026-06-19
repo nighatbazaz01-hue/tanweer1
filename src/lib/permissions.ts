@@ -95,7 +95,7 @@ export function filterParentsForRole(parents: Parent[], role: AppRole): Parent[]
     case "vp1":     return parents.filter((p) => p.childGrade >= 1 && p.childGrade <= 4);
     case "vp2":     return parents.filter((p) => p.childGrade >= 5 && p.childGrade <= 8);
     case "vp3":     return parents.filter((p) => p.childGrade >= 9 && p.childGrade <= 12);
-    case "teacher": return parents.filter((p) => p.childGrade === DEMO_TEACHER_GRADE);
+    case "teacher": return parents.filter((p) => p.childGrade === DEMO_TEACHER_GRADE && p.childSection === DEMO_TEACHER_SECTION);
     case "parent":  return parents.filter((p) => p.childId === DEMO_CHILD_ID);
     default:        return [];
   }

@@ -132,7 +132,7 @@ From QA Audit `plan/QA_AUDIT_REPORT.md` (June 2026):
 | PA-01 | Medium | Parent attendance log has hardcoded 2024 dates | Open |
 | AI-01 | Medium | AI Insights risk count doesn't match live at-risk population | Open |
 | AI-02 | Medium | AI Insights KPIs are static strings | Open |
-| P-01 | Medium | `filterParentsForRole("teacher")` returns whole grade, not section | Open |
+| P-01 | Medium | `filterParentsForRole("teacher")` returned whole grade, not section | **FIXED** — added `&& childSection === DEMO_TEACHER_SECTION` |
 | AD-02 | Medium | Fee collection rate is a static mock string | Open |
 | ST-01 | Low | `/ai-insights` briefly flashes admin page before redirect for student role | Open |
 | VP-02 | Low | VP dashboard attendance chart uses static data | Open |

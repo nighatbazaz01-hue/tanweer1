@@ -325,7 +325,7 @@ In order of severity:
 
 1. **AD-04** — Persist Settings to `useDataStore` (add `schoolSettings` state slice)
 2. **PA-01** — Replace parent attendance hardcoded dates with `generateAttendanceRecords()` output
-3. **P-01** — Fix `filterParentsForRole("teacher")` to filter by `childGrade === DEMO_TEACHER_GRADE && childSection === DEMO_TEACHER_SECTION`
+3. ~~**P-01**~~ — ✅ Fixed: `filterParentsForRole("teacher")` now filters by `childGrade === DEMO_TEACHER_GRADE && childSection === DEMO_TEACHER_SECTION`
 4. **AI-01/AI-02** — Derive AI Insights stats from live `useDataStore.students` (count `performanceTier === "at-risk"`, compute attendance rate from `attendanceRecords`)
 5. **AD-02** — Compute fee collection rate from live fee records instead of static string
 
