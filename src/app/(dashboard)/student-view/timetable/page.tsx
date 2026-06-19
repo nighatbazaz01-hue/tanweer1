@@ -41,15 +41,15 @@ const dayAbbr: Record<string, string> = {
   Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu",
 };
 
-function getTodayName(): string {
+function getTodayName(): string | null {
   const day = new Date().toLocaleDateString("en-US", { weekday: "long" });
-  return DAYS.includes(day) ? day : "Sunday";
+  return DAYS.includes(day) ? day : null;
 }
 
 export default function TimetablePage() {
   const { timetableEntries } = useDataStore();
   const todayName = getTodayName();
-  const [selectedDay, setSelectedDay] = useState(todayName);
+  const [selectedDay, setSelectedDay] = useState(todayName ?? "Sunday");
 
   // Filter store entries to Grade 10-A — reactive to VP edits
   const classEntries = useMemo(
@@ -70,7 +70,7 @@ export default function TimetablePage() {
     return map;
   }, [classEntries]);
 
-  const daySchedule = scheduleByDay[selectedDay] ?? {};
+  const daySchedule = scheduleByDay[selectedDay ?? "Sunday"] ?? {};
   const classCount = PERIODS.filter((p) => p.periodKey && daySchedule[p.periodKey]).length;
   const uniqueSubjects = new Set(
     PERIODS.filter((p) => p.periodKey && daySchedule[p.periodKey])
@@ -100,7 +100,7 @@ export default function TimetablePage() {
           >
             <span className="hidden sm:inline">{day}</span>
             <span className="sm:hidden">{dayAbbr[day]}</span>
-            {day === todayName && (
+            {todayName && day === todayName && (
               <span className="ml-1.5 text-[10px] font-semibold opacity-70">Today</span>
             )}
           </button>

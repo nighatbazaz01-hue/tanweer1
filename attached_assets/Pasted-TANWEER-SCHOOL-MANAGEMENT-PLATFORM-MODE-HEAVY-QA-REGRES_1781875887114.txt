@@ -1,0 +1,407 @@
+TANWEER SCHOOL MANAGEMENT PLATFORM
+
+MODE: HEAVY QA + REGRESSION TESTING
+
+IMPORTANT
+
+DO NOT ADD FEATURES.
+
+DO NOT REDESIGN UI.
+
+DO NOT REFACTOR FOR THE SAKE OF REFACTORING.
+
+DO NOT CREATE NEW MODULES.
+
+Your job is to behave like a senior QA engineer and attempt to BREAK the application.
+
+---
+
+PROJECT CONTEXT
+
+This platform contains:
+
+* Admin
+* VP1
+* VP2
+* VP3
+* Teacher
+* Parent
+* Student
+
+Core modules:
+
+* Authentication
+* OTP
+* PIN Security
+* Messaging
+* Tasks
+* Meetings
+* Announcements
+* Attendance
+* Grades
+* Homework
+* Timetable
+* Student Management
+* Parent Portal
+* Student Portal
+* Transport
+* Audit/Event Log
+* Notifications
+* Demo Guide
+
+Multiple stabilization passes have already been completed.
+
+Assume hidden bugs still exist.
+
+---
+
+PHASE 1 — ROUTE CRAWL
+
+Enumerate ALL routes.
+
+For every route:
+
+Verify:
+
+* loads successfully
+* no redirect loops
+* no console errors
+* no runtime errors
+* no blank screens
+* no missing imports
+
+Generate report:
+
+Route
+Status
+Role Allowed
+Issues
+
+---
+
+PHASE 2 — ROLE TESTING
+
+Test each role separately.
+
+Admin
+
+VP1
+
+VP2
+
+VP3
+
+Teacher
+
+Parent
+
+Student
+
+For each role:
+
+Click every:
+
+* Sidebar item
+* Button
+* Card action
+* Dropdown
+* Dialog button
+* View button
+* Save button
+* Edit button
+* Delete button
+
+Verify:
+
+* Does it work?
+* Does it update store?
+* Does UI refresh?
+* Is event logged?
+
+Document failures.
+
+---
+
+PHASE 3 — CROSS ROLE DATA TESTING
+
+Teacher Actions
+
+Create homework
+Mark attendance
+Enter grades
+
+Verify:
+
+Student sees changes.
+
+Parent sees changes.
+
+Admin sees changes.
+
+---
+
+VP Actions
+
+Create timetable.
+
+Modify timetable.
+
+Assign task.
+
+Approve leave.
+
+Verify:
+
+Teacher sees updates.
+
+Student sees timetable changes.
+
+Parent sees timetable changes.
+
+---
+
+Admin Actions
+
+Create announcement.
+
+Create notification.
+
+Modify transport.
+
+Verify visibility across all roles.
+
+---
+
+PHASE 4 — SECURITY TESTING
+
+Attempt unauthorized access.
+
+Student:
+
+/admin
+/admissions
+/audit
+/teacher
+/vp
+
+Parent:
+
+/admin
+/audit
+
+Teacher:
+
+/admin
+/admissions
+
+VP:
+
+/student-view
+/parent
+
+Verify:
+
+* blocked
+* redirected
+* logged
+
+---
+
+PHASE 5 — DATA CONSISTENCY TEST
+
+Search entire project for:
+
+useState(
+
+const [
+
+hardcoded arrays
+
+mock data imports
+
+duplicate datasets
+
+Verify modules use:
+
+useDataStore
+
+Identify:
+
+* disconnected pages
+* stale data
+* duplicated sources of truth
+
+---
+
+PHASE 6 — BUTTON VALIDATION
+
+Find:
+
+onClick={() => {}}
+
+placeholder handlers
+
+toast-only actions
+
+fake save buttons
+
+fake edit buttons
+
+dialogs that never persist
+
+forms that never save
+
+links that redirect incorrectly
+
+Output exact file and line.
+
+---
+
+PHASE 7 — STRESS TESTING
+
+Create:
+
+50 announcements
+
+50 messages
+
+50 tasks
+
+50 notifications
+
+50 attendance updates
+
+50 grade updates
+
+Verify:
+
+* UI remains responsive
+* store remains stable
+* no crashes
+* no duplicate IDs
+* no infinite rerenders
+
+---
+
+PHASE 8 — TRANSPORT TESTING
+
+Verify:
+
+Vehicles
+
+Routes
+
+Assignments
+
+Parent Requests
+
+Reports
+
+Change Requests
+
+Notifications
+
+Event Logs
+
+Every action must:
+
+persist
+
+update store
+
+appear in reports
+
+emit events
+
+---
+
+PHASE 9 — DEMO TEST
+
+Simulate actual board presentation.
+
+Login as:
+
+Admin
+
+Teacher
+
+Parent
+
+Student
+
+Perform complete flow:
+
+Teacher marks attendance
+
+Teacher enters grades
+
+Teacher creates homework
+
+Parent views updates
+
+Student views updates
+
+Admin reviews activity
+
+Verify every step works.
+
+---
+
+PHASE 10 — FINAL REPORT
+
+Produce:
+
+CRITICAL ISSUES
+HIGH ISSUES
+MEDIUM ISSUES
+LOW ISSUES
+
+For each issue:
+
+File
+Route
+Root Cause
+Impact
+Fix Recommendation
+
+Then provide:
+
+Demo Readiness Score (%)
+
+Security Score (%)
+
+Data Consistency Score (%)
+
+Workflow Completion Score (%)
+
+Overall Production Readiness Score (%)
+
+---
+
+AFTER AUDIT
+
+Fix ONLY:
+
+Critical issues
+
+High issues
+
+Do NOT add new features.
+
+Do NOT redesign UI.
+
+Do NOT stop after finding issues.
+
+Fix them.
+
+Then rerun the full test suite.
+
+Finally provide:
+
+BEFORE RESULTS
+
+AFTER RESULTS
+
+FINAL DEMO READINESS SCORE
+FINAL SECURITY SCORE
+FINAL REMAINING ISSUES

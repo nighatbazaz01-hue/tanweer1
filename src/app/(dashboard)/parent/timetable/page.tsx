@@ -33,15 +33,15 @@ const SUBJECT_COLORS: Record<string, string> = {
   History:            "bg-orange-50 text-orange-700 border-orange-200",
 };
 
-function getTodayName(): Day {
-  const day = new Date().toLocaleDateString("en-US", { weekday: "long" }) as Day;
-  return (DAYS as readonly string[]).includes(day) ? day : "Sunday";
+function getTodayName(): Day | null {
+  const day = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  return (DAYS as readonly string[]).includes(day) ? (day as Day) : null;
 }
 
 export default function ParentTimetablePage() {
   const { timetableEntries } = useDataStore();
   const todayName = getTodayName();
-  const [activeDay, setActiveDay] = useState<Day>(todayName);
+  const [activeDay, setActiveDay] = useState<Day>(todayName ?? "Sunday");
 
   // Filter store entries to this child's class (Grade 10-A) — reactive to VP edits
   const childEntries = useMemo(
@@ -64,7 +64,7 @@ export default function ParentTimetablePage() {
   }, [childEntries]);
 
   const activePeriods = byDay[activeDay] ?? [];
-  const todayPeriods  = byDay[todayName] ?? [];
+  const todayPeriods  = todayName ? (byDay[todayName] ?? []) : [];
 
   return (
     <div className="space-y-6">
@@ -86,8 +86,11 @@ export default function ParentTimetablePage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Clock className="h-4 w-4 text-amber-500" />
-            Today&apos;s Schedule — {todayName}
-            <Badge variant="secondary" className="ml-auto text-xs">{todayPeriods.length} classes</Badge>
+            Today&apos;s Schedule — {todayName ?? new Date().toLocaleDateString("en-US", { weekday: "long" })}
+            {todayName
+              ? <Badge variant="secondary" className="ml-auto text-xs">{todayPeriods.length} classes</Badge>
+              : <Badge variant="outline" className="ml-auto text-xs text-muted-foreground">No school today</Badge>
+            }
           </CardTitle>
         </CardHeader>
         <CardContent>

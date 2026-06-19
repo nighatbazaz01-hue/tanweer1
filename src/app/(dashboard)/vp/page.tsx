@@ -52,9 +52,9 @@ const upcomingExams = [
 ];
 
 const upcomingMeetings = [
-  { title: "Parent-Teacher Conference", date: "Jun 18", time: "09:00", attendees: 24 },
-  { title: "Grade Review Board", date: "Jun 21", time: "13:00", attendees: 8 },
-  { title: "Staff Briefing", date: "Jun 24", time: "07:30", attendees: 12 },
+  { title: "Parent-Teacher Conference", date: "Jun 22", time: "09:00", attendees: 24 },
+  { title: "Grade Review Board", date: "Jun 25", time: "13:00", attendees: 8 },
+  { title: "Staff Briefing", date: "Jun 29", time: "07:30", attendees: 12 },
 ];
 
 export default function VPDashboard() {

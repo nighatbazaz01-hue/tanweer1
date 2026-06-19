@@ -41,7 +41,7 @@ export default function TeacherHomeworkPage() {
   const handleCreate = () => {
     if (!newTitle.trim() || !newDue.trim()) return;
     const next: Assignment = {
-      id: assignments.length + 1,
+      id: Date.now(),
       title: newTitle,
       grade: newGrade,
       dueDate: newDue,

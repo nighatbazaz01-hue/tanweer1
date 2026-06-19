@@ -377,13 +377,89 @@ function DetailItem({ label, value, mono }: { label: string; value: string; mono
   );
 }
 
+// ── Live Event Feed (from useDataStore.eventLog) ──────────────────────────────
+function LiveEventFeed() {
+  const { eventLog } = useDataStore();
+
+  const eventTypeLabel: Record<string, { label: string; color: string }> = {
+    attendanceSaved:          { label: "Attendance Saved",      color: "bg-emerald-100 text-emerald-700" },
+    attendanceRecordUpdated:  { label: "Attendance Updated",    color: "bg-emerald-100 text-emerald-700" },
+    bulkAttendanceUpdated:    { label: "Bulk Attendance",       color: "bg-emerald-100 text-emerald-700" },
+    gradesUpdated:            { label: "Grades Updated",        color: "bg-blue-100 text-blue-700" },
+    assignmentAdded:          { label: "Homework Created",      color: "bg-violet-100 text-violet-700" },
+    timetableEntryAdded:      { label: "Timetable Added",       color: "bg-amber-100 text-amber-700" },
+    timetableEntryUpdated:    { label: "Timetable Updated",     color: "bg-amber-100 text-amber-700" },
+    timetableEntryDeleted:    { label: "Timetable Deleted",     color: "bg-red-100 text-red-700" },
+    messageCreated:           { label: "Message Sent",          color: "bg-sky-100 text-sky-700" },
+    replyAdded:               { label: "Reply Added",           color: "bg-sky-100 text-sky-700" },
+    announcementCreated:      { label: "Announcement Created",  color: "bg-orange-100 text-orange-700" },
+    meetingCreated:           { label: "Meeting Created",       color: "bg-indigo-100 text-indigo-700" },
+    taskCreated:              { label: "Task Created",          color: "bg-purple-100 text-purple-700" },
+    taskUpdated:              { label: "Task Updated",          color: "bg-purple-100 text-purple-700" },
+    leaveSubmitted:           { label: "Leave Submitted",       color: "bg-rose-100 text-rose-700" },
+    leaveApproved:            { label: "Leave Approved",        color: "bg-emerald-100 text-emerald-700" },
+    leaveRejected:            { label: "Leave Rejected",        color: "bg-red-100 text-red-700" },
+    transportRequestSubmitted:{ label: "Transport Request",     color: "bg-teal-100 text-teal-700" },
+    transportRequestApproved: { label: "Transport Approved",    color: "bg-emerald-100 text-emerald-700" },
+    vehicleAdded:             { label: "Vehicle Added",         color: "bg-slate-100 text-slate-700" },
+    studentAdded:             { label: "Student Added",         color: "bg-blue-100 text-blue-700" },
+    leadStatusUpdated:        { label: "Lead Updated",          color: "bg-amber-100 text-amber-700" },
+  };
+
+  if (eventLog.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <Activity className="h-8 w-8 mx-auto mb-2 opacity-30" />
+        <p className="text-sm">No live session events yet.</p>
+        <p className="text-xs mt-1">Events will appear here as users interact with the system.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      {[...eventLog].reverse().map((evt) => {
+        const meta = eventTypeLabel[evt.type] ?? { label: evt.type, color: "bg-slate-100 text-slate-700" };
+        const ts = new Date(evt.timestamp);
+        return (
+          <div key={evt.id} className="flex items-start gap-3 rounded-xl border px-4 py-3 bg-card hover:bg-muted/30 transition-colors">
+            <div className="shrink-0 mt-0.5">
+              <div className={cn("h-2 w-2 rounded-full mt-1", meta.color.includes("emerald") ? "bg-emerald-500" : meta.color.includes("red") ? "bg-red-500" : meta.color.includes("blue") ? "bg-blue-500" : "bg-slate-400")} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge className={cn("text-[10px] shrink-0", meta.color)}>{meta.label}</Badge>
+                <span className="text-sm font-medium truncate">{evt.actor}</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                {Object.entries(evt.payload)
+                  .filter(([, v]) => v !== undefined && v !== null && v !== "")
+                  .slice(0, 4)
+                  .map(([k, v]) => `${k}: ${String(v)}`)
+                  .join(" · ")}
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-[10px] text-muted-foreground font-mono">{evt.id}</p>
+              <p className="text-[10px] text-muted-foreground">{ts.toLocaleTimeString()}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Audit Logs Tab ─────────────────────────────────────────────────────────────
 function AuditLogsTab() {
   const [search, setSearch] = useState("");
   const [moduleFilter, setModuleFilter] = useState<string>("all");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [showLive, setShowLive] = useState(true);
   const PAGE_SIZE = 25;
+
+  const { eventLog } = useDataStore();
 
   const raw = useMemo(() => getRecentAuditLogs(500), []);
   const filtered = useMemo(() => raw.filter((l) => {
@@ -401,32 +477,63 @@ function AuditLogsTab() {
   const modules = [...new Set(raw.map((l) => l.module))];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search by user, action, record..." className="pl-9 h-9 text-sm" />
-        </div>
-        <select value={moduleFilter} onChange={(e) => { setModuleFilter(e.target.value); setPage(1); }} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
-          <option value="all">All Modules</option>
-          {modules.map((m) => <option key={m} value={m}>{m}</option>)}
-        </select>
-        <select value={severityFilter} onChange={(e) => { setSeverityFilter(e.target.value); setPage(1); }} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
-          <option value="all">All Severities</option>
-          {["critical", "high", "medium", "low", "info"].map((s) => <option key={s} value={s} className="capitalize">{s}</option>)}
-        </select>
-        <Badge variant="secondary" className="text-xs">{filtered.length.toLocaleString()} results</Badge>
+    <div className="space-y-5">
+
+      {/* ── Live Session Events ── */}
+      <div className="rounded-xl border border-blue-200 bg-blue-50/40 overflow-hidden">
+        <button
+          className="w-full flex items-center justify-between px-4 py-3 text-left"
+          onClick={() => setShowLive((v) => !v)}
+        >
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              {eventLog.length > 0 && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />}
+              <span className={cn("relative inline-flex rounded-full h-2.5 w-2.5", eventLog.length > 0 ? "bg-blue-500" : "bg-slate-300")} />
+            </span>
+            <span className="text-sm font-semibold text-blue-800">Live Session Events</span>
+            {eventLog.length > 0 && (
+              <Badge className="text-[10px] bg-blue-100 text-blue-700 border-blue-200">{eventLog.length} events this session</Badge>
+            )}
+          </div>
+          <ChevronDown className={cn("h-4 w-4 text-blue-600 transition-transform", !showLive && "-rotate-90")} />
+        </button>
+        {showLive && (
+          <div className="px-4 pb-4 border-t border-blue-100">
+            <p className="text-xs text-blue-700 py-2.5">Real-time events emitted during this session — attendance saves, grade entries, timetable changes, messages, and more.</p>
+            <LiveEventFeed />
+          </div>
+        )}
       </div>
 
-      <LogTable logs={paged} />
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-2">
-          <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>Prev</Button>
-          <span className="text-xs text-muted-foreground">Page {page} of {totalPages}</span>
-          <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next</Button>
+      {/* ── Historical Audit Logs ── */}
+      <div>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Historical Audit Log</p>
+        <div className="flex items-center gap-3 flex-wrap mb-4">
+          <div className="relative flex-1 min-w-48">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search by user, action, record..." className="pl-9 h-9 text-sm" />
+          </div>
+          <select value={moduleFilter} onChange={(e) => { setModuleFilter(e.target.value); setPage(1); }} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
+            <option value="all">All Modules</option>
+            {modules.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+          <select value={severityFilter} onChange={(e) => { setSeverityFilter(e.target.value); setPage(1); }} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
+            <option value="all">All Severities</option>
+            {["critical", "high", "medium", "low", "info"].map((s) => <option key={s} value={s} className="capitalize">{s}</option>)}
+          </select>
+          <Badge variant="secondary" className="text-xs">{filtered.length.toLocaleString()} results</Badge>
         </div>
-      )}
+
+        <LogTable logs={paged} />
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>Prev</Button>
+            <span className="text-xs text-muted-foreground">Page {page} of {totalPages}</span>
+            <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next</Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
