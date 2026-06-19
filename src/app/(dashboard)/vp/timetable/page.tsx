@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useDataStore, type TimetableEntry } from "@/store/useDataStore";
 import { VP_GRADE_RANGES } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
@@ -26,16 +27,16 @@ const PERIODS = [
 ];
 
 const SUBJECT_COLORS: Record<string, string> = {
-  Mathematics:       "bg-blue-100 text-blue-700",
-  Physics:           "bg-violet-100 text-violet-700",
-  Chemistry:         "bg-emerald-100 text-emerald-700",
-  English:           "bg-amber-100 text-amber-700",
-  Arabic:            "bg-rose-100 text-rose-700",
-  "Computer Science":"bg-sky-100 text-sky-700",
-  Islamic:           "bg-teal-100 text-teal-700",
-  Biology:           "bg-lime-100 text-lime-700",
-  History:           "bg-orange-100 text-orange-700",
-  PE:                "bg-pink-100 text-pink-700",
+  Mathematics:        "bg-blue-100 text-blue-700",
+  Physics:            "bg-violet-100 text-violet-700",
+  Chemistry:          "bg-emerald-100 text-emerald-700",
+  English:            "bg-amber-100 text-amber-700",
+  Arabic:             "bg-rose-100 text-rose-700",
+  "Computer Science": "bg-sky-100 text-sky-700",
+  Islamic:            "bg-teal-100 text-teal-700",
+  Biology:            "bg-lime-100 text-lime-700",
+  History:            "bg-orange-100 text-orange-700",
+  PE:                 "bg-pink-100 text-pink-700",
 };
 
 const SUBJECTS = Object.keys(SUBJECT_COLORS);
@@ -46,64 +47,52 @@ const TEACHERS = [
   "Sheikh Mohammed", "Coach Sami",
 ];
 
-interface TimetableEntry {
-  id: string;
-  day: string;
-  period: string;
-  grade: string;
-  section: string;
-  subject: string;
-  teacher: string;
-  room: string;
-}
-
-let entryIdCounter = 1000;
-
-const DEFAULT_ENTRIES: TimetableEntry[] = [
-  { id: "TE-001", day: "Sunday",    period: "P1", grade: "10", section: "A", subject: "Mathematics",        teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
-  { id: "TE-002", day: "Sunday",    period: "P2", grade: "10", section: "A", subject: "Physics",            teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
-  { id: "TE-003", day: "Sunday",    period: "P3", grade: "10", section: "A", subject: "English",            teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-  { id: "TE-004", day: "Sunday",    period: "P5", grade: "10", section: "A", subject: "Arabic",             teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-005", day: "Sunday",    period: "P6", grade: "10", section: "A", subject: "Chemistry",          teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-006", day: "Monday",    period: "P1", grade: "10", section: "A", subject: "Physics",            teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
-  { id: "TE-007", day: "Monday",    period: "P2", grade: "10", section: "A", subject: "Mathematics",        teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
-  { id: "TE-008", day: "Monday",    period: "P3", grade: "10", section: "A", subject: "Chemistry",          teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-009", day: "Tuesday",   period: "P1", grade: "10", section: "A", subject: "Arabic",             teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-010", day: "Tuesday",   period: "P2", grade: "10", section: "A", subject: "Chemistry",          teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-011", day: "Wednesday", period: "P1", grade: "10", section: "A", subject: "English",            teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-  { id: "TE-012", day: "Wednesday", period: "P3", grade: "10", section: "A", subject: "Arabic",             teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-013", day: "Thursday",  period: "P1", grade: "10", section: "A", subject: "Computer Science",   teacher: "Mr. Hassan Al-Shehri",  room: "Lab2" },
-  { id: "TE-014", day: "Thursday",  period: "P2", grade: "10", section: "A", subject: "English",            teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-];
+const SECTIONS = ["A", "B", "C", "D"];
 
 export default function VPTimetablePage() {
   const { activeRole } = useRoleStore();
   const { user } = useAuthStore();
+  const {
+    timetableEntries,
+    addTimetableEntry,
+    updateTimetableEntry,
+    deleteTimetableEntry,
+  } = useDataStore();
 
   const gradeRange = VP_GRADE_RANGES[activeRole as "vp1" | "vp2" | "vp3"] ?? [1, 12];
-  const grades = Array.from({ length: gradeRange[1] - gradeRange[0] + 1 }, (_, i) => String(gradeRange[0] + i));
+  const grades = Array.from(
+    { length: gradeRange[1] - gradeRange[0] + 1 },
+    (_, i) => String(gradeRange[0] + i)
+  );
 
-  const [entries, setEntries] = useState<TimetableEntry[]>(DEFAULT_ENTRIES);
   const [selectedDay, setSelectedDay] = useState("Sunday");
   const [selectedGrade, setSelectedGrade] = useState(grades[grades.length - 1] ?? "10");
   const [selectedSection, setSelectedSection] = useState("A");
   const [addOpen, setAddOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<TimetableEntry | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
-
   const [form, setForm] = useState({ period: "P1", subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" });
 
+  const actor = user?.name ?? activeRole;
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(null), 3000); };
 
   const filtered = useMemo(() =>
-    entries.filter((e) => e.day === selectedDay && e.grade === selectedGrade && e.section === selectedSection),
-    [entries, selectedDay, selectedGrade, selectedSection]
+    timetableEntries.filter(
+      (e) =>
+        e.day === selectedDay &&
+        e.grade === selectedGrade &&
+        e.section === selectedSection &&
+        Number(e.grade) >= gradeRange[0] &&
+        Number(e.grade) <= gradeRange[1]
+    ),
+    [timetableEntries, selectedDay, selectedGrade, selectedSection, gradeRange]
   );
 
   const handleAdd = () => {
-    const id = `TE-${++entryIdCounter}`;
-    const entry: TimetableEntry = { id, day: selectedDay, grade: selectedGrade, section: selectedSection, ...form };
-    setEntries((prev) => [...prev, entry]);
+    addTimetableEntry(
+      { day: selectedDay, grade: selectedGrade, section: selectedSection, ...form },
+      actor
+    );
     setAddOpen(false);
     setForm({ period: "P1", subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" });
     showToast(`Added ${form.subject} on ${selectedDay} ${form.period}`);
@@ -111,13 +100,13 @@ export default function VPTimetablePage() {
 
   const handleEdit = () => {
     if (!editEntry) return;
-    setEntries((prev) => prev.map((e) => e.id === editEntry.id ? { ...editEntry, ...form } : e));
+    updateTimetableEntry(editEntry.id, form, actor);
     setEditEntry(null);
     showToast("Timetable entry updated");
   };
 
   const handleDelete = (id: string) => {
-    setEntries((prev) => prev.filter((e) => e.id !== id));
+    deleteTimetableEntry(id, actor);
     showToast("Entry removed");
   };
 
@@ -125,8 +114,6 @@ export default function VPTimetablePage() {
     setEditEntry(e);
     setForm({ period: e.period, subject: e.subject, teacher: e.teacher, room: e.room });
   };
-
-  const SECTIONS = ["A", "B", "C", "D"];
 
   return (
     <div className="space-y-6">
@@ -141,21 +128,31 @@ export default function VPTimetablePage() {
         description={`Manage class schedules — Grades ${gradeRange[0]}–${gradeRange[1]}`}
         breadcrumbs={[{ label: "VP Dashboard" }, { label: "Timetable" }]}
         actions={
-          <Button onClick={() => { setAddOpen(true); setForm({ period: "P1", subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" }); }} className="gap-1.5">
+          <Button
+            onClick={() => {
+              setAddOpen(true);
+              setForm({ period: "P1", subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" });
+            }}
+            className="gap-1.5"
+          >
             <Plus className="h-4 w-4" /> Add Period
           </Button>
         }
       />
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex gap-1.5 flex-wrap">
           {DAYS.map((day) => (
-            <button key={day}
+            <button
+              key={day}
               onClick={() => setSelectedDay(day)}
-              className={cn("px-3 py-1.5 rounded-lg text-sm font-medium border transition-all",
-                selectedDay === day ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted"
-              )}>
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-sm font-medium border transition-all",
+                selectedDay === day
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border text-muted-foreground hover:bg-muted"
+              )}
+            >
               {day.slice(0, 3)}
             </button>
           ))}
@@ -178,24 +175,30 @@ export default function VPTimetablePage() {
         </div>
       </div>
 
-      {/* Timetable grid */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Calendar className="h-4 w-4" />
             {selectedDay} — Grade {selectedGrade}-{selectedSection}
-            <Badge variant="secondary" className="ml-auto">{filtered.length} period{filtered.length !== 1 ? "s" : ""}</Badge>
+            <Badge variant="secondary" className="ml-auto">
+              {filtered.length} period{filtered.length !== 1 ? "s" : ""}
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {PERIODS.map((period) => {
             const entry = filtered.find((e) => e.period === period.id);
-            const colorClass = entry ? (SUBJECT_COLORS[entry.subject] || "bg-muted text-muted-foreground") : "";
+            const colorClass = entry
+              ? (SUBJECT_COLORS[entry.subject] || "bg-muted text-muted-foreground")
+              : "";
             return (
-              <div key={period.id} className={cn(
-                "flex items-center gap-3 p-3 rounded-xl border transition-all",
-                entry ? "bg-card hover:shadow-sm" : "bg-muted/30 border-dashed"
-              )}>
+              <div
+                key={period.id}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                  entry ? "bg-card hover:shadow-sm" : "bg-muted/30 border-dashed"
+                )}
+              >
                 <div className="w-16 shrink-0 text-right">
                   <p className="text-xs font-bold text-muted-foreground">{period.label}</p>
                   <p className="text-[10px] text-muted-foreground">{period.time}</p>
@@ -215,7 +218,11 @@ export default function VPTimetablePage() {
                       <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(entry)}>
                         <Edit2 className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:text-destructive" onClick={() => handleDelete(entry.id)}>
+                      <Button
+                        variant="ghost" size="sm"
+                        className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(entry.id)}
+                      >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -223,8 +230,13 @@ export default function VPTimetablePage() {
                 ) : (
                   <>
                     <p className="text-xs text-muted-foreground flex-1 italic">No class scheduled</p>
-                    <Button variant="ghost" size="sm" className="text-xs gap-1 h-7"
-                      onClick={() => { setAddOpen(true); setForm({ period: period.id, subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" }); }}>
+                    <Button
+                      variant="ghost" size="sm" className="text-xs gap-1 h-7"
+                      onClick={() => {
+                        setAddOpen(true);
+                        setForm({ period: period.id, subject: SUBJECTS[0], teacher: TEACHERS[0], room: "" });
+                      }}
+                    >
                       <Plus className="h-3 w-3" /> Add
                     </Button>
                   </>
@@ -246,30 +258,50 @@ export default function VPTimetablePage() {
           <div className="space-y-3 py-2">
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Period</label>
-              <select value={form.period} onChange={(e) => setForm({ ...form, period: e.target.value })} className="w-full h-9 px-3 rounded-md border text-sm bg-background">
+              <select
+                value={form.period}
+                onChange={(e) => setForm({ ...form, period: e.target.value })}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
                 {PERIODS.map((p) => <option key={p.id} value={p.id}>{p.label} — {p.time}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Subject</label>
-              <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full h-9 px-3 rounded-md border text-sm bg-background">
+              <select
+                value={form.subject}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
                 {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Teacher</label>
-              <select value={form.teacher} onChange={(e) => setForm({ ...form, teacher: e.target.value })} className="w-full h-9 px-3 rounded-md border text-sm bg-background">
+              <select
+                value={form.teacher}
+                onChange={(e) => setForm({ ...form, teacher: e.target.value })}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
                 {TEACHERS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Room</label>
-              <Input value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} placeholder="e.g. R204, Lab1, Gym" />
+              <Input
+                value={form.room}
+                onChange={(e) => setForm({ ...form, room: e.target.value })}
+                placeholder="e.g. R204, Lab1, Gym"
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setAddOpen(false)}><X className="h-4 w-4 mr-1" /> Cancel</Button>
-            <Button onClick={handleAdd} disabled={!form.room.trim()}><Check className="h-4 w-4 mr-1" /> Add Period</Button>
+            <Button variant="ghost" onClick={() => setAddOpen(false)}>
+              <X className="h-4 w-4 mr-1" /> Cancel
+            </Button>
+            <Button onClick={handleAdd} disabled={!form.room.trim()}>
+              <Check className="h-4 w-4 mr-1" /> Add Period
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -285,24 +317,39 @@ export default function VPTimetablePage() {
           <div className="space-y-3 py-2">
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Subject</label>
-              <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full h-9 px-3 rounded-md border text-sm bg-background">
+              <select
+                value={form.subject}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
                 {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Teacher</label>
-              <select value={form.teacher} onChange={(e) => setForm({ ...form, teacher: e.target.value })} className="w-full h-9 px-3 rounded-md border text-sm bg-background">
+              <select
+                value={form.teacher}
+                onChange={(e) => setForm({ ...form, teacher: e.target.value })}
+                className="w-full h-9 px-3 rounded-md border text-sm bg-background"
+              >
                 {TEACHERS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Room</label>
-              <Input value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} />
+              <Input
+                value={form.room}
+                onChange={(e) => setForm({ ...form, room: e.target.value })}
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setEditEntry(null)}><X className="h-4 w-4 mr-1" /> Cancel</Button>
-            <Button onClick={handleEdit}><Check className="h-4 w-4 mr-1" /> Save Changes</Button>
+            <Button variant="ghost" onClick={() => setEditEntry(null)}>
+              <X className="h-4 w-4 mr-1" /> Cancel
+            </Button>
+            <Button onClick={handleEdit}>
+              <Check className="h-4 w-4 mr-1" /> Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

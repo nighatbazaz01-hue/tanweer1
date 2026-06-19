@@ -14,7 +14,10 @@ import { tasks as initialTasks, type Task, type TaskStatus } from "@/lib/mockDat
 import { allNotifications, type Notification } from "@/lib/mockData/notifications";
 import { initialLeaveRequests, type LeaveRequest, type LeaveStatus } from "@/lib/mockData/leaves";
 import { mockAdmissionLeads } from "@/lib/mockData";
-import { getAllStudents, type Student } from "@/lib/mockData/population";
+import {
+  getAllStudents, generateAttendanceRecords,
+  type Student, type PopulationAttendanceRecord, type AttendanceStatus,
+} from "@/lib/mockData/population";
 import {
   generateTransportRecords, type TransportRecord,
   initialVehicles, type VehicleRecord, type VehicleStatus, type VehicleType, type FuelType,
@@ -36,6 +39,11 @@ export type AppEventType =
   | "taskCreated"
   | "taskUpdated"
   | "attendanceSaved"
+  | "attendanceRecordUpdated"
+  | "bulkAttendanceUpdated"
+  | "timetableEntryAdded"
+  | "timetableEntryUpdated"
+  | "timetableEntryDeleted"
   | "leadStatusUpdated"
   | "leadAdded"
   | "studentAdded"
@@ -92,6 +100,45 @@ let leaveCounter = 1000;
 let vehicleCounter = 1000;
 let transportReqCounter = 1000;
 
+// ─── Timetable Types ──────────────────────────────────────────────────────────
+export interface TimetableEntry {
+  id: string;
+  day: string;
+  period: string;
+  grade: string;
+  section: string;
+  subject: string;
+  teacher: string;
+  room: string;
+}
+
+let timetableIdCounter = 2000;
+
+const DEFAULT_TIMETABLE_ENTRIES: TimetableEntry[] = [
+  { id: "TE-001", day: "Sunday",    period: "P1", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
+  { id: "TE-002", day: "Sunday",    period: "P2", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
+  { id: "TE-003", day: "Sunday",    period: "P3", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
+  { id: "TE-004", day: "Sunday",    period: "P5", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
+  { id: "TE-005", day: "Sunday",    period: "P6", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
+  { id: "TE-006", day: "Monday",    period: "P1", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
+  { id: "TE-007", day: "Monday",    period: "P2", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
+  { id: "TE-008", day: "Monday",    period: "P3", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
+  { id: "TE-009", day: "Tuesday",   period: "P1", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
+  { id: "TE-010", day: "Tuesday",   period: "P2", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
+  { id: "TE-011", day: "Wednesday", period: "P1", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
+  { id: "TE-012", day: "Wednesday", period: "P3", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
+  { id: "TE-013", day: "Thursday",  period: "P1", grade: "10", section: "A", subject: "Computer Science", teacher: "Mr. Hassan Al-Shehri",  room: "Lab2" },
+  { id: "TE-014", day: "Thursday",  period: "P2", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
+  { id: "TE-015", day: "Sunday",    period: "P1", grade: "1",  section: "A", subject: "Arabic",           teacher: "Mr. Faris Al-Shammari", room: "R101" },
+  { id: "TE-016", day: "Sunday",    period: "P2", grade: "1",  section: "A", subject: "Mathematics",      teacher: "Ms. Reem Al-Harbi",     room: "R102" },
+  { id: "TE-017", day: "Sunday",    period: "P1", grade: "5",  section: "A", subject: "English",          teacher: "Mr. Hassan Al-Shehri",  room: "R201" },
+  { id: "TE-018", day: "Sunday",    period: "P2", grade: "5",  section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R202" },
+  { id: "TE-019", day: "Sunday",    period: "P1", grade: "9",  section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R305" },
+  { id: "TE-020", day: "Sunday",    period: "P2", grade: "9",  section: "A", subject: "Chemistry",        teacher: "Dr. Layla Al-Anazi",    room: "Lab1" },
+  { id: "TE-021", day: "Sunday",    period: "P1", grade: "12", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
+  { id: "TE-022", day: "Sunday",    period: "P2", grade: "12", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
+];
+
 // ─── Assignment Type ──────────────────────────────────────────────────────────
 export interface Assignment {
   id: string;
@@ -119,6 +166,8 @@ interface DataStore {
   transportRecords: TransportRecord[];
   vehicles: VehicleRecord[];
   transportRequests: TransportRequest[];
+  timetableEntries: TimetableEntry[];
+  attendanceRecords: PopulationAttendanceRecord[];
 
   // ── Event Log (last 100 events) ──
   eventLog: AppEvent[];
@@ -200,6 +249,13 @@ interface DataStore {
     lateCount: number,
     actor: string
   ) => void;
+  updateAttendanceRecord: (id: string, status: AttendanceStatus, actor: string) => void;
+  bulkUpdateAttendance: (ids: string[], status: AttendanceStatus, actor: string) => void;
+
+  // ── Timetable Actions ──
+  addTimetableEntry: (entry: Omit<TimetableEntry, "id">, actor: string) => void;
+  updateTimetableEntry: (id: string, updates: Partial<Omit<TimetableEntry, "id">>, actor: string) => void;
+  deleteTimetableEntry: (id: string, actor: string) => void;
 
   // ── Assignment Actions ──
   addAssignment: (
@@ -251,6 +307,8 @@ export const useDataStore = create<DataStore>((set) => ({
   vehicles:         JSON.parse(JSON.stringify(initialVehicles)),
   transportRequests: JSON.parse(JSON.stringify(initialTransportRequests)),
   leaveRequests:    JSON.parse(JSON.stringify(initialLeaveRequests)),
+  timetableEntries: JSON.parse(JSON.stringify(DEFAULT_TIMETABLE_ENTRIES)),
+  attendanceRecords: generateAttendanceRecords(),
   eventLog:         [],
 
   // ── Student Actions ──────────────────────────────────────────────────────
@@ -560,6 +618,85 @@ export const useDataStore = create<DataStore>((set) => ({
         date:    "Jun 13, 2026",
       });
       return { eventLog: [event, ...state.eventLog].slice(0, 100) };
+    }),
+
+  updateAttendanceRecord: (id, status, actor) =>
+    set((state) => {
+      const record = state.attendanceRecords.find((r) => r.id === id);
+      const event = makeEvent("attendanceRecordUpdated", actor, {
+        recordId: id,
+        studentName: record?.studentName ?? "",
+        status,
+        grade: record?.grade,
+        section: record?.section,
+      });
+      return {
+        attendanceRecords: state.attendanceRecords.map((r) =>
+          r.id === id ? { ...r, status } : r
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  bulkUpdateAttendance: (ids, status, actor) =>
+    set((state) => {
+      const idSet = new Set(ids);
+      const event = makeEvent("bulkAttendanceUpdated", actor, {
+        count: ids.length,
+        status,
+      });
+      return {
+        attendanceRecords: state.attendanceRecords.map((r) =>
+          idSet.has(r.id) ? { ...r, status } : r
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Timetable Actions ────────────────────────────────────────────────────
+
+  addTimetableEntry: (entry, actor) =>
+    set((state) => {
+      const id = `TE-${++timetableIdCounter}`;
+      const newEntry: TimetableEntry = { id, ...entry };
+      const event = makeEvent("timetableEntryAdded", actor, {
+        entryId: id,
+        day: entry.day,
+        period: entry.period,
+        subject: entry.subject,
+        grade: entry.grade,
+        section: entry.section,
+      });
+      return {
+        timetableEntries: [...state.timetableEntries, newEntry],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  updateTimetableEntry: (id, updates, actor) =>
+    set((state) => {
+      const event = makeEvent("timetableEntryUpdated", actor, { entryId: id, ...updates });
+      return {
+        timetableEntries: state.timetableEntries.map((e) =>
+          e.id === id ? { ...e, ...updates } : e
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  deleteTimetableEntry: (id, actor) =>
+    set((state) => {
+      const entry = state.timetableEntries.find((e) => e.id === id);
+      const event = makeEvent("timetableEntryDeleted", actor, {
+        entryId: id,
+        subject: entry?.subject,
+        day: entry?.day,
+        period: entry?.period,
+      });
+      return {
+        timetableEntries: state.timetableEntries.filter((e) => e.id !== id),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
     }),
 
   // ── Assignment Actions ──────────────────────────────────────────────────

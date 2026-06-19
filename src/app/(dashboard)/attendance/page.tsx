@@ -11,28 +11,37 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { generateAttendanceRecords, type PopulationAttendanceRecord, type AttendanceStatus } from "@/lib/mockData/population";
+import { type PopulationAttendanceRecord, type AttendanceStatus } from "@/lib/mockData/population";
 import { useRoleStore } from "@/store/useRoleStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useDataStore } from "@/store/useDataStore";
 import { filterAttendanceForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 const statusConfig: Record<AttendanceStatus, {
   label: string; variant: "success" | "destructive" | "warning" | "secondary"; icon: React.ElementType; color: string;
 }> = {
-  present: { label: "Present", variant: "success", icon: CheckCircle, color: "text-green-600" },
-  absent:  { label: "Absent",  variant: "destructive", icon: XCircle,    color: "text-red-600" },
-  late:    { label: "Late",    variant: "warning",     icon: Clock,       color: "text-amber-600" },
-  excused: { label: "Excused", variant: "secondary",   icon: Shield,      color: "text-blue-600" },
+  present: { label: "Present", variant: "success",     icon: CheckCircle, color: "text-green-600" },
+  absent:  { label: "Absent",  variant: "destructive", icon: XCircle,     color: "text-red-600"   },
+  late:    { label: "Late",    variant: "warning",      icon: Clock,       color: "text-amber-600" },
+  excused: { label: "Excused", variant: "secondary",    icon: Shield,      color: "text-blue-600"  },
 };
 
 const PAGE_SIZE = 30;
 
 export default function AttendancePage() {
   const { activeRole } = useRoleStore();
-  const baseRecords = useMemo(() => filterAttendanceForRole(generateAttendanceRecords(), activeRole), [activeRole]);
-  const [records, setRecords] = useState<PopulationAttendanceRecord[]>(baseRecords);
-  useEffect(() => { setRecords(baseRecords); setPage(1); }, [baseRecords]);
+  const { user } = useAuthStore();
+  const { attendanceRecords: allRecords, updateAttendanceRecord, bulkUpdateAttendance } = useDataStore();
+
+  const actor = user?.name ?? activeRole;
+  const todayLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+  const records = useMemo(
+    () => filterAttendanceForRole(allRecords, activeRole),
+    [allRecords, activeRole]
+  );
+
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<AttendanceStatus | "all">("all");
@@ -42,10 +51,9 @@ export default function AttendancePage() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkStatus, setBulkStatus] = useState<AttendanceStatus>("present");
 
-  const todayLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-
   const handleBulkMark = () => {
-    setRecords((prev) => prev.map((r) => ({ ...r, status: bulkStatus })));
+    const ids = records.map((r) => r.id);
+    bulkUpdateAttendance(ids, bulkStatus, actor);
     setBulkOpen(false);
   };
 
@@ -53,25 +61,25 @@ export default function AttendancePage() {
     const q = search.toLowerCase();
     return records.filter((r) => {
       const matchSearch = !q || r.studentName.toLowerCase().includes(q) || r.studentId.toLowerCase().includes(q);
-      const matchGrade = gradeFilter === "all" || r.grade === gradeFilter;
+      const matchGrade  = gradeFilter === "all" || r.grade === gradeFilter;
       const matchStatus = statusFilter === "all" || r.status === statusFilter;
       return matchSearch && matchGrade && matchStatus;
     });
   }, [records, search, gradeFilter, statusFilter]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const presentCount = records.filter((r) => r.status === "present").length;
   const absentCount  = records.filter((r) => r.status === "absent").length;
   const lateCount    = records.filter((r) => r.status === "late").length;
-  const rate = Math.round((presentCount / records.length) * 100);
+  const rate = records.length > 0 ? Math.round((presentCount / records.length) * 100) : 0;
 
   const openEdit = (rec: PopulationAttendanceRecord) => { setEditing(rec); setEditStatus(rec.status); };
 
   const saveEdit = () => {
     if (!editing) return;
-    setRecords((prev) => prev.map((r) => r.id === editing.id ? { ...r, status: editStatus } : r));
+    updateAttendanceRecord(editing.id, editStatus, actor);
     setEditing(null);
   };
 
@@ -85,9 +93,9 @@ export default function AttendancePage() {
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatsCard title="Present" value={presentCount} subtitle={`${rate}% rate`} icon={CheckCircle} iconClassName="bg-green-500" />
-        <StatsCard title="Absent"  value={absentCount}  subtitle="Today"         icon={XCircle}      iconClassName="bg-red-500" />
-        <StatsCard title="Late"    value={lateCount}    subtitle="Today"         icon={Clock}        iconClassName="bg-amber-500" />
+        <StatsCard title="Present" value={presentCount} subtitle={`${rate}% rate`}       icon={CheckCircle} iconClassName="bg-green-500" />
+        <StatsCard title="Absent"  value={absentCount}  subtitle="Today"                 icon={XCircle}     iconClassName="bg-red-500"   />
+        <StatsCard title="Late"    value={lateCount}    subtitle="Today"                 icon={Clock}       iconClassName="bg-amber-500" />
         <StatsCard title="Overall Rate" value={`${rate}%`} subtitle={`${records.length} students`} icon={Shield} iconClassName="bg-blue-500" />
       </div>
 
@@ -105,20 +113,32 @@ export default function AttendancePage() {
         <div className="flex gap-1.5 flex-wrap">
           <span className="text-xs text-muted-foreground self-center">Grade:</span>
           {(["all", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const).map((g) => (
-            <button key={g} onClick={() => { setGradeFilter(g); setPage(1); }}
-              className={cn("px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
-                gradeFilter === g ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted text-muted-foreground"
-              )}>
+            <button
+              key={g}
+              onClick={() => { setGradeFilter(g); setPage(1); }}
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
+                gradeFilter === g
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border hover:bg-muted text-muted-foreground"
+              )}
+            >
               {g === "all" ? "All" : `G${g}`}
             </button>
           ))}
         </div>
         <div className="flex gap-1.5">
           {(["all", "present", "absent", "late", "excused"] as const).map((s) => (
-            <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
-              className={cn("px-2.5 py-1 rounded-full text-xs font-medium border capitalize transition-all",
-                statusFilter === s ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted text-muted-foreground"
-              )}>
+            <button
+              key={s}
+              onClick={() => { setStatusFilter(s); setPage(1); }}
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-medium border capitalize transition-all",
+                statusFilter === s
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border hover:bg-muted text-muted-foreground"
+              )}
+            >
               {s === "all" ? "All" : s}
             </button>
           ))}
@@ -159,7 +179,9 @@ export default function AttendancePage() {
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-sm text-muted-foreground">Page {page} of {totalPages} · {paginated.length} of {filtered.length}</p>
+          <p className="text-sm text-muted-foreground">
+            Page {page} of {totalPages} · {paginated.length} of {filtered.length}
+          </p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="gap-1">
               <ChevronLeft className="h-4 w-4" /> Prev
@@ -179,17 +201,24 @@ export default function AttendancePage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-sm text-muted-foreground">
-              Set attendance status for all <span className="font-semibold text-foreground">{records.length}</span> students in the current view.
+              Set attendance status for all{" "}
+              <span className="font-semibold text-foreground">{records.length}</span> students in scope.
             </p>
             <div className="grid grid-cols-2 gap-2">
               {(["present", "absent", "late", "excused"] as AttendanceStatus[]).map((s) => {
                 const cfg = statusConfig[s];
                 const Icon = cfg.icon;
                 return (
-                  <button key={s} onClick={() => setBulkStatus(s)}
-                    className={cn("flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all",
-                      bulkStatus === s ? "border-primary bg-primary/5 text-primary" : "border-border hover:bg-muted"
-                    )}>
+                  <button
+                    key={s}
+                    onClick={() => setBulkStatus(s)}
+                    className={cn(
+                      "flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all",
+                      bulkStatus === s
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border hover:bg-muted"
+                    )}
+                  >
                     <Icon className={cn("h-4 w-4", bulkStatus === s ? "text-primary" : cfg.color)} />
                     {s}
                   </button>
@@ -226,10 +255,16 @@ export default function AttendancePage() {
                   const cfg = statusConfig[s];
                   const Icon = cfg.icon;
                   return (
-                    <button key={s} onClick={() => setEditStatus(s)}
-                      className={cn("flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all",
-                        editStatus === s ? "border-primary bg-primary/5 text-primary" : "border-border hover:bg-muted"
-                      )}>
+                    <button
+                      key={s}
+                      onClick={() => setEditStatus(s)}
+                      className={cn(
+                        "flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all",
+                        editStatus === s
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-border hover:bg-muted"
+                      )}
+                    >
                       <Icon className={cn("h-4 w-4", editStatus === s ? "text-primary" : cfg.color)} />
                       {s}
                     </button>
