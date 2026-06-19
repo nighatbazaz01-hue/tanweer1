@@ -1,0 +1,379 @@
+PROJECT CONTEXT – TANWEER SCHOOL MANAGEMENT PLATFORM
+
+IMPORTANT: Read this entire prompt before making any code changes.
+
+This is a Next.js school management platform with role-based access.
+
+ROLES:
+
+* Admin
+* VP1 (Grades 10–12)
+* VP2 (Grades 6–9)
+* VP3 (Grades 1–5)
+* Teacher
+* Parent
+* Student
+* Transport roles
+
+ARCHITECTURE:
+
+* Zustand stores
+* Mock/demo environment
+* No backend
+* No Supabase
+* No Clerk
+* No external APIs
+* useDataStore is intended to be the single source of truth
+
+DOCUMENTATION FILES:
+
+* docs/PROJECT_STATE.md
+* docs/DEMO_CREDENTIALS.md
+* docs/AGENT_HANDOFF.md (if present)
+
+READ THESE FIRST.
+
+=========================================================
+PRIMARY GOAL
+============
+
+DO NOT BUILD NEW FEATURES.
+
+Perform the deepest audit possible and find:
+
+1. Broken buttons
+2. Dead links
+3. Buttons that only show a toast
+4. Buttons that redirect incorrectly
+5. Pages showing static data instead of store data
+6. Role permission leaks
+7. Cross-role data flow failures
+8. Count mismatches
+9. Demo inconsistencies
+10. Hidden routes not linked anywhere
+11. Sidebar items that do not work
+12. Dialog actions that do nothing
+13. Create/Edit/Delete actions that do not persist
+14. UI elements with misleading behaviour
+15. Placeholder data that breaks demo realism
+
+=========================================================
+MANDATORY TEST DEPTH
+====================
+
+Do NOT stop after finding a few issues.
+
+I want a full platform stress audit.
+
+Test every route.
+
+Test every role.
+
+Test every sidebar item.
+
+Test every tab.
+
+Test every modal.
+
+Test every button.
+
+Test every dropdown action.
+
+Test every table action.
+
+Test every card action.
+
+Test every dialog footer action.
+
+Test every navigation link.
+
+Test every quick action.
+
+Test every dashboard shortcut.
+
+If something is clickable:
+TEST IT.
+
+=========================================================
+ROLE TEST MATRIX
+================
+
+ADMIN:
+
+* Every dashboard card
+* Every quick action
+* Audit
+* AI Insights
+* Admissions
+* Students
+* Fees
+* Academics
+* Transport
+* Reports
+* Settings
+
+VP:
+
+* Dashboard
+* Tasks
+* Timetable
+* Meetings
+* Leave approvals
+* Teacher interactions
+* Student interactions
+
+TEACHER:
+
+* Dashboard
+* My Classes
+* Attendance
+* Homework
+* Performance
+* Leave
+* Messages
+* Students
+
+PARENT:
+
+* Dashboard
+* Attendance
+* Marks
+* Timetable
+* Fees
+* Transport
+* Messages
+
+STUDENT:
+
+* Dashboard
+* Attendance
+* Marks
+* Homework
+* Exams
+* Projects
+* Timetable
+
+=========================================================
+CROSS-ROLE FLOW TESTS
+=====================
+
+Verify every one of these.
+
+Teacher marks attendance
+→ Parent sees update
+
+Teacher marks attendance
+→ Student sees update
+
+Teacher enters grades
+→ Parent sees update
+
+Teacher enters grades
+→ Student sees update
+
+VP edits timetable
+→ Parent sees update
+
+VP edits timetable
+→ Student sees update
+
+Admin creates announcement
+→ All roles see it
+
+Parent transport request
+→ VP/Admin sees it
+
+VP approves transport request
+→ Parent sees update
+
+Teacher submits leave
+→ VP sees request
+
+VP approves leave
+→ Teacher sees result
+
+Task assigned by VP
+→ Teacher sees task
+
+Teacher updates task
+→ VP sees update
+
+=========================================================
+DEEP CONSISTENCY CHECKS
+=======================
+
+Compare all counts.
+
+Example:
+
+Teacher dashboard says:
+10A = 12 students
+
+Then verify:
+
+My Classes = 12
+
+Attendance = 12
+
+Homework = 12
+
+Performance = 12
+
+Students page = 12
+
+Any mismatch = report it.
+
+Do this for:
+
+* students
+* attendance
+* homework
+* grades
+* transport
+* tasks
+* routes
+* vehicles
+
+=========================================================
+DATA SOURCE AUDIT
+=================
+
+For every page identify:
+
+STORE DATA
+or
+STATIC DATA
+
+List all pages still using:
+
+* hardcoded arrays
+* mock constants
+* duplicated state
+* disconnected data
+
+Find every violation of:
+
+"Single source of truth"
+
+=========================================================
+SECURITY AUDIT
+==============
+
+Verify:
+
+Student cannot access:
+
+* admin
+* vp
+* teacher
+* audit
+
+Parent cannot access:
+
+* admin
+* vp
+* audit
+
+Teacher cannot access:
+
+* admin
+* admissions
+
+VP cannot access:
+
+* student
+* parent
+
+Verify:
+
+* redirects
+* route guards
+* event logging
+
+Verify Demo Guide credentials page is Admin-only.
+
+Verify PIN-protected fields remain protected.
+
+=========================================================
+DEMO REALISM AUDIT
+==================
+
+Find anything that would look strange during a board presentation.
+
+Examples:
+
+Bad:
+
+* Start Class for physical classroom
+* Fake countdown timers
+* Empty pages
+* Placeholder text
+* Dead actions
+* 2024 dates mixed with 2026 dates
+* Wrong student counts
+* Dummy names
+* Broken charts
+
+Report all of these.
+
+=========================================================
+AUTOMATED EXPLORATION
+=====================
+
+I want the agent to simulate:
+
+* route crawl
+* click crawl
+* action crawl
+* modal crawl
+* navigation crawl
+
+The goal is:
+
+"If a board member clicks anything during the demo, it should work."
+
+=========================================================
+OUTPUT FORMAT
+=============
+
+Produce:
+
+SECTION 1
+Executive Summary
+
+SECTION 2
+Critical Issues
+
+SECTION 3
+High Issues
+
+SECTION 4
+Medium Issues
+
+SECTION 5
+Low Issues
+
+SECTION 6
+Cross-Role Failures
+
+SECTION 7
+Security Findings
+
+SECTION 8
+Data Consistency Findings
+
+SECTION 9
+Static Data Findings
+
+SECTION 10
+Demo Readiness Score
+
+SECTION 11
+Recommended Fix Order
+
+IMPORTANT:
+Do not start implementing fixes immediately.
+
+First complete the entire audit.
+
+Only after presenting the audit should implementation begin.
