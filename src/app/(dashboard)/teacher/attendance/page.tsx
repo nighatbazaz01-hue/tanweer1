@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useDataStore } from "@/store/useDataStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { classAttendanceToday, teacherProfile } from "@/lib/mockData/teacher";
+import { DEMO_CHILD_ID, DEMO_CHILD_NAME } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 type AttStatus = "present" | "absent" | "late";
@@ -23,7 +24,7 @@ const statusConfig: Record<AttStatus, { label: string; color: string; icon: Reac
 const today = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 
 export default function TeacherAttendancePage() {
-  const { saveAttendance } = useDataStore();
+  const { saveAttendance, updateAttendanceRecord, attendanceRecords } = useDataStore();
   const { user } = useAuthStore();
 
   const [records, setRecords] = useState<{ id: string; name: string; grade: string; status: AttStatus }[]>(
@@ -42,7 +43,20 @@ export default function TeacherAttendancePage() {
   const lateCount    = records.filter((r) => r.status === "late").length;
 
   const handleSave = () => {
-    saveAttendance(teacherProfile.grade, presentCount, absentCount, lateCount, user?.name || "Teacher");
+    const actor = user?.name || "Teacher";
+    saveAttendance(teacherProfile.grade, presentCount, absentCount, lateCount, actor);
+
+    // Propagate attendance to the store so parent/student portals reflect the teacher's marks.
+    // Ahmed Al-Rashidi (DEMO_CHILD_NAME) is the demo linked child — find his status in the
+    // local roster and update the matching attendanceRecord (id = ATT-STU-0451).
+    const ahmedRecord = records.find((r) => r.name === DEMO_CHILD_NAME);
+    if (ahmedRecord) {
+      const storeRecord = attendanceRecords.find((r) => r.studentId === DEMO_CHILD_ID);
+      if (storeRecord) {
+        updateAttendanceRecord(storeRecord.id, ahmedRecord.status as "present" | "absent" | "late" | "excused", actor);
+      }
+    }
+
     setSaved(true);
     setToastMsg(`Attendance saved — ${presentCount} present, ${absentCount} absent, ${lateCount} late`);
     setTimeout(() => setToastMsg(null), 3000);

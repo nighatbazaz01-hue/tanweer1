@@ -5,3 +5,6 @@
 - [PIN Security System](pin-security.md) — session-level PIN gate for admin/VP sensitive fields; usePinStore + PinGate component; 3-failure lockout fires addNotification to admin
 - [Student Data Model](student-data-model.md) — Student interface in population.ts is the canonical shape; expanded with 10+ fields in Phase 6; always use getAllStudents() via useDataStore
 - [Grade Records Store](grade-records-store.md) — GradeRecord slice in useDataStore; teacher writes via bulkSetGradeRecords; parent/student marks overlay live records on static subjectMarks by subject name
+- [Attendance Propagation](attendance-propagation.md) — saveAttendance only logs events; propagation to parent/student requires updateAttendanceRecord keyed by ATT-${studentId}; demo child is DEMO_CHILD_ID with attendance record id ATT-STU-0451
+- [Timetable Consistency](timetable-consistency.md) — parent timetable uses useDataStore.timetableEntries (reactive to VP edits); student timetable was hardcoded — now fixed to use store; store period keys are P1–P8; PERIODS display array maps periodKey null = Break/Prayer rows
+- [Grade 10-A Student Count](grade10a-count.md) — population.ts generates 13 students for Grade 10-A (50/grade / 4 sections, A gets indices 0–12); classAttendanceToday expanded to 12 to align; todaysClasses and homeworkAssignments totals updated to match

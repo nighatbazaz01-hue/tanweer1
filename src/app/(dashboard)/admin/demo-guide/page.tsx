@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Eye, EyeOff, CheckCircle, Circle, Shield, User, Copy, Check } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, Circle, Shield, User, Copy, Check, Lock } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useRoleStore } from "@/store/useRoleStore";
 import { cn } from "@/lib/utils";
 
 interface Credential {
@@ -159,6 +160,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function DemoGuidePage() {
+  const { activeRole } = useRoleStore();
   const [showPasswords, setShowPasswords] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
@@ -167,6 +169,20 @@ export default function DemoGuidePage() {
     if (next.has(n)) next.delete(n); else next.add(n);
     return next;
   });
+
+  if (activeRole !== "admin") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center">
+        <div className="rounded-full bg-muted p-6">
+          <Lock className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="text-lg font-semibold">Restricted Access</p>
+          <p className="text-sm text-muted-foreground mt-1">This page is only accessible to the School Admin role.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

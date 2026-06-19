@@ -1,0 +1,223 @@
+STOP FEATURE DEVELOPMENT.
+
+Do NOT add dashboards.
+Do NOT add quick-view panels.
+Do NOT add AI improvements.
+Do NOT add analytics.
+
+Run a FINAL DEMO-READINESS AUDIT.
+
+Goal:
+
+Validate that every visible number, count, roster, KPI, class size, attendance count, homework count, grade count, transport count, and dashboard summary is internally consistent.
+
+---
+
+## PHASE 1 — DATA CONSISTENCY CROSS-CHECK
+
+For Teacher role:
+
+Compare:
+
+* Dashboard class counts
+* My Classes counts
+* My Students counts
+* Attendance roster counts
+* Homework student counts
+* Performance student counts
+* Grade Entry student counts
+
+Produce table:
+
+Module
+Expected Count
+Actual Count
+Match? Y/N
+
+Verify:
+
+Grade 10-A student count is identical everywhere.
+
+---
+
+## PHASE 2 — ATTENDANCE CONSISTENCY
+
+Verify:
+
+Teacher Attendance
+Parent Attendance
+Student Attendance
+Admin Attendance
+
+All reference the same attendanceRecords.
+
+Test:
+
+1. Change attendance as Teacher.
+2. Verify Parent reflects change.
+3. Verify Student reflects change.
+4. Verify Admin reflects change.
+
+Document result.
+
+---
+
+## PHASE 3 — GRADE CONSISTENCY
+
+Test:
+
+Teacher enters grade.
+
+Verify:
+
+Teacher Performance
+Parent Marks
+Student Marks
+
+all show identical values.
+
+Verify:
+
+Average calculations update correctly.
+
+---
+
+## PHASE 4 — TIMETABLE CONSISTENCY
+
+VP edits timetable.
+
+Verify:
+
+VP Timetable
+Student Timetable
+Parent Timetable
+
+show identical data.
+
+---
+
+## PHASE 5 — TRANSPORT CONSISTENCY
+
+Parent submits transport request.
+
+Verify:
+
+Store updated.
+Transport module updated.
+Notifications generated.
+Event log generated.
+
+Verify role access:
+
+Admin
+VP
+Parent
+Student
+Teacher
+
+---
+
+## PHASE 6 — BUTTON COVERAGE TEST
+
+Enumerate every button in:
+
+Admin
+VP
+Teacher
+Parent
+Student
+
+Classify:
+
+Working
+Disabled intentionally
+Placeholder
+Broken
+
+Output exact location.
+
+---
+
+## PHASE 7 — ROUTE COVERAGE TEST
+
+Enumerate every sidebar route.
+
+Verify:
+
+* route exists
+* page loads
+* no redirect loops
+* no dashboard fallback redirects
+
+Output any failures.
+
+---
+
+## PHASE 8 — SECURITY VALIDATION
+
+Verify:
+
+1. Credentials not visible anywhere in UI.
+2. OTP code never displayed.
+3. Demo Guide hidden from non-admin roles.
+4. PIN-gated fields actually require PIN.
+5. Teachers cannot access protected parent data.
+6. Parents only see linked child.
+7. Students only see self.
+
+---
+
+## PHASE 9 — DEMO FLOW VALIDATION
+
+Run complete journey:
+
+Admin
+→ Students
+→ Attendance
+→ Transport
+→ AI
+
+Teacher
+→ Attendance
+→ Homework
+→ Performance
+
+Parent
+→ Attendance
+→ Marks
+→ Transport
+
+Student
+→ Homework
+→ Marks
+→ Timetable
+
+Document every step.
+
+---
+
+## OUTPUT
+
+Provide:
+
+CRITICAL ISSUES
+HIGH ISSUES
+MEDIUM ISSUES
+LOW ISSUES
+
+For each:
+
+* file
+* root cause
+* impact
+* fix
+
+Then provide:
+
+FINAL DEMO READINESS SCORE
+
+out of 100.
+
+Do not add new functionality.
+
+Only identify and stabilize remaining issues.
