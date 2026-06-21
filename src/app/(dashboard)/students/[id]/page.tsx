@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import {
   User, BookOpen, ClipboardList, FileText, MessageSquare,
   DollarSign, Sparkles, Star, TrendingUp, TrendingDown,
-  CheckCircle, Award, Brain, ArrowLeft,
+  CheckCircle, Award, Brain, ArrowLeft, Lock,
 } from "lucide-react";
 import { useRoleStore } from "@/store/useRoleStore";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -480,47 +480,59 @@ export default function Student360Page() {
 
       {/* ── FEES ── */}
       {activeTab === "fees" && (
-        <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Fee History">
-        <div className="space-y-5">
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: "Total Paid (Lifetime)", value: `SAR ${feeSummary.totalPaid.toLocaleString()}`,      color: "text-emerald-600", icon: CheckCircle },
-              { label: "Outstanding Balance",   value: `SAR ${feeSummary.outstanding.toLocaleString()}`,    color: "text-blue-600",    icon: DollarSign  },
-              { label: "Next Due",              value: feeSummary.nextDue,                                  color: "text-amber-600",   icon: Award       },
-            ].map((s) => (
-              <Card key={s.label}>
-                <CardContent className="p-4 flex items-center gap-3">
-                  <s.icon className={`h-8 w-8 ${s.color}`} />
-                  <div>
-                    <p className={`text-base font-bold ${s.color}`}>{s.value}</p>
-                    <p className="text-xs text-muted-foreground">{s.label}</p>
-                  </div>
+        ["admin", "vp1", "vp2", "vp3"].includes(activeRole) ? (
+          <PinGate correctPin={correctPin} role={activeRole} actor={user?.name || activeRole} field="Fee History">
+            <div className="space-y-5">
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { label: "Total Paid (Lifetime)", value: `SAR ${feeSummary.totalPaid.toLocaleString()}`,   color: "text-emerald-600", icon: CheckCircle },
+                  { label: "Outstanding Balance",   value: `SAR ${feeSummary.outstanding.toLocaleString()}`, color: "text-blue-600",    icon: DollarSign  },
+                  { label: "Next Due",              value: feeSummary.nextDue,                               color: "text-amber-600",   icon: Award       },
+                ].map((s) => (
+                  <Card key={s.label}>
+                    <CardContent className="p-4 flex items-center gap-3">
+                      <s.icon className={`h-8 w-8 ${s.color}`} />
+                      <div>
+                        <p className={`text-base font-bold ${s.color}`}>{s.value}</p>
+                        <p className="text-xs text-muted-foreground">{s.label}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold">Fee Payment History</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {feeHistory.map((fee, i) => (
+                    <div key={i} className="flex items-center gap-4 p-3 rounded-xl border">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{fee.term}</p>
+                        <p className="text-xs text-muted-foreground">Paid: {fee.paidDate} · {fee.method}</p>
+                        <p className="text-xs text-muted-foreground">Receipt: {fee.receipt}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">SAR {fee.amount.toLocaleString()}</p>
+                        <Badge variant="success" className="text-xs">Paid ✓</Badge>
+                      </div>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            </div>
+          </PinGate>
+        ) : (
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Fee Payment History</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {feeHistory.map((fee, i) => (
-                <div key={i} className="flex items-center gap-4 p-3 rounded-xl border">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{fee.term}</p>
-                    <p className="text-xs text-muted-foreground">Paid: {fee.paidDate} · {fee.method}</p>
-                    <p className="text-xs text-muted-foreground">Receipt: {fee.receipt}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">SAR {fee.amount.toLocaleString()}</p>
-                    <Badge variant="success" className="text-xs">Paid ✓</Badge>
-                  </div>
-                </div>
-              ))}
+            <CardContent className="py-12 flex flex-col items-center text-center gap-3">
+              <Lock className="h-10 w-10 text-muted-foreground/40" />
+              <div>
+                <p className="font-semibold text-foreground">Fee records require administrative access</p>
+                <p className="text-sm text-muted-foreground mt-1">Contact your school administrator to review fee history.</p>
+              </div>
             </CardContent>
           </Card>
-        </div>
-        </PinGate>
+        )
       )}
 
       {/* ── AI SUMMARY ── */}

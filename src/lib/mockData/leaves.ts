@@ -23,6 +23,7 @@ export interface LeaveRequest {
   reviewedAt?: string;
   reviewedBy?: string;
   remarks?: string;
+  gradeGroup?: 1 | 5 | 9;
 }
 
 export const initialLeaveRequests: LeaveRequest[] = [
@@ -37,6 +38,7 @@ export const initialLeaveRequests: LeaveRequest[] = [
     reason: "Recovering from flu — doctor recommends 2 days rest.",
     status: "pending",
     submittedAt: "Jun 14, 2026",
+    gradeGroup: 9,
   },
   {
     id: "LVR-002",
@@ -49,6 +51,7 @@ export const initialLeaveRequests: LeaveRequest[] = [
     reason: "Family commitment — attending a relative's graduation ceremony.",
     status: "pending",
     submittedAt: "Jun 13, 2026",
+    gradeGroup: 9,
   },
   {
     id: "LVR-003",
@@ -63,7 +66,8 @@ export const initialLeaveRequests: LeaveRequest[] = [
     submittedAt: "Jun 14, 2026",
     reviewedAt: "Jun 14, 2026",
     reviewedBy: "Dr. Khalid Al-Otaibi",
-    remarks: "Approved. Please arrange a substitute teacher for Grade 7-B.",
+    remarks: "Approved. Please arrange a substitute teacher for Grade 10-A.",
+    gradeGroup: 9,
   },
   {
     id: "LVR-004",
@@ -79,6 +83,7 @@ export const initialLeaveRequests: LeaveRequest[] = [
     reviewedAt: "Jun 11, 2026",
     reviewedBy: "Ms. Nora Al-Zahrani",
     remarks: "Insufficient coverage available on this date. Please reschedule.",
+    gradeGroup: 1,
   },
   {
     id: "LVR-005",
@@ -91,5 +96,6 @@ export const initialLeaveRequests: LeaveRequest[] = [
     reason: "Medical appointment in the morning — will attend from 11am.",
     status: "pending",
     submittedAt: "Jun 13, 2026",
+    gradeGroup: 5,
   },
 ];

@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useDataStore } from "@/store/useDataStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRoleStore } from "@/store/useRoleStore";
 import { LEAVE_TYPE_LABELS, type LeaveStatus } from "@/lib/mockData/leaves";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +29,13 @@ const statusConfig: Record<LeaveStatus, { label: string; icon: React.ElementType
 
 export default function VPLeavePage() {
   const { user } = useAuthStore();
+  const { activeRole } = useRoleStore();
   const { leaveRequests, approveLeaveRequest, rejectLeaveRequest } = useDataStore();
+
+  const vpRole = (["vp1", "vp2", "vp3"].includes(activeRole) ? activeRole : "vp3") as "vp1" | "vp2" | "vp3";
+  const vpGradeGroup: 1 | 5 | 9 = vpRole === "vp1" ? 1 : vpRole === "vp2" ? 5 : 9;
+
+  const scopedRequests = leaveRequests.filter((r) => (r.gradeGroup ?? 9) === vpGradeGroup);
 
   const [tab, setTab]         = useState<TabFilter>("pending");
   const [search, setSearch]   = useState("");
@@ -38,17 +45,17 @@ export default function VPLeavePage() {
   const [processing, setProcessing] = useState(false);
   const [done, setDone] = useState(false);
 
-  const filtered = leaveRequests.filter((r) => {
+  const filtered = scopedRequests.filter((r) => {
     const matchTab    = tab === "all" || r.status === tab;
     const matchSearch = !search || r.teacherName.toLowerCase().includes(search.toLowerCase());
     return matchTab && matchSearch;
   });
 
   const counts = {
-    all:      leaveRequests.length,
-    pending:  leaveRequests.filter((r) => r.status === "pending").length,
-    approved: leaveRequests.filter((r) => r.status === "approved").length,
-    rejected: leaveRequests.filter((r) => r.status === "rejected").length,
+    all:      scopedRequests.length,
+    pending:  scopedRequests.filter((r) => r.status === "pending").length,
+    approved: scopedRequests.filter((r) => r.status === "approved").length,
+    rejected: scopedRequests.filter((r) => r.status === "rejected").length,
   };
 
   const openAction = (id: string, type: "approve" | "reject") => {
@@ -80,7 +87,7 @@ export default function VPLeavePage() {
     setTimeout(() => closeAction(), 1500);
   };
 
-  const actionRequest = actionId ? leaveRequests.find((r) => r.id === actionId) : null;
+  const actionRequest = actionId ? scopedRequests.find((r) => r.id === actionId) : null;
 
   const tabs: { value: TabFilter; label: string; count: number }[] = [
     { value: "pending",  label: "Pending",  count: counts.pending  },

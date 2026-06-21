@@ -18,8 +18,9 @@ import { useDataStore } from "@/store/useDataStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   teacherProfile, todaysClasses,
-  studentPerformance, gradeDistribution, classRiskStudents,
+  studentPerformance, gradeDistribution,
 } from "@/lib/mockData/teacher";
+
 import { filterStudentsForRole, DEMO_TEACHER_NAME } from "@/lib/permissions";
 
 import {
@@ -38,6 +39,16 @@ const attendanceStatusStyle: Record<string, { label: string; color: string; icon
   absent:  { label: "Absent",  color: "text-red-600",     icon: XCircle },
   late:    { label: "Late",    color: "text-amber-600",   icon: Clock },
   excused: { label: "Excused", color: "text-blue-600",    icon: CheckCircle },
+};
+
+type AtRiskStudent = {
+  id: string;
+  name: string;
+  grade: string;
+  attendance: number;
+  lastScore: number;
+  risk: string;
+  trend: string;
 };
 
 export default function TeacherDashboard() {
@@ -60,6 +71,22 @@ export default function TeacherDashboard() {
     [assignments]
   );
 
+  // At-risk students derived from live store data — real IDs, real attendance
+  const atRiskStudents = useMemo((): AtRiskStudent[] =>
+    classStudents
+      .filter((s) => s.performanceTier === "at-risk" || (s.attendanceRate != null && s.attendanceRate < 85))
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        grade: `${s.grade}-${s.section}`,
+        attendance: s.attendanceRate ?? 0,
+        lastScore: s.performanceTier === "at-risk" ? 48 : 62,
+        risk: s.performanceTier === "at-risk" ? "High" : "Medium",
+        trend: (s.attendanceRate ?? 100) < 80 ? "down" : "stable",
+      })),
+    [classStudents]
+  );
+
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [classActionOpen, setClassActionOpen] = useState(false);
   const [activeClass, setActiveClass] = useState<typeof todaysClasses[0] | null>(null);
@@ -67,7 +94,7 @@ export default function TeacherDashboard() {
   const [hwTitle, setHwTitle] = useState("");
   const [hwDue, setHwDue] = useState("");
   const [hwPoints, setHwPoints] = useState("20");
-  const [contactStudent, setContactStudent] = useState<typeof classRiskStudents[0] | null>(null);
+  const [contactStudent, setContactStudent] = useState<AtRiskStudent | null>(null);
   const [composeBody, setComposeBody] = useState("");
 
   // Grade Entry
@@ -151,7 +178,7 @@ export default function TeacherDashboard() {
 
       <PageHeader
         title={`Good morning, ${teacherProfile.name.split(" ")[1]}!`}
-        description={`${teacherProfile.subject} · ${teacherProfile.sections.join(", ")} · ${teacherProfile.totalStudents} students`}
+        description={`${teacherProfile.subject} · Grade 10-A · ${classStudents.length} students`}
         breadcrumbs={[{ label: "Teacher" }, { label: "Dashboard" }]}
         actions={
           <div className="flex gap-2">
@@ -171,7 +198,7 @@ export default function TeacherDashboard() {
           { label: "Classes Today",  value: todaysClasses.length,                                                       sub: "2 remaining",               icon: BookOpen,     color: "bg-blue-500" },
           { label: "Present Today",  value: `${attendanceRate}%`,                                                       sub: `${presentCount}/${classStudents.length} students`, icon: CheckCircle,  color: "bg-emerald-500" },
           { label: "Homework Due",   value: activeTeacherAssignments.length,                                             sub: "Active assignments",          icon: BookOpen,     color: "bg-amber-500" },
-          { label: "At-Risk",        value: classRiskStudents.length,                                                   sub: "Needs attention",            icon: AlertTriangle, color: "bg-red-500" },
+          { label: "At-Risk",        value: atRiskStudents.length,                                                      sub: "Needs attention",            icon: AlertTriangle, color: "bg-red-500" },
         ].map((s) => (
           <Card key={s.label} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center gap-3">
@@ -348,8 +375,8 @@ export default function TeacherDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {classRiskStudents.map((s, i) => (
-              <div key={i} className="p-3 rounded-xl border space-y-2">
+            {atRiskStudents.map((s) => (
+              <div key={s.id} className="p-3 rounded-xl border space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-7 w-7">

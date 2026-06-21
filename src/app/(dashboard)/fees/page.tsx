@@ -17,7 +17,6 @@ import { useDataStore } from "@/store/useDataStore";
 import { filterFeesForRole, getRoleScopeLabel } from "@/lib/permissions";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 const statusConfig: Record<FeeStatus, {
   label: string; variant: "success" | "warning" | "destructive" | "secondary"; icon: React.ElementType;
@@ -34,8 +33,6 @@ export default function FeesPage() {
   const { activeRole } = useRoleStore();
   const { feeRecords: storeRecords, recordFeePayment } = useDataStore();
   const baseRecords = useMemo(() => filterFeesForRole(storeRecords, activeRole), [storeRecords, activeRole]);
-  const [records, setRecords] = useState<PopulationFeeRecord[]>(baseRecords);
-  useEffect(() => { setRecords(baseRecords); setPage(1); }, [baseRecords]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<FeeStatus | "all">("all");
   const [gradeFilter, setGradeFilter] = useState<number | "all">("all");
@@ -44,20 +41,20 @@ export default function FeesPage() {
   const [payAmount, setPayAmount] = useState("");
   const [paying, setPaying] = useState(false);
 
-  const totalAmount = useMemo(() => records.reduce((s, r) => s + r.amount, 0), [records]);
-  const totalPaid   = useMemo(() => records.reduce((s, r) => s + r.paidAmount, 0), [records]);
-  const totalOverdue = useMemo(() => records.filter((r) => r.status === "overdue").reduce((s, r) => s + r.amount, 0), [records]);
+  const totalAmount = useMemo(() => baseRecords.reduce((s, r) => s + r.amount, 0), [baseRecords]);
+  const totalPaid   = useMemo(() => baseRecords.reduce((s, r) => s + r.paidAmount, 0), [baseRecords]);
+  const totalOverdue = useMemo(() => baseRecords.filter((r) => r.status === "overdue").reduce((s, r) => s + r.amount, 0), [baseRecords]);
   const collectionRate = Math.round((totalPaid / totalAmount) * 100);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return records.filter((r) => {
+    return baseRecords.filter((r) => {
       const matchSearch = !q || r.studentName.toLowerCase().includes(q) || r.studentId.toLowerCase().includes(q);
       const matchStatus = statusFilter === "all" || r.status === statusFilter;
       const matchGrade = gradeFilter === "all" || r.grade === gradeFilter;
       return matchSearch && matchStatus && matchGrade;
     });
-  }, [records, search, statusFilter, gradeFilter]);
+  }, [baseRecords, search, statusFilter, gradeFilter]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -83,7 +80,7 @@ export default function FeesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <StatsCard title="Total Billed"   value={formatCurrency(totalAmount)}  subtitle="All students"        icon={DollarSign}   iconClassName="bg-blue-500" />
         <StatsCard title="Collected"      value={formatCurrency(totalPaid)}    subtitle={`${collectionRate}% rate`} icon={CheckCircle} iconClassName="bg-green-500" />
-        <StatsCard title="Overdue"        value={formatCurrency(totalOverdue)} subtitle={`${records.filter((r) => r.status === "overdue").length} accounts`} icon={AlertCircle} iconClassName="bg-red-500" />
+        <StatsCard title="Overdue"        value={formatCurrency(totalOverdue)} subtitle={`${baseRecords.filter((r) => r.status === "overdue").length} accounts`} icon={AlertCircle} iconClassName="bg-red-500" />
         <StatsCard title="Collection Rate" value={`${collectionRate}%`}        subtitle="This semester"       icon={TrendingUp}   iconClassName="bg-violet-500" />
       </div>
 
