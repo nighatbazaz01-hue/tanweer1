@@ -23,6 +23,7 @@ import {
 } from "@/lib/mockData/auditLogs";
 import { TrendArea } from "@/components/charts";
 import { cn } from "@/lib/utils";
+import { useDataStore } from "@/store/useDataStore";
 
 // ── Visual config ──────────────────────────────────────────────────────────────
 const severityStyle: Record<string, { bg: string; text: string; dot: string }> = {

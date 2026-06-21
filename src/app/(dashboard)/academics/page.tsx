@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { getAllTeachers } from "@/lib/mockData/population";
 
 const subjects = [
-  { name: "Mathematics", teacher: "Dr. Sarah Al-Hamdan", grade: "Grade 10-12", students: 342 },
-  { name: "Physics", teacher: "Mr. Khalid Al-Mutairi", grade: "Grade 10-12", students: 198 },
-  { name: "English Language", teacher: "Ms. Reem Al-Harbi", grade: "All Grades", students: 890 },
-  { name: "Arabic Language", teacher: "Mr. Hassan Al-Shehri", grade: "All Grades", students: 890 },
-  { name: "Chemistry", teacher: "Dr. Layla Al-Anazi", grade: "Grade 11-12", students: 145 },
+  { name: "Mathematics",    teacher: "Dr. Priya Sharma", grade: "Grade 10-12", students: 342 },
+  { name: "Physics",        teacher: "Mr. Imran Khan",   grade: "Grade 10-12", students: 198 },
+  { name: "English Language", teacher: "Ms. Neha Gupta", grade: "All Grades",  students: 890 },
+  { name: "Urdu Language",  teacher: "Mr. Aaqib Wani",   grade: "All Grades",  students: 890 },
+  { name: "Chemistry",      teacher: "Dr. Sunita Rao",   grade: "Grade 11-12", students: 145 },
 ];
 
 const upcomingExams = [

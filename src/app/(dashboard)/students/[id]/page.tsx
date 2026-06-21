@@ -260,12 +260,12 @@ export default function Student360Page() {
             <CardContent>
               <div className="space-y-3">
                 {[
-                  { subject: "Arabic Language", score: 91, grade: "A", teacher: "Mr. Hassan Al-Shehri", change: 3 },
-                  { subject: "Computer Science", score: 88, grade: "A-", teacher: "Mr. Tariq Al-Yami", change: 5 },
-                  { subject: "English Language", score: 87, grade: "A-", teacher: "Ms. Reem Al-Harbi", change: 2 },
-                  { subject: "Chemistry", score: 84, grade: "A-", teacher: "Dr. Layla Al-Anazi", change: 6 },
-                  { subject: "Mathematics", score: 82, grade: "B+", teacher: "Dr. Sarah Al-Hamdan", change: 4 },
-                  { subject: "Physics", score: 79, grade: "B+", teacher: "Mr. Khalid Al-Mutairi", change: -1 },
+                  { subject: "Urdu Language",   score: 91, grade: "A",  teacher: "Mr. Aaqib Wani",   change: 3 },
+                  { subject: "Computer Science", score: 88, grade: "A-", teacher: "Mr. Ravi Sharma",   change: 5 },
+                  { subject: "English Language", score: 87, grade: "A-", teacher: "Ms. Neha Gupta",    change: 2 },
+                  { subject: "Chemistry",        score: 84, grade: "A-", teacher: "Dr. Sunita Rao",    change: 6 },
+                  { subject: "Mathematics",      score: 82, grade: "B+", teacher: "Dr. Priya Sharma",  change: 4 },
+                  { subject: "Physics",          score: 79, grade: "B+", teacher: "Mr. Imran Khan",    change: -1 },
                 ].map((s, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <span className="text-xs text-muted-foreground w-5 text-right">{i + 1}.</span>
@@ -485,8 +485,8 @@ export default function Student360Page() {
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { label: "Total Paid (Lifetime)", value: `SAR ${feeSummary.totalPaid.toLocaleString()}`,   color: "text-emerald-600", icon: CheckCircle },
-                  { label: "Outstanding Balance",   value: `SAR ${feeSummary.outstanding.toLocaleString()}`, color: "text-blue-600",    icon: DollarSign  },
+                  { label: "Total Paid (Lifetime)", value: `₹${feeSummary.totalPaid.toLocaleString()}`,   color: "text-emerald-600", icon: CheckCircle },
+                  { label: "Outstanding Balance",   value: `₹${feeSummary.outstanding.toLocaleString()}`, color: "text-blue-600",    icon: DollarSign  },
                   { label: "Next Due",              value: feeSummary.nextDue,                               color: "text-amber-600",   icon: Award       },
                 ].map((s) => (
                   <Card key={s.label}>
@@ -513,7 +513,7 @@ export default function Student360Page() {
                         <p className="text-xs text-muted-foreground">Receipt: {fee.receipt}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold">SAR {fee.amount.toLocaleString()}</p>
+                        <p className="font-bold">₹{fee.amount.toLocaleString()}</p>
                         <Badge variant="success" className="text-xs">Paid ✓</Badge>
                       </div>
                     </div>
@@ -563,7 +563,7 @@ export default function Student360Page() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1.5">
-                {["Arabic Language (91/100)", "Consistent improvement trajectory", "Strong attendance (94.3%)", "Team collaboration in projects"].map((s) => (
+                {["Urdu Language (91/100)", "Consistent improvement trajectory", "Strong attendance (94.3%)", "Team collaboration in projects"].map((s) => (
                   <div key={s} className="flex items-center gap-2 text-xs text-emerald-800">
                     <CheckCircle className="h-3.5 w-3.5 shrink-0" /> {s}
                   </div>

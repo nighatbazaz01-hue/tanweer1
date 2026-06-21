@@ -293,10 +293,10 @@ export default function ParentDashboard() {
                   <p className="text-xs text-muted-foreground">{childFeeRecord.feeType}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/40 text-xs space-y-1.5">
-                  <div className="flex justify-between"><span>Total</span><span className="font-semibold">SAR {childFeeRecord.amount.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span>Paid</span><span className="font-semibold text-emerald-700">SAR {childFeeRecord.paidAmount.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span>Total</span><span className="font-semibold">₹{childFeeRecord.amount.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span>Paid</span><span className="font-semibold text-emerald-700">₹{childFeeRecord.paidAmount.toLocaleString()}</span></div>
                   {childFeeRecord.paidAmount < childFeeRecord.amount && (
-                    <div className="flex justify-between"><span>Balance</span><span className="font-semibold text-red-600">SAR {(childFeeRecord.amount - childFeeRecord.paidAmount).toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span>Balance</span><span className="font-semibold text-red-600">₹{(childFeeRecord.amount - childFeeRecord.paidAmount).toLocaleString()}</span></div>
                   )}
                 </div>
                 <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs">
@@ -312,7 +312,7 @@ export default function ParentDashboard() {
                       <p className="text-muted-foreground">{h.date}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">SAR {h.amount.toLocaleString()}</p>
+                      <p className="font-semibold">₹{h.amount.toLocaleString()}</p>
                       <Badge variant="success" className="text-[10px]">Paid</Badge>
                     </div>
                   </div>

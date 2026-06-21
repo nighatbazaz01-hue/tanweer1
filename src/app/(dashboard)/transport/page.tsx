@@ -376,7 +376,7 @@ function AdminTransportHub() {
           <div className="space-y-3 py-2">
             <div><label className="text-xs font-semibold text-muted-foreground block mb-1">Pickup Stop</label><Input value={editStop} onChange={(e) => setEditStop(e.target.value)} placeholder="Pickup stop location" /></div>
             <div><label className="text-xs font-semibold text-muted-foreground block mb-1">Home Address</label><Input value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Full home address" /></div>
-            <div><label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Contact Number</label><Input value={editContact} onChange={(e) => setEditContact(e.target.value)} placeholder="+966 5xxxxxxxx" /></div>
+            <div><label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Contact Number</label><Input value={editContact} onChange={(e) => setEditContact(e.target.value)} placeholder="+91 9xxxxxxxxx" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-1"><X className="h-4 w-4" />Cancel</Button>
@@ -545,7 +545,7 @@ function TransportContent({ activeRole }: { activeRole: string }) {
             {requestType === "change_address" && (
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">New Home Address</label>
-                <Input placeholder="e.g. Villa 45, Al-Ruwais District, Riyadh" value={proposedAddress} onChange={(e) => setProposedAddress(e.target.value)} />
+                <Input placeholder="e.g. House 12, Rajbagh Colony, Srinagar" value={proposedAddress} onChange={(e) => setProposedAddress(e.target.value)} />
               </div>
             )}
             {requestType === "temporary" && (

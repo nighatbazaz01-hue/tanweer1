@@ -67,7 +67,7 @@ export default function StudentAttendancePage() {
     <div className="space-y-6">
       <PageHeader
         title="My Attendance"
-        description="Grade 10-A · Ahmed Al-Rashidi"
+        description="Grade 10-A · Aarav Sharma"
         breadcrumbs={[{ label: "Dashboard", href: "/student-view" }, { label: "Attendance" }]}
         actions={
           <Link href="/student-view">

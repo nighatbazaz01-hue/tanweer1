@@ -56,12 +56,12 @@ const statusStyle: Record<string, string> = {
 const ROOMS = ["Main Conference Room", "Board Room", "Hall A", "Room 201", "Room 305", "Online — Zoom", "Library Meeting Room"];
 
 const STAFF_ROSTER = [
-  { name: "Dr. Sarah Al-Hamdan",  role: "Math Teacher",      avatar: "SA" },
-  { name: "Mr. Khalid Al-Mutairi", role: "Physics Teacher",  avatar: "KM" },
-  { name: "Ms. Reem Al-Harbi",    role: "English Teacher",   avatar: "RH" },
-  { name: "Dr. Layla Al-Anazi",   role: "Arabic Teacher",    avatar: "LA" },
-  { name: "Mr. Faris Al-Shammari", role: "Chemistry Teacher", avatar: "FS" },
-  { name: "Mr. Hassan Al-Shehri", role: "CS Teacher",        avatar: "HS" },
+  { name: "Dr. Priya Sharma",  role: "Math Teacher",      avatar: "PS" },
+  { name: "Mr. Imran Khan",    role: "Physics Teacher",   avatar: "IK" },
+  { name: "Ms. Neha Gupta",    role: "English Teacher",   avatar: "NG" },
+  { name: "Dr. Sunita Rao",    role: "Urdu Teacher",      avatar: "SR" },
+  { name: "Mr. Vikram Singh",  role: "Chemistry Teacher", avatar: "VS" },
+  { name: "Mr. Aaqib Wani",    role: "CS Teacher",        avatar: "AW" },
 ];
 
 export default function MeetingsPage() {

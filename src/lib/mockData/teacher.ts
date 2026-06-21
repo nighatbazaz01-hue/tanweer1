@@ -1,9 +1,9 @@
 export const teacherProfile = {
-  name: "Dr. Sarah Al-Hamdan",
+  name: "Dr. Priya Sharma",
   subject: "Mathematics",
   grade: "Grade 10",
   sections: ["10-A", "10-B", "11-A"],
-  employeeId: "TCH-001",
+  employeeId: "TCH-003",
   totalStudents: 94,
 };
 
@@ -15,18 +15,19 @@ export const todaysClasses = [
 ];
 
 export const classAttendanceToday = [
-  { name: "Ahmed Al-Rashidi",  id: "STU-001", status: "present", grade: "10-A" },
-  { name: "Fatima Al-Zahrani", id: "STU-002", status: "present", grade: "10-A" },
-  { name: "Omar Al-Ghamdi",    id: "STU-003", status: "absent",  grade: "10-A" },
-  { name: "Nora Al-Otaibi",    id: "STU-004", status: "late",    grade: "10-A" },
-  { name: "Yusuf Al-Dosari",   id: "STU-005", status: "present", grade: "10-A" },
-  { name: "Lina Al-Shamri",    id: "STU-006", status: "present", grade: "10-A" },
-  { name: "Hassan Al-Barrak",  id: "STU-007", status: "present", grade: "10-A" },
-  { name: "Reem Al-Harbi",     id: "STU-008", status: "present", grade: "10-A" },
-  { name: "Salma Al-Qahtani",  id: "STU-009", status: "present", grade: "10-A" },
-  { name: "Khalid Al-Mutairi", id: "STU-010", status: "present", grade: "10-A" },
-  { name: "Dana Al-Shammari",  id: "STU-011", status: "absent",  grade: "10-A" },
-  { name: "Tariq Al-Anazi",    id: "STU-012", status: "present", grade: "10-A" },
+  { name: "Aarav Sharma",   id: "STU-0451", status: "present", grade: "10-A" },
+  { name: "Aryan Koul",     id: "STU-0452", status: "present", grade: "10-A" },
+  { name: "Rohan Sheikh",   id: "STU-0453", status: "absent",  grade: "10-A" },
+  { name: "Sara Wani",      id: "STU-0454", status: "late",    grade: "10-A" },
+  { name: "Yusuf Mir",      id: "STU-0455", status: "present", grade: "10-A" },
+  { name: "Lina Bhat",      id: "STU-0456", status: "present", grade: "10-A" },
+  { name: "Hassan Mir",     id: "STU-0457", status: "present", grade: "10-A" },
+  { name: "Noor Kaul",      id: "STU-0458", status: "present", grade: "10-A" },
+  { name: "Fatima Sheikh",  id: "STU-0459", status: "present", grade: "10-A" },
+  { name: "Ali Shah",       id: "STU-0460", status: "present", grade: "10-A" },
+  { name: "Noor Bhat",      id: "STU-0461", status: "absent",  grade: "10-A" },
+  { name: "Omar Malik",     id: "STU-0462", status: "present", grade: "10-A" },
+  { name: "Riya Kaul",      id: "STU-0463", status: "present", grade: "10-A" },
 ];
 
 export const homeworkAssignments = [
@@ -55,9 +56,9 @@ export const gradeDistribution = [
 ];
 
 export const classRiskStudents = [
-  { name: "Omar Al-Ghamdi", grade: "10-A", attendance: 71, lastScore: 38, risk: "High", trend: "down" },
-  { name: "Lina Al-Shamri", grade: "10-B", attendance: 85, lastScore: 52, risk: "Medium", trend: "stable" },
-  { name: "Hassan Al-Barrak", grade: "10-A", attendance: 88, lastScore: 61, risk: "Medium", trend: "up" },
+  { name: "Rohan Sheikh",  grade: "10-A", attendance: 71, lastScore: 38, risk: "High",   trend: "down"   },
+  { name: "Lina Bhat",     grade: "10-B", attendance: 85, lastScore: 52, risk: "Medium", trend: "stable" },
+  { name: "Hassan Mir",    grade: "10-A", attendance: 88, lastScore: 61, risk: "Medium", trend: "up"     },
 ];
 
 export const teacherAttendanceSummary = { present: 58, total: 60, rate: 96.7 };

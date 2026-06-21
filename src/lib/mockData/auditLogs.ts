@@ -47,32 +47,32 @@ export interface AuditLogEntry {
 // ── Lookup Tables ──────────────────────────────────────────────────────────────
 
 const users = [
-  { name: "Dr. Khalid Al-Mansouri", role: "Principal", avatar: "DK" },
-  { name: "Ms. Reem Al-Harbi", role: "Vice Principal", avatar: "RA" },
-  { name: "Dr. Sarah Al-Hamdan", role: "Teacher", avatar: "SA" },
-  { name: "Mr. Khalid Al-Mutairi", role: "Teacher", avatar: "KM" },
-  { name: "Dr. Layla Al-Anazi", role: "Teacher", avatar: "LA" },
-  { name: "Mr. Hassan Al-Shehri", role: "Teacher", avatar: "HA" },
-  { name: "Mr. Faris Al-Shammari", role: "Teacher", avatar: "FS" },
-  { name: "Mohammed Al-Rashidi", role: "Parent", avatar: "MR" },
-  { name: "Nora Al-Ghamdi", role: "Parent", avatar: "NG" },
-  { name: "Saad Al-Qahtani", role: "Parent", avatar: "SQ" },
+  { name: "Dr. Mushtaq Ahmed", role: "Principal", avatar: "MA" },
+  { name: "Ms. Neha Gupta", role: "Vice Principal", avatar: "NG" },
+  { name: "Dr. Priya Sharma", role: "Teacher", avatar: "PS" },
+  { name: "Mr. Imran Khan", role: "Teacher", avatar: "IK" },
+  { name: "Dr. Sunita Rao", role: "Teacher", avatar: "SR" },
+  { name: "Mr. Aaqib Wani", role: "Teacher", avatar: "AW" },
+  { name: "Mr. Vikram Singh", role: "Teacher", avatar: "VS" },
+  { name: "Arjun Sharma", role: "Parent", avatar: "AJ" },
+  { name: "Noor Mir", role: "Parent", avatar: "NM" },
+  { name: "Suresh Wani", role: "Parent", avatar: "SW" },
   { name: "Admin Office", role: "Admin", avatar: "AO" },
   { name: "Finance Officer", role: "Finance", avatar: "FO" },
   { name: "IT Admin", role: "IT", avatar: "IA" },
 ];
 
 const studentRecords = [
-  { id: "STU-2024-001", label: "Ahmed Al-Rashidi — Grade 10-A" },
-  { id: "STU-2024-002", label: "Fatima Al-Zahrani — Grade 10-A" },
-  { id: "STU-2024-003", label: "Omar Al-Ghamdi — Grade 11-B" },
-  { id: "STU-2024-004", label: "Nora Al-Otaibi — Grade 10-B" },
-  { id: "STU-2024-005", label: "Ali Al-Mansouri — Grade 12-A" },
-  { id: "STU-2024-006", label: "Sara Al-Qahtani — Grade 9-A" },
-  { id: "STU-2024-007", label: "Rayan Al-Khalidi — Grade 8-C" },
-  { id: "STU-2024-008", label: "Lina Al-Dosari — Grade 7-A" },
-  { id: "STU-2024-009", label: "Hassan Al-Barrak — Grade 11-B" },
-  { id: "STU-2024-010", label: "Yusuf Al-Dosari — Grade 10-A" },
+  { id: "STU-2024-001", label: "Aarav Sharma — Grade 10-A" },
+  { id: "STU-2024-002", label: "Fatima Sheikh — Grade 10-A" },
+  { id: "STU-2024-003", label: "Aryan Koul — Grade 11-B" },
+  { id: "STU-2024-004", label: "Noor Kaul — Grade 10-B" },
+  { id: "STU-2024-005", label: "Ali Shah — Grade 12-A" },
+  { id: "STU-2024-006", label: "Sara Wani — Grade 9-A" },
+  { id: "STU-2024-007", label: "Rohan Sheikh — Grade 8-C" },
+  { id: "STU-2024-008", label: "Lina Bhat — Grade 7-A" },
+  { id: "STU-2024-009", label: "Hassan Mir — Grade 11-B" },
+  { id: "STU-2024-010", label: "Yusuf Mir — Grade 10-A" },
 ];
 
 const devices: ("Desktop" | "Mobile" | "Tablet")[] = ["Desktop", "Desktop", "Desktop", "Mobile", "Tablet"];
@@ -227,7 +227,7 @@ const actionTemplates: ActionTemplate[] = [
       details: `${u.name} modified fee record — discount applied`,
       recordType: "Fee Record", recordLabel: r?.label,
       fieldsModified: ["Total Fee Amount", "Discount %"],
-      beforeValue: { total: "SAR 15,000", discount: "0%" }, afterValue: { total: "SAR 12,000", discount: "20%" },
+      beforeValue: { total: "₹15,000", discount: "0%" }, afterValue: { total: "₹12,000", discount: "20%" },
     }),
   },
   {
@@ -236,7 +236,7 @@ const actionTemplates: ActionTemplate[] = [
       details: `${u.name} recorded fee payment`,
       recordType: "Payment Record", recordLabel: r?.label,
       fieldsModified: ["Payment Amount", "Receipt No", "Payment Date"],
-      afterValue: { amount: "SAR 7,500", receipt: "RCP-2024-0021", date: "Jun 13" },
+      afterValue: { amount: "₹7,500", receipt: "RCP-2024-0021", date: "Jun 13" },
     }),
   },
   {
@@ -244,7 +244,7 @@ const actionTemplates: ActionTemplate[] = [
     makeDetails: (u) => ({
       details: `${u.name} sent internal message`,
       recordType: "Message",
-      recordLabel: "Re: Ahmed's Physics performance",
+      recordLabel: "Re: Aarav's Physics performance",
     }),
   },
   {
@@ -288,7 +288,7 @@ const actionTemplates: ActionTemplate[] = [
     makeDetails: (u) => ({
       details: `${u.name} viewed teacher profile`,
       recordType: "Teacher Profile",
-      recordLabel: "Dr. Sarah Al-Hamdan — Mathematics",
+      recordLabel: "Dr. Priya Sharma — Mathematics",
       fieldsViewed: ["Qualifications", "Classes", "Performance Rating", "Attendance"],
     }),
   },
@@ -448,11 +448,11 @@ export const actionSummary: { action: string; count: number; trend: number }[] =
 
 export const topUsersByActivity: { name: string; role: string; avatar: string; actions: number; sensitiveActions: number }[] = [
   { name: "Admin Office", role: "Admin", avatar: "AO", actions: 1842, sensitiveActions: 89 },
-  { name: "Dr. Sarah Al-Hamdan", role: "Teacher", avatar: "SA", actions: 1234, sensitiveActions: 23 },
-  { name: "Ms. Reem Al-Harbi", role: "Vice Principal", avatar: "RA", actions: 987, sensitiveActions: 67 },
-  { name: "Finance Officer", role: "Finance", avatar: "FO", actions: 876, sensitiveActions: 112 },
-  { name: "Mr. Khalid Al-Mutairi", role: "Teacher", avatar: "KM", actions: 654, sensitiveActions: 18 },
-  { name: "Dr. Khalid Al-Mansouri", role: "Principal", avatar: "DK", actions: 543, sensitiveActions: 34 },
+  { name: "Dr. Priya Sharma", role: "Teacher", avatar: "PS", actions: 1234, sensitiveActions: 23 },
+  { name: "Ms. Neha Gupta",    role: "Vice Principal", avatar: "NG", actions: 987, sensitiveActions: 67 },
+  { name: "Finance Officer",   role: "Finance",        avatar: "FO", actions: 876, sensitiveActions: 112 },
+  { name: "Mr. Imran Khan",    role: "Teacher",        avatar: "IK", actions: 654, sensitiveActions: 18 },
+  { name: "Dr. Mushtaq Ahmed", role: "Principal",      avatar: "MA", actions: 543, sensitiveActions: 34 },
   { name: "IT Admin", role: "IT", avatar: "IA", actions: 432, sensitiveActions: 201 },
 ];
 
@@ -477,9 +477,9 @@ export const dailyActivityLast30Days: { day: string; total: number; sensitive: n
 });
 
 export const aiSecurityResponses: Record<string, string> = {
-  address: `🔐 **Sensitive Address Accesses — Last 30 Days:**\n\nTotal accesses: **47**\n\n| User | Role | Count | Last Access |\n|------|------|-------|-------------|\n| IT Admin | IT | 18 | Jun 13 09:42 AM |\n| Admin Office | Admin | 15 | Jun 13 08:30 AM |\n| Ms. Reem Al-Harbi | VP | 9 | Jun 12 02:15 PM |\n| Finance Officer | Finance | 5 | Jun 10 11:00 AM |\n\n⚠️ IT Admin accessed 18 addresses — above normal threshold. Recommend review.`,
-  marks: `📊 **Marks Modified After Deadline:**\n\n23 instances found in the last 6 months.\n\n**Recent cases:**\n• Mr. Khalid Al-Mutairi — Physics (Omar Al-Ghamdi) changed 68→79 — Jun 5, 3:22 PM ⚠️\n• Dr. Sarah Al-Hamdan — Math (Sara Al-Qahtani) changed 71→78 — May 28, 4:10 PM\n• Dr. Layla Al-Anazi — Chem (Rayan Al-Khalidi) changed 59→65 — May 15, 1:05 PM\n\n🔍 All 3 cases were within 48h of deadline. No pattern of abuse detected.`,
-  attendance: `📋 **Attendance Changes — Grade 10 This Week:**\n\n12 edits to submitted records found.\n\n• Dr. Sarah Al-Hamdan: 8 edits on Jun 10 (2 Absent→Present, 6 Late→Present)\n• Mr. Khalid Al-Mutairi: 4 edits on Jun 11 (4 Absent→Present)\n\nAll edits occurred during school hours. Most common reason logged: "Late arrival confirmed via gate scan."\n\n✅ No suspicious pattern — typical end-of-day reconciliation.`,
-  sensitive: `🔒 **Top Sensitive Data Accessors — Last 30 Days:**\n\n| Rank | User | Accesses | Data Types |\n|------|------|----------|------------|\n| 1 | IT Admin | 201 | Addresses, Phones, Bank |\n| 2 | Finance Officer | 112 | Fee Records, Bank Details |\n| 3 | Admin Office | 89 | Phones, Addresses |\n| 4 | Ms. Reem Al-Harbi | 67 | Student Profiles, Phones |\n| 5 | Dr. Khalid Al-Mansouri | 34 | Reports, Fee Records |\n\n⚠️ IT Admin's access count (201) is 3.2× the next highest user. Consider access review.`,
+  address: `🔐 **Sensitive Address Accesses — Last 30 Days:**\n\nTotal accesses: **47**\n\n| User | Role | Count | Last Access |\n|------|------|-------|-------------|\n| IT Admin | IT | 18 | Jun 13 09:42 AM |\n| Admin Office | Admin | 15 | Jun 13 08:30 AM |\n| Ms. Neha Gupta | VP | 9 | Jun 12 02:15 PM |\n| Finance Officer | Finance | 5 | Jun 10 11:00 AM |\n\n⚠️ IT Admin accessed 18 addresses — above normal threshold. Recommend review.`,
+  marks: `📊 **Marks Modified After Deadline:**\n\n23 instances found in the last 6 months.\n\n**Recent cases:**\n• Mr. Imran Khan — Physics (Aryan Koul) changed 68→79 — Jun 5, 3:22 PM ⚠️\n• Dr. Priya Sharma — Math (Sara Wani) changed 71→78 — May 28, 4:10 PM\n• Dr. Sunita Rao — Chem (Rohan Sheikh) changed 59→65 — May 15, 1:05 PM\n\n🔍 All 3 cases were within 48h of deadline. No pattern of abuse detected.`,
+  attendance: `📋 **Attendance Changes — Grade 10 This Week:**\n\n12 edits to submitted records found.\n\n• Dr. Priya Sharma: 8 edits on Jun 10 (2 Absent→Present, 6 Late→Present)\n• Mr. Imran Khan: 4 edits on Jun 11 (4 Absent→Present)\n\nAll edits occurred during school hours. Most common reason logged: "Late arrival confirmed via gate scan."\n\n✅ No suspicious pattern — typical end-of-day reconciliation.`,
+  sensitive: `🔒 **Top Sensitive Data Accessors — Last 30 Days:**\n\n| Rank | User | Accesses | Data Types |\n|------|------|----------|------------|\n| 1 | IT Admin | 201 | Addresses, Phones, Bank |\n| 2 | Finance Officer | 112 | Fee Records, Bank Details |\n| 3 | Admin Office | 89 | Phones, Addresses |\n| 4 | Ms. Neha Gupta | 67 | Student Profiles, Phones |\n| 5 | Dr. Mushtaq Ahmed | 34 | Reports, Fee Records |\n\n⚠️ IT Admin's access count (201) is 3.2× the next highest user. Consider access review.`,
   failed: `🚨 **Failed Login Analysis — Last 30 Days:**\n\n47 failed login attempts detected.\n\n• 32 attempts from known user accounts (password errors)\n• 11 attempts from unknown email addresses\n• 4 attempts from unusual IP addresses (flagged)\n\n**Flagged IPs:**\n• 203.45.67.89 — 4 attempts, non-school network\n• 178.23.45.12 — 2 attempts, overseas IP\n\n🔴 Recommend: Enable 2FA for all admin accounts.`,
 };

@@ -1,45 +1,45 @@
 const FIRST_NAMES_MALE = [
-  "Ahmed", "Mohammed", "Omar", "Yusuf", "Hassan", "Ali", "Rayan", "Khalid",
-  "Tariq", "Faris", "Ibrahim", "Salman", "Nasser", "Hamad", "Waleed", "Ziad",
-  "Majed", "Saad", "Fahad", "Turki", "Bandar", "Sultan", "Nawaf", "Muteb",
-  "Mansour", "Abdulaziz", "Abdulrahman", "Saud", "Badr", "Talal",
+  "Aarav", "Aryan", "Rohan", "Yusuf", "Hassan", "Ali", "Omar", "Khalid",
+  "Ravi", "Faizan", "Ibrahim", "Salman", "Naseer", "Hamid", "Bilal", "Zaid",
+  "Mohsin", "Suresh", "Faheem", "Deepak", "Ranjit", "Vikram", "Nawaz", "Mushtaq",
+  "Mansoor", "Irfan", "Rahul", "Saurav", "Babar", "Tanveer",
 ];
 
 const FIRST_NAMES_FEMALE = [
-  "Fatima", "Nora", "Sara", "Lina", "Reem", "Hessa", "Maha", "Dana",
-  "Nouf", "Reema", "Dina", "Rana", "Lama", "Shahad", "Arwa", "Maryam",
-  "Ghada", "Hind", "Abeer", "Najla", "Latifa", "Wafa", "Amal", "Samira",
-  "Hajer", "Joud", "Rawan", "Basma", "Wedad", "Afnan",
+  "Fatima", "Noor", "Sara", "Lina", "Riya", "Hessa", "Maha", "Priya",
+  "Neha", "Reema", "Dina", "Rana", "Lata", "Shaheen", "Arwa", "Maryam",
+  "Sunita", "Hina", "Abeer", "Najla", "Latika", "Wafa", "Amala", "Samira",
+  "Hajra", "Jyoti", "Rawan", "Basma", "Sudha", "Afnan",
 ];
 
 const LAST_NAMES = [
-  "Al-Rashidi", "Al-Ghamdi", "Al-Zahrani", "Al-Otaibi", "Al-Shehri",
-  "Al-Mutairi", "Al-Dosari", "Al-Qahtani", "Al-Harbi", "Al-Anazi",
-  "Al-Shamri", "Al-Barrak", "Al-Khalidi", "Al-Mansouri", "Al-Yami",
-  "Al-Hamdan", "Al-Balawi", "Al-Maliki", "Al-Ruwaili", "Al-Juhani",
-  "Al-Subai", "Al-Enezi", "Al-Dawsari", "Al-Bishi", "Al-Zahrani",
-  "Al-Qahtani", "Al-Saidi", "Al-Thubaiti", "Al-Asiri", "Al-Shahrani",
+  "Sharma", "Bhat", "Wani", "Koul", "Dar",
+  "Mir", "Sheikh", "Shah", "Lone", "Rather",
+  "Malik", "Khan", "Gupta", "Singh", "Mehta",
+  "Kaul", "Raina", "Mattoo", "Dhar", "Pandita",
+  "Tickoo", "Nehru", "Razdan", "Handoo", "Ganjoo",
+  "Sopori", "Zutshi", "Saraf", "Kaul", "Bakshi",
 ];
 
 const SUBJECTS = [
-  "Mathematics", "English", "Arabic", "Physics", "Chemistry",
-  "Biology", "Computer Science", "Islamic Studies", "History",
-  "Geography", "Physical Education", "Art", "Social Studies",
+  "Mathematics", "English", "Urdu", "Physics", "Chemistry",
+  "Biology", "Computer Science", "Social Studies", "History",
+  "Geography", "Physical Education", "Art", "Environmental Science",
 ];
 
 const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
-const NATIONALITIES = ["Saudi", "Saudi", "Saudi", "Saudi", "Saudi", "Emirati", "Jordanian", "Egyptian", "Pakistani", "Indian"];
-const DISTRICTS = ["Al-Olaya", "Al-Malaz", "Al-Sulimaniyah", "Al-Rawdah", "Al-Wurood", "Al-Naseem", "Al-Rabwah", "Al-Nakheel", "Diplomatic Quarter", "Al-Aqiq"];
-const CITIES = ["Riyadh", "Riyadh", "Jeddah", "Dammam"];
+const NATIONALITIES = ["Indian", "Indian", "Indian", "Indian", "Indian", "Indian", "Indian", "Indian", "Indian", "Indian"];
+const DISTRICTS = ["Nowgam", "Hyderpora", "Rajbagh", "Bemina", "Chanapora", "Lasjan", "Batmaloo", "Pampore", "Anantnag", "Sopore"];
+const CITIES = ["Srinagar", "Srinagar", "Srinagar", "Baramulla"];
 const RELATIONS = ["Father", "Mother", "Father", "Father", "Mother", "Uncle", "Grandfather"];
-const INTERESTS_POOL = ["Football", "Basketball", "Chess", "Art", "Coding", "Reading", "Science", "Music", "Debate Club", "Robotics", "Swimming", "Photography", "Drama", "Math Olympiad", "Quran Memorization"];
+const INTERESTS_POOL = ["Cricket", "Football", "Chess", "Art", "Coding", "Reading", "Science", "Music", "Debate Club", "Robotics", "Swimming", "Photography", "Drama", "Math Olympiad", "Quran Memorization"];
 const MEDICAL_NOTES = ["Mild asthma — inhaler required", "Nut allergy — EpiPen on record", "Glasses prescribed", "Lactose intolerant", "Mild dyslexia — support plan active"];
-const PREV_SCHOOLS = ["Al-Falah International School", "Ibn Rushd Academy", "Dar Al-Uloom Primary", "Al-Manar Model School", "National Learning Institute", "Al-Bayan Elementary"];
+const PREV_SCHOOLS = ["DPS Srinagar", "Burn Hall School", "Presentation Convent", "Tyndale Biscoe School", "The Achievers School", "Islamia Model School"];
 
 const QUALIFICATIONS = [
   "B.Ed. Mathematics", "M.Sc. Physics", "Ph.D. Chemistry", "B.Ed. English",
-  "M.A. Arabic Literature", "B.Sc. Computer Science", "M.Ed. Educational Leadership",
-  "B.Ed. Biology", "M.Sc. Mathematics", "B.Ed. Islamic Studies",
+  "M.A. Urdu Literature", "B.Sc. Computer Science", "M.Ed. Educational Leadership",
+  "B.Ed. Biology", "M.Sc. Mathematics", "B.Ed. Social Studies",
   "M.A. History", "B.Ed. Physical Education", "M.Sc. Geography",
 ];
 
@@ -156,9 +156,9 @@ export function getAllStudents(): Student[] {
       const nationality = seededPick(NATIONALITIES, seed + 22);
       const district = seededPick(DISTRICTS, seed + 23);
       const city = seededPick(CITIES, seed + 24);
-      const address = `${Math.floor(1 + seededRandom(seed + 25) * 999)} ${district} St, ${city}`;
-      const studentPhone = `+966 5${String(Math.floor(50000000 + seededRandom(seed + 26) * 49999999)).slice(0, 8)}`;
-      const studentEmail = `${firstName.toLowerCase()}.${lastName.replace("Al-", "").toLowerCase()}@student.tanweer.edu`;
+      const address = `House ${Math.floor(1 + seededRandom(seed + 25) * 999)}, ${district} Colony, ${city}`;
+      const studentPhone = `+91 9${String(Math.floor(400000000 + seededRandom(seed + 26) * 500000000)).slice(0, 9)}`;
+      const studentEmail = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@student.tanweer.edu`;
       const hasMedical = seededRandom(seed + 27) < 0.15;
       const medicalNote = hasMedical ? seededPick(MEDICAL_NOTES, seed + 28) : undefined;
       const numInterests = Math.floor(2 + seededRandom(seed + 29) * 3);
@@ -167,7 +167,7 @@ export function getAllStudents(): Student[] {
       ).filter((v, i, a) => a.indexOf(v) === i);
       const emergencyRelation = seededPick(RELATIONS, seed + 35);
       const emergencyFName = seededPick(FIRST_NAMES_MALE, seed + 36);
-      const emergencyPhone = `+966 5${String(Math.floor(50000000 + seededRandom(seed + 37) * 49999999)).slice(0, 8)}`;
+      const emergencyPhone = `+91 9${String(Math.floor(400000000 + seededRandom(seed + 37) * 500000000)).slice(0, 9)}`;
       const previousSchool = grade > 1 ? seededPick(PREV_SCHOOLS, seed + 38) : undefined;
 
       result.push({
@@ -180,8 +180,8 @@ export function getAllStudents(): Student[] {
         performanceTier,
         gpa: Math.min(4.0, gpa),
         parentName,
-        parentPhone: `+966 5${String(phoneDigits).slice(0, 8)}`,
-        parentEmail: `${parentFName.toLowerCase()}.${lastName.replace("Al-", "").toLowerCase()}@email.com`,
+        parentPhone: `+91 9${String(phoneDigits).slice(0, 9)}`,
+        parentEmail: `${parentFName.toLowerCase()}.${lastName.toLowerCase()}@email.com`,
         avatar: `${firstName[0]}${lastName[0]}`,
         enrolledYear,
         nationalId,
@@ -213,22 +213,22 @@ export function getAllTeachers(): Teacher[] {
   const result: Teacher[] = [];
 
   for (let i = 0; i < 50; i++) {
-    // ── Demo teacher persona: always TCH-003, Dr. Sarah Al-Hamdan ─────────────
+    // ── Demo teacher persona: always TCH-003, Dr. Priya Sharma ───────────────
     // i=2 → gradeGroupIdx=2 → grades 9–12 (includes Grade 10-A). Pinned so
     // filterTeachersForRole('teacher') can reliably match by ID = "TCH-003".
     if (i === 2) {
       result.push({
         id: "TCH-003",
-        name: "Dr. Sarah Al-Hamdan",
+        name: "Dr. Priya Sharma",
         gender: "female",
         subject: "Mathematics",
         qualification: "Ph.D. Mathematics",
         assignedGrades: [9, 10, 11, 12],
         assignedSections: ["9-A", "9-B", "10-A", "10-B", "11-A", "11-B", "12-A", "12-B"],
         employeeId: "TCH-003",
-        phone: "+966 512345678",
-        email: "sarah.hamdan@tanweer.edu",
-        avatar: "SH",
+        phone: "+91 9419112345",
+        email: "priya.sharma@tanweer.edu",
+        avatar: "PS",
         yearsExperience: 15,
       });
       continue;
@@ -267,8 +267,8 @@ export function getAllTeachers(): Teacher[] {
       assignedGrades,
       assignedSections,
       employeeId: `TCH-${String(i + 1).padStart(3, "0")}`,
-      phone: `+966 5${String(phoneDigits).slice(0, 8)}`,
-      email: `${firstName.toLowerCase()}.${lastName.replace("Al-", "").toLowerCase()}@tanweer.edu`,
+      phone: `+91 9${String(phoneDigits).slice(0, 9)}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@tanweer.edu`,
       avatar: `${firstName[0]}${lastName[0]}`,
       yearsExperience: yearsExp,
     });
@@ -316,9 +316,9 @@ export function getTeachersByGradeGroup(startGrade: 1 | 5 | 9): Teacher[] {
 
 export function getVPProfile(role: "vp1" | "vp2" | "vp3"): VPProfile {
   const profiles: Record<string, VPProfile> = {
-    vp1: { role: "vp1", name: "Dr. Khalid Al-Otaibi", gradeRange: [1, 4], gradeGroupLabel: "Grades 1–4" },
-    vp2: { role: "vp2", name: "Ms. Nora Al-Zahrani", gradeRange: [5, 8], gradeGroupLabel: "Grades 5–8" },
-    vp3: { role: "vp3", name: "Mr. Faris Al-Mutairi", gradeRange: [9, 12], gradeGroupLabel: "Grades 9–12" },
+    vp1: { role: "vp1", name: "Mr. Irfan Wani",   gradeRange: [1, 4], gradeGroupLabel: "Grades 1–4" },
+    vp2: { role: "vp2", name: "Ms. Rubina Bhat",  gradeRange: [5, 8], gradeGroupLabel: "Grades 5–8" },
+    vp3: { role: "vp3", name: "Mr. Bilal Khan",   gradeRange: [9, 12], gradeGroupLabel: "Grades 9–12" },
   };
   return profiles[role];
 }

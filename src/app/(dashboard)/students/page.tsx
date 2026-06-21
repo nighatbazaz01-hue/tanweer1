@@ -218,7 +218,7 @@ export default function StudentsPage() {
           <div className="space-y-3 py-2">
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Full Name *</label>
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Mohammed Al-Rashidi" />
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Aarav Sharma" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -240,11 +240,11 @@ export default function StudentsPage() {
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent / Guardian Name</label>
-              <Input value={newParent} onChange={(e) => setNewParent(e.target.value)} placeholder="e.g. Ahmed Al-Rashidi" />
+              <Input value={newParent} onChange={(e) => setNewParent(e.target.value)} placeholder="e.g. Arjun Sharma" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Phone</label>
-              <Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+966 5xxxxxxxx" />
+              <Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+91 9xxxxxxxxx" />
             </div>
           </div>
           <DialogFooter>

@@ -1,0 +1,213 @@
+PHASE 5 — DEMO READINESS HARDENING (NO NEW FEATURES)
+
+Do NOT add any new features, widgets, pages, AI capabilities, notification systems, audit systems, or enhancements.
+
+Your job is to make the existing product board-demo ready.
+
+Before changing any code:
+
+1. Read PROJECT_STATE.md
+2. Read the latest audit findings
+3. Verify every claim yourself in code
+4. Produce evidence for every fix
+5. Run build verification after every batch
+
+PRIMARY OBJECTIVE
+
+The platform is being demonstrated to a school in Kashmir, India.
+
+The system must look like a real Indian school product, not a Saudi-school template, not a generic demo, and not a prototype.
+
+==================================================
+PHASE 5A — FIX ALL REMAINING TYPESCRIPT ERRORS
+==============================================
+
+Do not classify any error as "pre-existing."
+
+The branch is not considered demo-ready until:
+
+* TypeScript = 0 errors
+* Build = clean
+* Console = clean
+* Route compilation = clean
+
+Fix every remaining TS error.
+
+Deliver:
+
+* exact file
+* root cause
+* fix
+* proof build passes
+
+==================================================
+PHASE 5B — INDIA / KASHMIR LOCALIZATION AUDIT
+=============================================
+
+Search the ENTIRE codebase for:
+
+SAR
+Saudi Riyal
+Riyadh
+Saudi Arabia
+Al-Noor
+Al Noor
+Arabic Language
+Arabic Teacher
+Arabic
++966
+Saudi phone formats
+Saudi addresses
+Saudi districts
+Saudi curriculum references
+Middle-East-specific terminology
+
+Produce a table:
+
+| File | Current Value | Why It Appears | Recommended Replacement |
+
+Do NOT blindly replace yet.
+
+First produce a complete inventory.
+
+Then apply replacements using these principles:
+
+School Context:
+
+* Foundation School Humhama
+* Srinagar, Kashmir
+* India
+
+Currency:
+
+* INR
+* ₹
+
+Phone:
+
+* +91
+
+Addresses:
+
+* Srinagar / Humhama examples
+
+Language:
+
+* English
+* Urdu
+* Hindi
+  (or configurable where appropriate)
+
+The final UI should feel like it was built for an Indian school.
+
+==================================================
+PHASE 5C — VERIFY BOARD-DEMO BREAKERS
+=====================================
+
+Re-audit every issue below and confirm whether it still exists.
+
+1. Student 360 content identical for all students
+2. AI Insights actions are toast-only
+3. AI Insights exports are toast-only
+4. VP upcoming meetings are static
+5. Messages statistics are static
+6. School Health Score explainability
+7. Parent dashboard hardcoded rank/GPA
+8. Admin KPI cards still using mock values
+9. Settings persistence
+10. Student profile fee history realism
+
+For each item:
+
+Status:
+
+* Fixed
+* Partially Fixed
+* Still Broken
+
+Evidence:
+
+* exact code location
+* exact data source
+* screenshot path if generated
+
+==================================================
+PHASE 5D — SECURITY VALIDATION
+==============================
+
+Re-test:
+
+Admin
+VP1
+VP2
+VP3
+Teacher
+Parent
+Student
+
+Verify:
+
+* unauthorized routes blocked
+* fee history protected
+* student financial data protected
+* leave approvals scoped correctly
+* no role sees data outside scope
+
+Specifically test:
+
+Can VP1 approve VP3 leave requests by manipulating IDs?
+
+If yes:
+
+Document as a security limitation.
+
+Do not hide it.
+
+==================================================
+PHASE 5E — FINAL BOARD-MEMBER REVIEW
+====================================
+
+Act as a skeptical board member.
+
+Visit every major screen and identify:
+
+* fake-looking data
+* unrealistic statistics
+* contradictory numbers
+* stale dates
+* hardcoded names
+* hardcoded schools
+* hardcoded locations
+* hardcoded counts
+* demo wording
+* placeholder text
+
+Rank findings:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+Only report real issues.
+
+==================================================
+DELIVERABLE
+===========
+
+Provide:
+
+1. Complete localization audit
+2. Complete TypeScript/build report
+3. Security validation report
+4. Board-member review report
+5. Exact files modified
+6. Exact remaining issues
+
+No new features.
+
+No enhancements.
+
+No architecture changes.
+
+Only stabilization, localization, consistency, credibility, and demo readiness.

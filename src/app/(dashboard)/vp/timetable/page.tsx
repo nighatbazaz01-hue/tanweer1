@@ -42,9 +42,9 @@ const SUBJECT_COLORS: Record<string, string> = {
 const SUBJECTS = Object.keys(SUBJECT_COLORS);
 
 const TEACHERS = [
-  "Dr. Sarah Al-Hamdan", "Mr. Khalid Al-Mutairi", "Mr. Faris Al-Shammari",
-  "Ms. Reem Al-Harbi", "Dr. Layla Al-Anazi", "Mr. Hassan Al-Shehri",
-  "Sheikh Mohammed", "Coach Sami",
+  "Dr. Priya Sharma", "Mr. Imran Khan", "Mr. Vikram Singh",
+  "Ms. Neha Gupta", "Dr. Sunita Rao", "Mr. Aaqib Wani",
+  "Sheikh Imran", "Coach Rajesh",
 ];
 
 const SECTIONS = ["A", "B", "C", "D"];

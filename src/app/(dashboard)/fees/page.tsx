@@ -239,7 +239,7 @@ export default function FeesPage() {
 
               {paying && (
                 <div className="space-y-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-sm font-medium text-blue-800">Record Payment Amount (SAR)</p>
+                  <p className="text-sm font-medium text-blue-800">Record Payment Amount (₹)</p>
                   <input
                     type="number"
                     value={payAmount}

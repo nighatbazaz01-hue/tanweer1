@@ -55,11 +55,11 @@ export const gradeDistribution = [
 ];
 
 export const atRiskStudents = [
-  { id: "1", name: "Omar Al-Ghamdi", grade: "Grade 11-B", risk: "Academic + Fee Default", score: 87, avatar: "OG" },
-  { id: "2", name: "Rayan Al-Khalidi", grade: "Grade 8-C", risk: "Low Attendance (71%)", score: 79, avatar: "RK" },
-  { id: "3", name: "Sara Al-Qahtani", grade: "Grade 9-A", risk: "Academic Decline", score: 72, avatar: "SQ" },
-  { id: "4", name: "Ali Al-Mansouri", grade: "Grade 12-B", risk: "Fee Default Risk", score: 65, avatar: "AM" },
-  { id: "5", name: "Lina Al-Dosari", grade: "Grade 7-A", risk: "Frequent Absences", score: 61, avatar: "LD" },
+  { id: "1", name: "Aryan Koul", grade: "Grade 11-B", risk: "Academic + Fee Default", score: 87, avatar: "AK" },
+  { id: "2", name: "Rohan Sheikh", grade: "Grade 8-C", risk: "Low Attendance (71%)", score: 79, avatar: "RS" },
+  { id: "3", name: "Sara Wani", grade: "Grade 9-A", risk: "Academic Decline", score: 72, avatar: "SW" },
+  { id: "4", name: "Ali Shah", grade: "Grade 12-B", risk: "Fee Default Risk", score: 65, avatar: "AS" },
+  { id: "5", name: "Lina Bhat", grade: "Grade 7-A", risk: "Frequent Absences", score: 61, avatar: "LB" },
 ];
 
 export const parentSatisfactionData = [
@@ -75,6 +75,6 @@ export const recentAlerts = [
   { id: 1, type: "fee", message: "15 students predicted to default on Q2 fees", severity: "high", time: "2 min ago" },
   { id: 2, type: "attendance", message: "Grade 8-C attendance dropped 8% this week", severity: "medium", time: "25 min ago" },
   { id: 3, type: "academic", message: "23 students flagged for academic underperformance", severity: "medium", time: "1 hr ago" },
-  { id: 4, type: "admission", message: "3 new admission leads from Al-Noor district", severity: "info", time: "2 hrs ago" },
+  { id: 4, type: "admission", message: "3 new admission leads from Anantnag district", severity: "info", time: "2 hrs ago" },
   { id: 5, type: "positive", message: "Admission conversion rate improved by 12%", severity: "positive", time: "3 hrs ago" },
 ];

@@ -13,13 +13,13 @@ import { cn } from "@/lib/utils";
 import type { AIMessage } from "@/types";
 
 const roleGreetings: Record<string, string> = {
-  admin: "Hello, Dr. Khalid! I'm your AI Executive Assistant. I can provide real-time analytics, risk alerts, take actions like sending messages or generating reports. What would you like to do?",
+  admin: "Hello, Dr. Mushtaq! I'm your AI Executive Assistant. I can provide real-time analytics, risk alerts, take actions like sending messages or generating reports. What would you like to do?",
   vp1: "Hello! I'm your AI Assistant for Grades 1–4 (Lower Primary). I can surface at-risk students, attendance summaries, and teacher updates scoped to your division. What would you like to know?",
   vp2: "Hello! I'm your AI Assistant for Grades 5–8 (Upper Primary). Ask me about attendance trends, student performance, or at-risk alerts — all scoped to your division.",
   vp3: "Hello! I'm your AI Assistant for Grades 9–12 (Secondary). I can show you at-risk students, exam readiness, and attendance data for your division. What do you need?",
-  teacher: "Hello, Dr. Sarah! I'm your AI Teaching Assistant. I can message parents, assign homework, find absent students, generate class summaries, and more. What do you need?",
-  parent: "Hello! I'm the Tanweer Parent Assistant. I can tell you about Ahmed's attendance, marks, contact his teachers, check upcoming exams, and more. How can I help?",
-  student: "Hey Ahmed! 👋 I'm your AI Study Assistant. I can help you prepare for exams, track homework, generate study plans, and give you tips. What do you need help with?",
+  teacher: "Hello, Dr. Priya! I'm your AI Teaching Assistant. I can message parents, assign homework, find absent students, generate class summaries, and more. What do you need?",
+  parent: "Hello! I'm the Tanweer Parent Assistant. I can tell you about Aarav's attendance, marks, contact his teachers, check upcoming exams, and more. How can I help?",
+  student: "Hey Aarav! 👋 I'm your AI Study Assistant. I can help you prepare for exams, track homework, generate study plans, and give you tips. What do you need help with?",
 };
 
 const roleSuggestions: Record<string, string[]> = {
@@ -48,14 +48,14 @@ const roleSuggestions: Record<string, string[]> = {
     "Generate Secondary division performance report",
   ],
   teacher: [
-    "Message Ahmed's parents about Physics",
+    "Message Aarav's parents about Physics",
     "Find students absent today",
     "Generate Grade 10-A class summary",
     "Assign revision homework",
   ],
   parent: [
-    "How is Ahmed doing this term?",
-    "Contact Dr. Sarah about Math exam",
+    "How is Aarav doing this term?",
+    "Contact Dr. Priya about Math exam",
     "Show upcoming exams this month",
     "Check all pending homework",
   ],
@@ -133,7 +133,7 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       text: "🏫 **School Health Score: 87/100**\n\n• Attendance: 94.3% ✅\n• Fee Collection: 87.5% ⚠️\n• Teacher Presence: 97.1% ✅\n• Parent Satisfaction: 4.3/5 ✅\n• At-Risk Students: 23 ⚠️\n\nFee collection is the primary area requiring attention. 15 students predicted to default on Q2 fees.",
     };
     if (m.includes("risk") || m.includes("at-risk")) return {
-      text: "⚠️ **Top 5 At-Risk Students:**\n\n1. Omar Al-Ghamdi (Grade 11-B) — Academic + Fee Default, Risk: 87% 🔴\n2. Rayan Al-Khalidi (Grade 8-C) — Attendance 71%, Risk: 79% 🔴\n3. Sara Al-Qahtani (Grade 9-A) — Academic Decline, Risk: 72% 🟡\n4. Ali Al-Mansouri (Grade 12-B) — Fee Default Risk, Risk: 65% 🟡\n5. Lina Al-Dosari (Grade 7-A) — Frequent Absences, Risk: 61% 🟡\n\nImmediate parent outreach recommended for students 1 and 2.",
+      text: "⚠️ **Top 5 At-Risk Students:**\n\n1. Aryan Koul (Grade 11-B) — Academic + Fee Default, Risk: 87% 🔴\n2. Rohan Sheikh (Grade 8-C) — Attendance 71%, Risk: 79% 🔴\n3. Sara Wani (Grade 9-A) — Academic Decline, Risk: 72% 🟡\n4. Ali Shah (Grade 12-B) — Fee Default Risk, Risk: 65% 🟡\n5. Lina Bhat (Grade 7-A) — Frequent Absences, Risk: 61% 🟡\n\nImmediate parent outreach recommended for students 1 and 2.",
     };
     if (m.includes("report") || m.includes("generate")) return {
       text: "✅ **School Performance Report Generated**\n\nReport includes:\n• Q2 attendance analytics (all grades)\n• Fee collection vs. target breakdown\n• Teacher performance metrics\n• At-risk student list with interventions\n• Admissions funnel analysis\n\n📊 The report has been saved and is ready for download.",
@@ -146,7 +146,7 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       actionDetail: "Attendance reminder sent to 600 parents",
     };
     if (m.includes("fee") || m.includes("collection")) return {
-      text: "💰 **Fee Collection — June 2024**\n\n• Target: SAR 2,140,000\n• Collected: SAR 1,873,500 (87.5%)\n• Gap: SAR 266,500\n\nOverdue accounts: 128 students\nAI predicts 15 students will default.\n\n📌 Recommendation: Send automated reminders to 43 accounts overdue >30 days.",
+      text: "💰 **Fee Collection — June 2024**\n\n• Target: ₹21,40,000\n• Collected: ₹18,73,500 (87.5%)\n• Gap: ₹2,66,500\n\nOverdue accounts: 128 students\nAI predicts 15 students will default.\n\n📌 Recommendation: Send automated reminders to 43 accounts overdue >30 days.",
     };
     if (m.includes("meeting") || m.includes("schedule")) return {
       text: "📅 **Meeting Scheduled**\n\nEmergency At-Risk Student Review Meeting:\n• Date: June 14, 2024 at 01:00 PM\n• Room: Seminar Room B\n• Attendees notified: VP, 4 teachers, school counselor\n\nAgenda auto-generated and attached.",
@@ -154,7 +154,7 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       actionDetail: "At-Risk Student Review — June 14, 01:00 PM",
     };
     return {
-      text: "I can help you analyze that. Al-Noor Academy has a health score of 87/100. The main areas to watch are fee collection (87.5%) and the 23 at-risk students. Try asking me to 'generate school report' or 'send attendance alert to parents'.",
+      text: "I can help you analyze that. Foundation School Humhama has a health score of 87/100. The main areas to watch are fee collection (87.5%) and the 23 at-risk students. Try asking me to 'generate school report' or 'send attendance alert to parents'.",
     };
   },
   vp1: vpResponse("Grades 1–4", "Lower Primary (Grades 1–4)", 1),
@@ -162,16 +162,16 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
   vp3: vpResponse("Grades 9–12", "Secondary (Grades 9–12)", 9),
   teacher: (msg) => {
     const m = msg.toLowerCase();
-    if (m.includes("message") && (m.includes("parent") || m.includes("ahmed"))) return {
-      text: "📨 **Message Sent to Mohammed Al-Rashidi (Ahmed's Parent)**\n\nMessage: 'Dear Mohammed, I wanted to share my concern about Ahmed's Physics performance this term. His last 3 scores show a declining trend (-1 this term). I recommend we schedule a meeting to discuss a support plan. Available: Thu 4pm or Fri 2pm.'\n\nSent via: Tanweer Messaging\nExpected response time: Within 24 hours",
+    if (m.includes("message") && (m.includes("parent") || m.includes("aarav"))) return {
+      text: "📨 **Message Sent to Arjun Sharma (Aarav's Parent)**\n\nMessage: 'Dear Arjun, I wanted to share my concern about Aarav's Physics performance this term. His last 3 scores show a declining trend (-1 this term). I recommend we schedule a meeting to discuss a support plan. Available: Thu 4pm or Fri 2pm.'\n\nSent via: Tanweer Messaging\nExpected response time: Within 24 hours",
       action: "message_sent",
-      actionDetail: "To: Mohammed Al-Rashidi (Ahmed's parent)",
+      actionDetail: "To: Arjun Sharma (Aarav's parent)",
     };
     if (m.includes("absent") || m.includes("missing")) return {
-      text: "📋 **Students Absent Today (Grade 10-A):**\n\n• Omar Al-Ghamdi — 3rd absence this week ⚠️\n\n**Parent contact status:**\n• Omar's parent: Not contacted yet\n\nShall I send an automated absence notification to Omar's parent?",
+      text: "📋 **Students Absent Today (Grade 10-A):**\n\n• Aryan Koul — 3rd absence this week ⚠️\n\n**Parent contact status:**\n• Aryan's parent: Not contacted yet\n\nShall I send an automated absence notification to Aryan's parent?",
     };
     if (m.includes("summary") || m.includes("class") || m.includes("generate")) return {
-      text: "📊 **Grade 10-A Class Summary Generated**\n\n**Attendance:** 87.5% (28/32 present today)\n**Homework Submission:** 87.5% (28/32 submitted)\n**Last Assessment Avg:** 80.2%\n\n**Top 3 Students:** Fatima Al-Zahrani (96%), Nora Al-Otaibi (91%), Ahmed Al-Rashidi (82%)\n**Needs Attention:** Omar Al-Ghamdi (38%, High Risk)\n\nSummary saved to class dashboard.",
+      text: "📊 **Grade 10-A Class Summary Generated**\n\n**Attendance:** 87.5% (28/32 present today)\n**Homework Submission:** 87.5% (28/32 submitted)\n**Last Assessment Avg:** 80.2%\n\n**Top 3 Students:** Fatima Sheikh (96%), Noor Kaul (91%), Aarav Sharma (82%)\n**Needs Attention:** Aryan Koul (38%, High Risk)\n\nSummary saved to class dashboard.",
       action: "report_generated",
       actionDetail: "Grade 10-A Weekly Summary Report",
     };
@@ -181,58 +181,58 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
       actionDetail: "Revision homework assigned to Grade 10-A",
     };
     if (m.includes("meeting") || m.includes("schedule")) return {
-      text: "📅 **Meeting Scheduled**\n\n1-on-1 with Mohammed Al-Rashidi (Ahmed's parent):\n• Date: June 15, 2024 at 04:00 PM\n• Room: Room 204\n• Agenda: Physics performance, study plan, Q3 targets\n\nInvite sent to parent. You'll receive a confirmation soon.",
+      text: "📅 **Meeting Scheduled**\n\n1-on-1 with Arjun Sharma (Aarav's parent):\n• Date: June 15, 2024 at 04:00 PM\n• Room: Room 204\n• Agenda: Physics performance, study plan, Q3 targets\n\nInvite sent to parent. You'll receive a confirmation soon.",
       action: "meeting_scheduled",
-      actionDetail: "Ahmed's Physics Support Meeting — Jun 15",
+      actionDetail: "Aarav's Physics Support Meeting — Jun 15",
     };
     if (m.includes("performance") || m.includes("grade 10") || m.includes("class")) return {
-      text: "📊 **Grade 10-A Performance Summary:**\n\n• Class Average: 80.2%\n• Top: Fatima Al-Zahrani (96%) 🌟\n• Lowest: Omar Al-Ghamdi (38%) ⚠️\n\n**Grade Distribution:**\n• A (90+): 12 students\n• B (70-89): 18 students  \n• C (60-69): 9 students\n• Below 60: 5 students\n\nOmar Al-Ghamdi needs urgent 1-on-1 intervention.",
+      text: "📊 **Grade 10-A Performance Summary:**\n\n• Class Average: 80.2%\n• Top: Fatima Sheikh (96%) 🌟\n• Lowest: Aryan Koul (38%) ⚠️\n\n**Grade Distribution:**\n• A (90+): 12 students\n• B (70-89): 18 students  \n• C (60-69): 9 students\n• Below 60: 5 students\n\nAryan Koul needs urgent 1-on-1 intervention.",
     };
     return {
-      text: "I can help with that! Try asking me to 'message Ahmed's parent about Physics', 'find absent students today', 'generate class summary', or 'assign revision homework'. I can execute these actions instantly.",
+      text: "I can help with that! Try asking me to 'message Aarav's parent about Physics', 'find absent students today', 'generate class summary', or 'assign revision homework'. I can execute these actions instantly.",
     };
   },
   parent: (msg) => {
     const m = msg.toLowerCase();
-    if (m.includes("contact") || m.includes("message") || m.includes("sarah") || m.includes("teacher")) return {
-      text: "📨 **Message Sent to Dr. Sarah Al-Hamdan**\n\nMessage: 'Dear Dr. Sarah, I am writing about Ahmed's preparation for the upcoming Math mid-term exam. Could you please advise on specific areas to focus on and any additional resources? Thank you.'\n\nSent via: Tanweer Messaging\nDr. Sarah typically responds within 4 hours during school days.",
+    if (m.includes("contact") || m.includes("message") || m.includes("priya") || m.includes("teacher")) return {
+      text: "📨 **Message Sent to Dr. Priya Sharma**\n\nMessage: 'Dear Dr. Priya, I am writing about Aarav's preparation for the upcoming Math mid-term exam. Could you please advise on specific areas to focus on and any additional resources? Thank you.'\n\nSent via: Tanweer Messaging\nDr. Priya typically responds within 4 hours during school days.",
       action: "message_sent",
-      actionDetail: "To: Dr. Sarah Al-Hamdan (Math Teacher)",
+      actionDetail: "To: Dr. Priya Sharma (Math Teacher)",
     };
     if (m.includes("attendance")) return {
-      text: "📅 **Ahmed's Attendance — June 2024:**\n\nRate: 94.3% ✅\nPresent: 16 days | Absent: 1 day | Late: 0\n\nCurrent Streak: 12 consecutive days! 🔥\nYear-to-date: 94.8% — above school average (93.5%).\n\n✅ Ahmed's attendance is excellent. No concerns.",
+      text: "📅 **Aarav's Attendance — June 2024:**\n\nRate: 94.3% ✅\nPresent: 16 days | Absent: 1 day | Late: 0\n\nCurrent Streak: 12 consecutive days! 🔥\nYear-to-date: 94.8% — above school average (93.5%).\n\n✅ Aarav's attendance is excellent. No concerns.",
     };
     if (m.includes("exam") || m.includes("upcoming")) return {
-      text: "📝 **Ahmed's Upcoming Exams:**\n\n• **Jun 20** — Math Mid-Term (30%) — Exam Hall A, 08:00\n• **Jun 22** — Physics Mid-Term (30%) — Exam Hall B, 10:00\n• **Jun 24** — English Quiz (10%)\n• **Jun 26** — Chemistry Practical (15%)\n\n⚠️ Math exam is in 7 days. He should review Chapters 4 & 5 tonight.",
+      text: "📝 **Aarav's Upcoming Exams:**\n\n• **Jun 20** — Math Mid-Term (30%) — Exam Hall A, 08:00\n• **Jun 22** — Physics Mid-Term (30%) — Exam Hall B, 10:00\n• **Jun 24** — English Quiz (10%)\n• **Jun 26** — Chemistry Practical (15%)\n\n⚠️ Math exam is in 7 days. He should review Chapters 4 & 5 tonight.",
     };
     if (m.includes("homework") || m.includes("pending")) return {
-      text: "📚 **Ahmed's Pending Homework:**\n\n⚠️ **English Essay** — Due Jun 16 — NOT STARTED!\n⚠️ **Physics Lab Report** — Due Jun 18 — NOT STARTED!\n🔄 **CS Python Project** — Due Jun 20 — In Progress (0%)\n\n✅ Chemistry (22/25) and Math (18/20) submitted.\n\nShall I send a reminder notification to Ahmed?",
+      text: "📚 **Aarav's Pending Homework:**\n\n⚠️ **English Essay** — Due Jun 16 — NOT STARTED!\n⚠️ **Physics Lab Report** — Due Jun 18 — NOT STARTED!\n🔄 **CS Python Project** — Due Jun 20 — In Progress (0%)\n\n✅ Chemistry (22/25) and Math (18/20) submitted.\n\nShall I send a reminder notification to Aarav?",
     };
     if (m.includes("grade") || m.includes("marks") || m.includes("doing")) return {
-      text: "📊 **Ahmed's Academic Summary:**\n\nGPA: 3.4 (B+) | Class Rank: 7/32\n\n• Arabic: 91/100 — A 🌟\n• English: 87/100 — A-\n• CS: 88/100 — A-\n• Chemistry: 84/100 — A-\n• Mathematics: 82/100 — B+\n• Physics: 79/100 — B+ ↓ (declining!)\n\nOverall trending positively. Physics is the only concern.",
+      text: "📊 **Aarav's Academic Summary:**\n\nGPA: 3.4 (B+) | Class Rank: 7/32\n\n• Urdu: 91/100 — A 🌟\n• English: 87/100 — A-\n• CS: 88/100 — A-\n• Chemistry: 84/100 — A-\n• Mathematics: 82/100 — B+\n• Physics: 79/100 — B+ ↓ (declining!)\n\nOverall trending positively. Physics is the only concern.",
     };
     return {
-      text: "I'm here to help you stay connected with Ahmed's school journey. Try asking me to 'contact Dr. Sarah about Math exam', 'show upcoming exams', 'check pending homework', or 'show attendance'. I can also send messages to teachers on your behalf!",
+      text: "I'm here to help you stay connected with Aarav's school journey. Try asking me to 'contact Dr. Priya about Math exam', 'show upcoming exams', 'check pending homework', or 'show attendance'. I can also send messages to teachers on your behalf!",
     };
   },
   student: (msg) => {
     const m = msg.toLowerCase();
     if (m.includes("study plan") || m.includes("prepare") || m.includes("math")) return {
-      text: "📖 **7-Day Math Mid-Term Study Plan:**\n\n**Day 1-2 (Jun 13-14):** Chapter 4 — Trigonometry\n• Practice 15 problems daily\n• Review unit circle and identities\n\n**Day 3-4 (Jun 15-16):** Chapter 5 — Quadratic Equations\n• Complete the 20-question practice sheet\n• Focus on vertex form and applications\n\n**Day 5 (Jun 17):** Chapter 3 — Polynomials review\n\n**Day 6 (Jun 18):** Past paper simulation (45 mins timed)\n\n**Day 7 (Jun 19):** Review mistakes + light revision only\n\n💡 Dr. Sarah says: focus on timed practice — you struggle under time pressure.\n\nPlan saved to your dashboard!",
+      text: "📖 **7-Day Math Mid-Term Study Plan:**\n\n**Day 1-2 (Jun 13-14):** Chapter 4 — Trigonometry\n• Practice 15 problems daily\n• Review unit circle and identities\n\n**Day 3-4 (Jun 15-16):** Chapter 5 — Quadratic Equations\n• Complete the 20-question practice sheet\n• Focus on vertex form and applications\n\n**Day 5 (Jun 17):** Chapter 3 — Polynomials review\n\n**Day 6 (Jun 18):** Past paper simulation (45 mins timed)\n\n**Day 7 (Jun 19):** Review mistakes + light revision only\n\n💡 Dr. Priya says: focus on timed practice — you struggle under time pressure.\n\nPlan saved to your dashboard!",
       action: "study_plan_created",
       actionDetail: "7-Day Math Study Plan created",
     };
     if (m.includes("homework") || m.includes("due")) return {
-      text: "📚 **Your Homework This Week:**\n\n🔴 **English Essay** — Due Jun 16 (NOT STARTED!) — 25 marks\n🔴 **Physics Lab Report** — Due Jun 18 (NOT STARTED!) — 30 marks\n🟡 **CS Python Project** — Due Jun 20 (In Progress) — 50 marks\n\n✅ Math Exercises — Submitted (18/20)\n✅ Chemistry Problems — Submitted (22/25)\n✅ Arabic Reading — Submitted (19/20)\n\n📌 Start the English essay tonight — it's your highest-stakes pending item!",
+      text: "📚 **Your Homework This Week:**\n\n🔴 **English Essay** — Due Jun 16 (NOT STARTED!) — 25 marks\n🔴 **Physics Lab Report** — Due Jun 18 (NOT STARTED!) — 30 marks\n🟡 **CS Python Project** — Due Jun 20 (In Progress) — 50 marks\n\n✅ Math Exercises — Submitted (18/20)\n✅ Chemistry Problems — Submitted (22/25)\n✅ Urdu Reading — Submitted (19/20)\n\n📌 Start the English essay tonight — it's your highest-stakes pending item!",
     };
     if (m.includes("grade") || m.includes("mark") || m.includes("score")) return {
-      text: "📊 **Your Current Grades:**\n\n🌟 Arabic: 91/100 — A (+3)\n📈 CS: 88/100 — A- (+5)\n📈 English: 87/100 — A- (+2)\n📈 Chemistry: 84/100 — A- (+6 — most improved!)\n📈 Mathematics: 82/100 — B+ (+4)\n⚠️ Physics: 79/100 — B+ (-1, declining!)\n\nOverall GPA: 3.4 (B+) | Class Rank: 7/32\n\nFocus on Physics — it's your only declining subject.",
+      text: "📊 **Your Current Grades:**\n\n🌟 Urdu: 91/100 — A (+3)\n📈 CS: 88/100 — A- (+5)\n📈 English: 87/100 — A- (+2)\n📈 Chemistry: 84/100 — A- (+6 — most improved!)\n📈 Mathematics: 82/100 — B+ (+4)\n⚠️ Physics: 79/100 — B+ (-1, declining!)\n\nOverall GPA: 3.4 (B+) | Class Rank: 7/32\n\nFocus on Physics — it's your only declining subject.",
     };
     if (m.includes("physics") || m.includes("problem")) return {
-      text: "🔬 **Physics Support Plan:**\n\n**Your weak areas (based on last 3 tests):**\n• Newton's Laws of Motion (scored 65%)\n• Energy and Work calculations (scored 70%)\n• Projectile motion (scored 72%)\n\n**Recommended resources:**\n1. Khan Academy — Unit 3: Forces (30 min)\n2. Your textbook problems P.87-92\n3. Mr. Khalid's revision sheet (available on portal)\n\n**Quick tip:** You understand the theory but lose points on calculations. Practice 3 timed problems every day.",
+      text: "🔬 **Physics Support Plan:**\n\n**Your weak areas (based on last 3 tests):**\n• Newton's Laws of Motion (scored 65%)\n• Energy and Work calculations (scored 70%)\n• Projectile motion (scored 72%)\n\n**Recommended resources:**\n1. Khan Academy — Unit 3: Forces (30 min)\n2. Your textbook problems P.87-92\n3. Mr. Imran's revision sheet (available on portal)\n\n**Quick tip:** You understand the theory but lose points on calculations. Practice 3 timed problems every day.",
     };
     if (m.includes("project")) return {
-      text: "🔬 **Your Active Projects:**\n\n1. **Solar Energy Efficiency** (Physics)\n   Progress: 65% | Due: Jun 25 | Team: Ahmed, Fatima, Omar\n   ⚡ Next step: Write the analysis section (your part)\n\n2. **Population Growth Math Model** (Mathematics)\n   Progress: 40% | Due: Jun 30 | Team: Ahmed, Nora\n   ⚡ Next step: Collect data for 3 more cities\n\n📌 Solar project needs 35% more work in 12 days. Consider a team meeting this weekend!",
+      text: "🔬 **Your Active Projects:**\n\n1. **Solar Energy Efficiency** (Physics)\n   Progress: 65% | Due: Jun 25 | Team: Aarav, Fatima, Aryan\n   ⚡ Next step: Write the analysis section (your part)\n\n2. **Population Growth Math Model** (Mathematics)\n   Progress: 40% | Due: Jun 30 | Team: Aarav, Noor\n   ⚡ Next step: Collect data for 3 more cities\n\n📌 Solar project needs 35% more work in 12 days. Consider a team meeting this weekend!",
     };
     return {
       text: "I'm your personal AI study assistant! Here's what I can do for you:\n\n📖 Create custom study plans\n📊 Analyze your grade trends\n📝 Track all your homework\n🔬 Help you understand concepts\n📅 Show exam preparation timelines\n\nTry asking: 'Create a study plan for Math exam' or 'What homework is due this week?'",
@@ -240,166 +240,193 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
   },
 };
 
+// ─── Component ─────────────────────────────────────────────────────────────────
 export function AIDrawer() {
-  const { aiDrawerOpen, setAiDrawerOpen } = useUIStore();
+  const { isAiDrawerOpen, toggleAiDrawer } = useUIStore();
   const { activeRole } = useRoleStore();
-  const cfg = roleConfig[activeRole];
 
-  const isStudent = activeRole === "student";
-  const assistantName = isStudent ? "Study Assistant" : "School AI Assistant";
-  const assistantSubtitle = isStudent ? "Homework · Exams · Study Plans" : "Analytics · Attendance · Messaging";
+  const greeting   = roleGreetings[activeRole]   ?? roleGreetings.admin;
+  const suggestions = roleSuggestions[activeRole] ?? roleSuggestions.admin;
+  const respond     = roleResponses[activeRole]   ?? roleResponses.admin;
+  const roleInfo    = roleConfig[activeRole];
 
-  const [messages, setMessages] = useState<AIMessage[]>([]);
-  const [input, setInput] = useState("");
+  const [input, setInput]       = useState("");
+  const [messages, setMessages] = useState<AIMessage[]>([
+    { id: "1", role: "assistant", content: greeting, timestamp: new Date() },
+  ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [lastAction, setLastAction] = useState<{ type: ActionType; detail?: string } | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef  = useRef<HTMLDivElement>(null);
+  const inputRef   = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMessages([{
-      id: "1",
-      role: "assistant",
-      content: roleGreetings[activeRole],
-      timestamp: new Date(),
-    }]);
-    setLastAction(null);
+    setMessages([{ id: "1", role: "assistant", content: roleGreetings[activeRole] ?? roleGreetings.admin, timestamp: new Date() }]);
+    setInput("");
   }, [activeRole]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, isTyping]);
 
-  const handleSend = async (text?: string) => {
-    const msg = text || input.trim();
-    if (!msg) return;
-    const userMsg: AIMessage = { id: Date.now().toString(), role: "user", content: msg, timestamp: new Date() };
+  useEffect(() => {
+    if (isAiDrawerOpen) setTimeout(() => inputRef.current?.focus(), 150);
+  }, [isAiDrawerOpen]);
+
+  const handleSend = (text: string = input.trim()) => {
+    if (!text) return;
+    const userMsg: AIMessage = { id: Date.now().toString(), role: "user", content: text, timestamp: new Date() };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsTyping(true);
-    setLastAction(null);
-
     setTimeout(() => {
-      const respFn = roleResponses[activeRole];
-      const response = respFn ? respFn(msg) : { text: "Let me look into that for you..." };
-      const aiMsg: AIMessage = {
+      const response = respond(text);
+      const assistantMsg: AIMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: response.text,
         timestamp: new Date(),
+        action: response.action ? { type: response.action, detail: response.actionDetail } : undefined,
       };
-      setMessages((prev) => [...prev, aiMsg]);
-      if (response.action) {
-        const allowedActions = isStudent ? STUDY_ACTIONS : SCHOOL_ACTIONS;
-        if ((allowedActions as ActionType[]).includes(response.action)) {
-          setLastAction({ type: response.action, detail: response.actionDetail });
-        }
-      }
+      setMessages((prev) => [...prev, assistantMsg]);
       setIsTyping(false);
-    }, 1100);
+    }, 900 + Math.random() * 600);
   };
 
-  if (!aiDrawerOpen) return null;
-  const suggestions = roleSuggestions[activeRole];
+  const renderContent = (text: string) =>
+    text.split("\n").map((line, i, arr) => {
+      const html = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      return (
+        <span key={i}>
+          <span dangerouslySetInnerHTML={{ __html: html }} />
+          {i < arr.length - 1 && <br />}
+        </span>
+      );
+    });
+
+  if (!isAiDrawerOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-card border-l shadow-2xl flex flex-col z-50">
-      {/* Header */}
-      <div className="flex items-center gap-2 p-4 border-b text-white"
-        style={{ background: isStudent ? "linear-gradient(135deg, #d97706 0%, #b45309 100%)" : "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}>
-        <Sparkles className="h-5 w-5" />
-        <div className="flex-1">
-          <p className="font-semibold text-sm">{assistantName}</p>
-          <p className={`text-xs ${isStudent ? "text-amber-200" : "text-violet-200"}`}>{assistantSubtitle}</p>
-        </div>
-        <Button variant="ghost" size="icon" onClick={() => setAiDrawerOpen(false)} className="h-8 w-8 text-white hover:bg-white/20">
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
+    <div className="fixed inset-0 z-50 flex">
+      <div className="flex-1 bg-black/20 backdrop-blur-sm" onClick={toggleAiDrawer} />
 
-      {/* Action Banner */}
-      {lastAction && (
-        <div className={cn("mx-3 mt-3 rounded-xl p-3 flex items-center gap-2.5 border", actionConfigs[lastAction.type].color)}>
-          <div className={cn("p-1.5 rounded-lg shrink-0", actionConfigs[lastAction.type].color)}>
-            {(() => { const Icon = actionConfigs[lastAction.type].icon; return <Icon className="h-4 w-4" />; })()}
+      <div className="w-[420px] max-w-[95vw] bg-background border-l shadow-2xl flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-violet-600 to-indigo-600 text-white shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm leading-tight">Tanweer AI Assistant</p>
+              <p className="text-[11px] text-white/75 leading-tight">{roleInfo?.label}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold">{actionConfigs[lastAction.type].label}</p>
-            <p className="text-xs opacity-80">{lastAction.detail || actionConfigs[lastAction.type].description}</p>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-white/20 text-white text-[10px] border-0 hover:bg-white/30">
+              <span className="mr-1 h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block" />
+              Online
+            </Badge>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-white hover:bg-white/20" onClick={toggleAiDrawer}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-          <Badge className="text-[10px] shrink-0">Done ✓</Badge>
         </div>
-      )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <div key={msg.id} className={cn("flex gap-2", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-            {msg.role === "assistant" && (
-              <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0 mt-1">
+        {/* Messages */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {messages.map((msg) => (
+            <div key={msg.id} className={cn("flex gap-2.5", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
+              {msg.role === "assistant" && (
+                <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <Bot className="h-4 w-4 text-violet-600" />
+                </div>
+              )}
+              <div className={cn("max-w-[85%] space-y-2", msg.role === "user" ? "items-end flex flex-col" : "items-start")}>
+                <div className={cn(
+                  "rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
+                  msg.role === "user" ? "bg-violet-600 text-white rounded-tr-sm" : "bg-muted rounded-tl-sm"
+                )}>
+                  {renderContent(msg.content)}
+                </div>
+                {msg.action && (() => {
+                  const cfg = actionConfigs[msg.action.type as ActionType];
+                  if (!cfg) return null;
+                  const Icon = cfg.icon;
+                  return (
+                    <div className={cn("flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium", cfg.color)}>
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      <span>{cfg.label}</span>
+                      {msg.action.detail && <span className="text-[11px] opacity-70">— {msg.action.detail}</span>}
+                    </div>
+                  );
+                })()}
+                <p className="text-[10px] text-muted-foreground px-1">
+                  {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex gap-2.5">
+              <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
                 <Bot className="h-4 w-4 text-violet-600" />
               </div>
-            )}
-            <div className={cn(
-              "max-w-[82%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-line leading-relaxed",
-              msg.role === "user"
-                ? "bg-primary text-primary-foreground rounded-tr-sm"
-                : "bg-muted rounded-tl-sm"
-            )}>
-              {msg.content}
+              <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
+                {[0, 1, 2].map((i) => (
+                  <span key={i} className="h-1.5 w-1.5 rounded-full bg-muted-foreground/60 animate-bounce"
+                    style={{ animationDelay: `${i * 0.15}s` }} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-        {isTyping && (
-          <div className="flex gap-2">
-            <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-              <Bot className="h-4 w-4 text-violet-600" />
-            </div>
-            <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1 items-center">
-              <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:-0.3s]" />
-              <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:-0.15s]" />
-              <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" />
+          )}
+        </div>
+
+        {/* Suggestions */}
+        {messages.length <= 1 && (
+          <div className="px-4 pb-2 shrink-0">
+            <p className="text-[11px] text-muted-foreground mb-2 font-medium">Suggested</p>
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => handleSend(s)}
+                  className="text-[11px] px-2.5 py-1 rounded-full border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      {/* Suggestions (first message only) */}
-      {messages.length <= 1 && (
-        <div className="px-4 pb-2">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Zap className="h-3.5 w-3.5 text-amber-500" />
-            <p className="text-xs font-semibold text-muted-foreground">Quick Actions</p>
+        {/* Input */}
+        <div className="px-4 py-3 border-t shrink-0">
+          <div className="flex gap-2">
+            <Input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder="Ask anything about your school..."
+              className="flex-1 text-sm rounded-xl"
+              disabled={isTyping}
+            />
+            <Button
+              size="icon"
+              className="bg-violet-600 hover:bg-violet-700 rounded-xl shrink-0"
+              onClick={() => handleSend()}
+              disabled={!input.trim() || isTyping}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex flex-col gap-1.5">
-            {suggestions.map((s) => (
-              <button key={s} onClick={() => handleSend(s)}
-                className="text-xs text-left px-3 py-2 rounded-lg bg-muted hover:bg-accent transition-colors border border-border/50">
-                {s}
-              </button>
-            ))}
-          </div>
+          <p className="text-[10px] text-muted-foreground text-center mt-2">
+            AI responses are simulated for demo purposes
+          </p>
         </div>
-      )}
-
-      {/* Input */}
-      <div className="p-4 border-t">
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask or give a command..."
-            className="h-9 text-sm"
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          />
-          <Button size="icon" className="h-9 w-9 shrink-0" onClick={() => handleSend()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
-          {isStudent ? "AI can create study plans, track homework, and prep for exams" : "AI can send messages, assign tasks, and generate reports"}
-        </p>
       </div>
     </div>
   );
 }
+
+export default AIDrawer;

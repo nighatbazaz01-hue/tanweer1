@@ -103,7 +103,7 @@ const CREDENTIALS: Credential[] = [
     targetRoute: "/parent",
     color: "bg-amber-100 text-amber-700 border-amber-200",
     demoHighlights: [
-      "Parent dashboard for Ahmed Al-Rashidi (Grade 10-A)",
+      "Parent dashboard for Aarav Sharma (Grade 10-A)",
       "Transport tracking — bus route, live ETA",
       "Fee payment history and upcoming dues",
       "Messaging with teachers and school admin",

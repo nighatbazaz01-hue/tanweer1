@@ -23,16 +23,16 @@ export const VP_GRADE_RANGES: Record<"vp1" | "vp2" | "vp3", [number, number]> = 
 };
 
 // ─── Demo Persona Bindings (mock system) ──────────────────────────────────────
-// Teacher persona: Dr. Sarah Al-Hamdan teaches Grade 10-A Mathematics
+// Teacher persona: Dr. Priya Sharma teaches Grade 10-A Mathematics
 // TCH-003 is pinned in population.ts getAllTeachers() at i=2 (grades 9–12 group)
 export const DEMO_TEACHER_ID    = "TCH-003";
-export const DEMO_TEACHER_NAME  = "Dr. Sarah Al-Hamdan";
+export const DEMO_TEACHER_NAME  = "Dr. Priya Sharma";
 export const DEMO_TEACHER_GRADE = 10;
 export const DEMO_TEACHER_SECTION: "A" | "B" | "C" | "D" = "A";
 
-// Parent/Student persona: Ahmed Al-Rashidi, Grade 10-A, STU-0451
+// Parent/Student persona: Aarav Sharma, Grade 10-A, STU-0451
 export const DEMO_CHILD_ID = "STU-0451";
-export const DEMO_CHILD_NAME = "Ahmed Al-Rashidi";
+export const DEMO_CHILD_NAME = "Aarav Sharma";
 
 // ─── Feature Permission Flags ─────────────────────────────────────────────────
 export interface RolePermissions {

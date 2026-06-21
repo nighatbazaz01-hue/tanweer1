@@ -59,12 +59,12 @@ export interface TransportRequest {
 
 // ─── BUS_ROUTES (single source of truth) ──────────────────────────────────────
 export const BUS_ROUTES = [
-  { bus: "Bus 01", routeCode: "RT-01", route: "North Riyadh — Al-Nakheel",  stops: ["Al-Nakheel Roundabout", "Malaz Square", "King Fahd Road", "Al-Muruj Gate"], pickupTimes: ["6:45 AM", "7:00 AM", "7:10 AM", "7:20 AM"], dropTimes: ["2:30 PM", "2:45 PM", "2:55 PM", "3:05 PM"] },
-  { bus: "Bus 02", routeCode: "RT-02", route: "East Riyadh — Al-Ruwais",    stops: ["Al-Ruwais Park", "Al-Rabwa Crossing", "Prince Turki Road", "Al-Salam Gate"], pickupTimes: ["6:40 AM", "6:55 AM", "7:05 AM", "7:15 AM"], dropTimes: ["2:25 PM", "2:40 PM", "2:50 PM", "3:00 PM"] },
-  { bus: "Bus 03", routeCode: "RT-03", route: "West Riyadh — Al-Aqiq",      stops: ["Al-Aqiq Mosque", "King Abdullah Road", "Diplomatic Quarter", "Al-Hamra Exit"], pickupTimes: ["6:50 AM", "7:02 AM", "7:12 AM", "7:22 AM"], dropTimes: ["2:35 PM", "2:47 PM", "2:57 PM", "3:07 PM"] },
-  { bus: "Bus 04", routeCode: "RT-04", route: "South Riyadh — Al-Shifa",    stops: ["Al-Shifa Center", "Al-Badr Road", "Airport Road Junction", "Al-Naseem Gate"], pickupTimes: ["6:30 AM", "6:45 AM", "6:58 AM", "7:10 AM"], dropTimes: ["2:20 PM", "2:35 PM", "2:48 PM", "3:00 PM"] },
-  { bus: "Bus 05", routeCode: "RT-05", route: "Central Riyadh — Olaya",     stops: ["Olaya Towers", "Al-Wuroud", "King Salman Park", "Main Gate"], pickupTimes: ["6:55 AM", "7:05 AM", "7:15 AM", "7:25 AM"], dropTimes: ["2:40 PM", "2:50 PM", "3:00 PM", "3:10 PM"] },
-  { bus: "Bus 06", routeCode: "RT-06", route: "North-West — Al-Rawdah",     stops: ["Al-Rawdah Villa", "Al-Worood District", "Prince Fawwaz Road", "Side Gate B"], pickupTimes: ["6:35 AM", "6:48 AM", "7:00 AM", "7:12 AM"], dropTimes: ["2:28 PM", "2:41 PM", "2:53 PM", "3:05 PM"] },
+  { bus: "Bus 01", routeCode: "RT-01", route: "Hyderpora — Nowgam",        stops: ["Hyderpora Crossing", "Nowgam Chowk", "Parimpora Bypass", "School Main Gate"],    pickupTimes: ["6:45 AM", "7:00 AM", "7:10 AM", "7:20 AM"], dropTimes: ["2:30 PM", "2:45 PM", "2:55 PM", "3:05 PM"] },
+  { bus: "Bus 02", routeCode: "RT-02", route: "Pampore — Lasjan",           stops: ["Pampore Chowk", "Lasjan Market", "Zainakote Turn", "School Side Gate"],         pickupTimes: ["6:40 AM", "6:55 AM", "7:05 AM", "7:15 AM"], dropTimes: ["2:25 PM", "2:40 PM", "2:50 PM", "3:00 PM"] },
+  { bus: "Bus 03", routeCode: "RT-03", route: "Batmaloo — Rajbagh",         stops: ["Batmaloo Roundabout", "Rajbagh Signal", "Residency Road", "School Gate 2"],     pickupTimes: ["6:50 AM", "7:02 AM", "7:12 AM", "7:22 AM"], dropTimes: ["2:35 PM", "2:47 PM", "2:57 PM", "3:07 PM"] },
+  { bus: "Bus 04", routeCode: "RT-04", route: "Bemina — Chanapora",         stops: ["Bemina Crossing", "Chanapora Chowk", "Narbal Bridge", "School Gate 3"],        pickupTimes: ["6:30 AM", "6:45 AM", "6:58 AM", "7:10 AM"], dropTimes: ["2:20 PM", "2:35 PM", "2:48 PM", "3:00 PM"] },
+  { bus: "Bus 05", routeCode: "RT-05", route: "Dalgate — Lal Chowk",        stops: ["Dalgate Stop", "Lal Chowk", "Exhibition Crossing", "Main Gate"],               pickupTimes: ["6:55 AM", "7:05 AM", "7:15 AM", "7:25 AM"], dropTimes: ["2:40 PM", "2:50 PM", "3:00 PM", "3:10 PM"] },
+  { bus: "Bus 06", routeCode: "RT-06", route: "Sopore — Baramulla Road",    stops: ["Sopore Bypass", "Baramulla Road", "Tengpora Stop", "Side Gate B"],             pickupTimes: ["6:35 AM", "6:48 AM", "7:00 AM", "7:12 AM"], dropTimes: ["2:28 PM", "2:41 PM", "2:53 PM", "3:05 PM"] },
 ];
 
 // ─── Vehicle details derived from BUS_ROUTES (one record per route) ───────────
@@ -83,12 +83,12 @@ const VEHICLE_EXTRAS: {
   driverName: string;
   conductorName: string;
 }[] = [
-  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-1045-A", insuranceExpiry: "Dec 2025", fitnessExpiry: "Nov 2025", pollutionExpiry: "Oct 2025", status: "active",      driverName: "Mohammed Al-Rashidi",  conductorName: "Ahmed Al-Zahrani"  },
-  { vehicleType: "Coach",    capacity: 48, fuelType: "Diesel", registrationNumber: "RYD-2187-B", insuranceExpiry: "Mar 2026", fitnessExpiry: "Feb 2026", pollutionExpiry: "Jan 2026", status: "active",      driverName: "Ibrahim Al-Ghamdi",    conductorName: "Khalid Al-Dosari"  },
-  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "CNG",    registrationNumber: "RYD-3321-C", insuranceExpiry: "Jun 2026", fitnessExpiry: "May 2026", pollutionExpiry: "Apr 2026", status: "maintenance", driverName: "Faisal Al-Mutairi",    conductorName: "Omar Al-Harbi"     },
-  { vehicleType: "Coach",    capacity: 52, fuelType: "Diesel", registrationNumber: "RYD-4563-D", insuranceExpiry: "Sep 2025", fitnessExpiry: "Aug 2025", pollutionExpiry: "Jul 2025", status: "active",      driverName: "Saad Al-Anazi",        conductorName: "Bilal Al-Shehri"   },
-  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "RYD-5892-E", insuranceExpiry: "Jan 2026", fitnessExpiry: "Dec 2025", pollutionExpiry: "Nov 2025", status: "active",      driverName: "Turki Al-Barrak",      conductorName: "Nawaf Al-Sayed"    },
-  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "Petrol", registrationNumber: "RYD-6124-F", insuranceExpiry: "Apr 2026", fitnessExpiry: "Mar 2026", pollutionExpiry: "Feb 2026", status: "inactive",    driverName: "Adel Al-Qahtani",      conductorName: "Ziad Al-Farouk"    },
+  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "JK02A-1045", insuranceExpiry: "Dec 2025", fitnessExpiry: "Nov 2025", pollutionExpiry: "Oct 2025", status: "active",      driverName: "Bashir Ahmed",   conductorName: "Shabir Bhat"   },
+  { vehicleType: "Coach",    capacity: 48, fuelType: "Diesel", registrationNumber: "JK02A-2187", insuranceExpiry: "Mar 2026", fitnessExpiry: "Feb 2026", pollutionExpiry: "Jan 2026", status: "active",      driverName: "Ghulam Nabi",    conductorName: "Nisar Ahmed"   },
+  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "CNG",    registrationNumber: "JK02B-3321", insuranceExpiry: "Jun 2026", fitnessExpiry: "May 2026", pollutionExpiry: "Apr 2026", status: "maintenance", driverName: "Rameez Raja",    conductorName: "Rakesh Kumar"  },
+  { vehicleType: "Coach",    capacity: 52, fuelType: "Diesel", registrationNumber: "JK02A-4563", insuranceExpiry: "Sep 2025", fitnessExpiry: "Aug 2025", pollutionExpiry: "Jul 2025", status: "active",      driverName: "Javid Akhtar",   conductorName: "Sanjay Singh"  },
+  { vehicleType: "Coach",    capacity: 50, fuelType: "Diesel", registrationNumber: "JK02A-5892", insuranceExpiry: "Jan 2026", fitnessExpiry: "Dec 2025", pollutionExpiry: "Nov 2025", status: "active",      driverName: "Mushtaq Lone",   conductorName: "Deepak Sharma" },
+  { vehicleType: "Mini-Bus", capacity: 35, fuelType: "Petrol", registrationNumber: "JK02B-6124", insuranceExpiry: "Apr 2026", fitnessExpiry: "Mar 2026", pollutionExpiry: "Feb 2026", status: "inactive",    driverName: "Farooq Ahmad",   conductorName: "Anil Kumar"    },
 ];
 
 export const initialVehicles: VehicleRecord[] = BUS_ROUTES.map((route, i) => ({
@@ -101,31 +101,31 @@ export const initialVehicles: VehicleRecord[] = BUS_ROUTES.map((route, i) => ({
 // ─── Initial Transport Requests ────────────────────────────────────────────────
 export const initialTransportRequests: TransportRequest[] = [
   {
-    id: "TR-001", studentId: "STU-001", studentName: "Ahmed Al-Rashidi", parentName: "Mohammed Al-Rashidi",
+    id: "TR-001", studentId: "STU-001", studentName: "Aarav Sharma", parentName: "Arjun Sharma",
     requestType: "change_stop",
-    proposedStop: "Malaz Square",
-    details: "Please change pickup stop from Al-Nakheel Roundabout to Malaz Square starting Monday.",
+    proposedStop: "Nowgam Chowk",
+    details: "Please change pickup stop from Hyderpora Crossing to Nowgam Chowk starting Monday.",
     status: "pending", submittedAt: "Jun 12, 2026", routeId: "RT-01",
   },
   {
-    id: "TR-002", studentId: "STU-051", studentName: "Mazen Al-Harbi", parentName: "Hassan Al-Harbi",
+    id: "TR-002", studentId: "STU-051", studentName: "Mohsin Bhat", parentName: "Hamid Bhat",
     requestType: "change_address",
-    proposedAddress: "Villa 45, Al-Ruwais District, Riyadh",
-    details: "We have moved to Villa 45, Al-Ruwais District. Please update our home address.",
+    proposedAddress: "House 45, Nowgam Colony, Srinagar",
+    details: "We have moved to House 45, Nowgam Colony. Please update our home address.",
     status: "pending", submittedAt: "Jun 13, 2026", routeId: "RT-02",
   },
   {
-    id: "TR-003", studentId: "STU-101", studentName: "Fahad Al-Mutairi", parentName: "Saeed Al-Mutairi",
+    id: "TR-003", studentId: "STU-101", studentName: "Faizan Khan", parentName: "Saleem Khan",
     requestType: "temporary",
-    proposedStop: "Prince Fawwaz Road (Grandmother's house)",
-    details: "My son will need temporary pickup from his grandmother's house at Prince Fawwaz Road for two weeks (Jun 17–Jun 28).",
-    status: "approved", submittedAt: "Jun 10, 2026", reviewedBy: "VP — Mrs. Hessa", reviewedAt: "Jun 11, 2026", routeId: "RT-06",
+    proposedStop: "Sopore Bypass Stop (Grandmother's house)",
+    details: "My son will need temporary pickup from his grandmother's house at Sopore Bypass for two weeks (Jun 17–Jun 28).",
+    status: "approved", submittedAt: "Jun 10, 2026", reviewedBy: "VP — Mrs. Rubina", reviewedAt: "Jun 11, 2026", routeId: "RT-06",
   },
   {
-    id: "TR-004", studentId: "STU-151", studentName: "Abdullah Al-Zahrani", parentName: "Khalid Al-Zahrani",
+    id: "TR-004", studentId: "STU-151", studentName: "Abdullah Bhat", parentName: "Khalid Bhat",
     requestType: "change_stop",
-    proposedStop: "Al-Naseem Gate",
-    details: "Please move pickup to Al-Naseem Gate instead of Al-Shifa Center.",
+    proposedStop: "Chanapora Chowk",
+    details: "Please move pickup to Chanapora Chowk instead of Bemina Crossing.",
     status: "rejected", submittedAt: "Jun 9, 2026", reviewedBy: "Admin", reviewedAt: "Jun 10, 2026", routeId: "RT-04",
   },
 ];
@@ -155,7 +155,7 @@ export function generateTransportRecords(): TransportRecord[] {
       stopLocation: stop,
       parentName: s.parentName,
       parentContact: s.parentPhone,
-      address: `Villa ${num}, ${stop}, Riyadh`,
+      address: `House ${num}, ${stop}, Srinagar`,
       avatar: s.avatar,
     };
   });

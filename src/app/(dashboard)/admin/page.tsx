@@ -69,7 +69,7 @@ export default function AdminDashboard() {
     const paid = feeRecords.reduce((s, r) => s + r.paidAmount, 0);
     if (paid === 0) return "—";
     const m = paid / 1_000_000;
-    return m >= 1 ? `SAR ${m.toFixed(2)}M` : `SAR ${Math.round(paid / 1000).toLocaleString()}K`;
+    return m >= 1 ? `₹${m.toFixed(2)}M` : `₹${Math.round(paid / 1000).toLocaleString()}K`;
   }, [feeRecords]);
   const liveGradeDistribution = useMemo(() => {
     const colors = ["#34d399", "#60a5fa", "#a78bfa", "#f59e0b"];
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Fee Collection vs. Target (SAR 000s)</CardTitle>
+            <CardTitle className="text-sm font-semibold">Fee Collection vs. Target (₹ 000s)</CardTitle>
           </CardHeader>
           <CardContent>
             <GroupedBar

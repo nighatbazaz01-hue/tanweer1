@@ -1,5 +1,5 @@
 export const studentProfile = {
-  name: "Ahmed Al-Rashidi",
+  name: "Aarav Sharma",
   studentId: "STU-2024-001",
   grade: "Grade 10-A",
   gpa: 3.4,
@@ -40,44 +40,44 @@ export const upcomingExams = [
 ];
 
 export const subjectMarks = [
-  { subject: "Mathematics", teacher: "Dr. Sarah Al-Hamdan", marks: 82, total: 100, grade: "B+", change: +4 },
-  { subject: "English", teacher: "Ms. Reem Al-Harbi", marks: 87, total: 100, grade: "A-", change: +2 },
-  { subject: "Physics", teacher: "Mr. Khalid Al-Mutairi", marks: 79, total: 100, grade: "B+", change: -1 },
-  { subject: "Chemistry", teacher: "Dr. Layla Al-Anazi", marks: 84, total: 100, grade: "A-", change: +6 },
-  { subject: "Arabic", teacher: "Mr. Hassan Al-Shehri", marks: 91, total: 100, grade: "A", change: +3 },
-  { subject: "Computer Science", teacher: "Mr. Tariq Al-Yami", marks: 88, total: 100, grade: "A-", change: +5 },
+  { subject: "Mathematics",    teacher: "Dr. Priya Sharma", marks: 82, total: 100, grade: "B+", change: +4 },
+  { subject: "English",        teacher: "Ms. Neha Gupta",   marks: 87, total: 100, grade: "A-", change: +2 },
+  { subject: "Physics",        teacher: "Mr. Imran Khan",   marks: 79, total: 100, grade: "B+", change: -1 },
+  { subject: "Chemistry",      teacher: "Dr. Sunita Rao",   marks: 84, total: 100, grade: "A-", change: +6 },
+  { subject: "Urdu",           teacher: "Mr. Aaqib Wani",   marks: 91, total: 100, grade: "A",  change: +3 },
+  { subject: "Computer Science", teacher: "Mr. Ravi Sharma",marks: 88, total: 100, grade: "A-", change: +5 },
 ];
 
 export const weeklyTimetable = {
-  Sunday: [
-    { time: "07:30", subject: "Mathematics", room: "204", teacher: "Dr. Sarah" },
-    { time: "09:15", subject: "English", room: "105", teacher: "Ms. Reem" },
-    { time: "11:00", subject: "Physics", room: "Lab 2", teacher: "Mr. Khalid" },
-    { time: "13:00", subject: "Arabic", room: "201", teacher: "Mr. Hassan" },
-  ],
   Monday: [
-    { time: "07:30", subject: "Chemistry", room: "Lab 1", teacher: "Dr. Layla" },
-    { time: "09:15", subject: "Mathematics", room: "204", teacher: "Dr. Sarah" },
-    { time: "11:00", subject: "Islamic Studies", room: "103", teacher: "Sheikh Omar" },
-    { time: "13:00", subject: "PE", room: "Gym", teacher: "Mr. Faris" },
+    { time: "07:30", subject: "Mathematics",    room: "204",    teacher: "Dr. Priya"  },
+    { time: "09:15", subject: "English",         room: "105",    teacher: "Ms. Neha"   },
+    { time: "11:00", subject: "Physics",         room: "Lab 2",  teacher: "Mr. Imran"  },
+    { time: "13:00", subject: "Urdu",            room: "201",    teacher: "Mr. Aaqib"  },
   ],
   Tuesday: [
-    { time: "07:30", subject: "English", room: "105", teacher: "Ms. Reem" },
-    { time: "09:15", subject: "Physics", room: "Lab 2", teacher: "Mr. Khalid" },
-    { time: "11:00", subject: "Mathematics", room: "204", teacher: "Dr. Sarah" },
-    { time: "13:00", subject: "Computer Science", room: "CS Lab", teacher: "Mr. Tariq" },
+    { time: "07:30", subject: "Chemistry",       room: "Lab 1",  teacher: "Dr. Sunita" },
+    { time: "09:15", subject: "Mathematics",     room: "204",    teacher: "Dr. Priya"  },
+    { time: "11:00", subject: "Social Studies",  room: "103",    teacher: "Ms. Reema"  },
+    { time: "13:00", subject: "PE",              room: "Gym",    teacher: "Mr. Vikram" },
   ],
   Wednesday: [
-    { time: "07:30", subject: "Arabic", room: "201", teacher: "Mr. Hassan" },
-    { time: "09:15", subject: "Chemistry", room: "Lab 1", teacher: "Dr. Layla" },
-    { time: "11:00", subject: "English", room: "105", teacher: "Ms. Reem" },
-    { time: "13:00", subject: "Art", room: "Art Room", teacher: "Ms. Noura" },
+    { time: "07:30", subject: "English",         room: "105",    teacher: "Ms. Neha"   },
+    { time: "09:15", subject: "Physics",         room: "Lab 2",  teacher: "Mr. Imran"  },
+    { time: "11:00", subject: "Mathematics",     room: "204",    teacher: "Dr. Priya"  },
+    { time: "13:00", subject: "Computer Science",room: "CS Lab", teacher: "Mr. Ravi"   },
   ],
   Thursday: [
-    { time: "07:30", subject: "Mathematics", room: "204", teacher: "Dr. Sarah" },
-    { time: "09:15", subject: "Arabic", room: "201", teacher: "Mr. Hassan" },
-    { time: "11:00", subject: "Physics", room: "Lab 2", teacher: "Mr. Khalid" },
-    { time: "13:00", subject: "Computer Science", room: "CS Lab", teacher: "Mr. Tariq" },
+    { time: "07:30", subject: "Urdu",            room: "201",    teacher: "Mr. Aaqib"  },
+    { time: "09:15", subject: "Chemistry",       room: "Lab 1",  teacher: "Dr. Sunita" },
+    { time: "11:00", subject: "English",         room: "105",    teacher: "Ms. Neha"   },
+    { time: "13:00", subject: "Art",             room: "Art Room", teacher: "Ms. Jyoti" },
+  ],
+  Friday: [
+    { time: "07:30", subject: "Mathematics",     room: "204",    teacher: "Dr. Priya"  },
+    { time: "09:15", subject: "Urdu",            room: "201",    teacher: "Mr. Aaqib"  },
+    { time: "11:00", subject: "Physics",         room: "Lab 2",  teacher: "Mr. Imran"  },
+    { time: "13:00", subject: "Computer Science",room: "CS Lab", teacher: "Mr. Ravi"   },
   ],
 };
 

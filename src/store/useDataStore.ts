@@ -65,7 +65,8 @@ export type AppEventType =
   | "leaveApproved"
   | "leaveRejected"
   | "gradesUpdated"
-  | "feePaymentRecorded";
+  | "feePaymentRecorded"
+  | "unauthorizedAccess";
 
 export interface AppEvent {
   id: string;
@@ -120,28 +121,28 @@ export interface TimetableEntry {
 let timetableIdCounter = 2000;
 
 const DEFAULT_TIMETABLE_ENTRIES: TimetableEntry[] = [
-  { id: "TE-001", day: "Sunday",    period: "P1", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
-  { id: "TE-002", day: "Sunday",    period: "P2", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
-  { id: "TE-003", day: "Sunday",    period: "P3", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-  { id: "TE-004", day: "Sunday",    period: "P5", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-005", day: "Sunday",    period: "P6", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-006", day: "Monday",    period: "P1", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
-  { id: "TE-007", day: "Monday",    period: "P2", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
-  { id: "TE-008", day: "Monday",    period: "P3", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-009", day: "Tuesday",   period: "P1", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-010", day: "Tuesday",   period: "P2", grade: "10", section: "A", subject: "Chemistry",        teacher: "Mr. Faris Al-Shammari", room: "Lab1" },
-  { id: "TE-011", day: "Wednesday", period: "P1", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-  { id: "TE-012", day: "Wednesday", period: "P3", grade: "10", section: "A", subject: "Arabic",           teacher: "Dr. Layla Al-Anazi",    room: "R108" },
-  { id: "TE-013", day: "Thursday",  period: "P1", grade: "10", section: "A", subject: "Computer Science", teacher: "Mr. Hassan Al-Shehri",  room: "Lab2" },
-  { id: "TE-014", day: "Thursday",  period: "P2", grade: "10", section: "A", subject: "English",          teacher: "Ms. Reem Al-Harbi",     room: "R105" },
-  { id: "TE-015", day: "Sunday",    period: "P1", grade: "1",  section: "A", subject: "Arabic",           teacher: "Mr. Faris Al-Shammari", room: "R101" },
-  { id: "TE-016", day: "Sunday",    period: "P2", grade: "1",  section: "A", subject: "Mathematics",      teacher: "Ms. Reem Al-Harbi",     room: "R102" },
-  { id: "TE-017", day: "Sunday",    period: "P1", grade: "5",  section: "A", subject: "English",          teacher: "Mr. Hassan Al-Shehri",  room: "R201" },
-  { id: "TE-018", day: "Sunday",    period: "P2", grade: "5",  section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R202" },
-  { id: "TE-019", day: "Sunday",    period: "P1", grade: "9",  section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R305" },
-  { id: "TE-020", day: "Sunday",    period: "P2", grade: "9",  section: "A", subject: "Chemistry",        teacher: "Dr. Layla Al-Anazi",    room: "Lab1" },
-  { id: "TE-021", day: "Sunday",    period: "P1", grade: "12", section: "A", subject: "Mathematics",      teacher: "Dr. Sarah Al-Hamdan",   room: "R204" },
-  { id: "TE-022", day: "Sunday",    period: "P2", grade: "12", section: "A", subject: "Physics",          teacher: "Mr. Khalid Al-Mutairi", room: "R301" },
+  { id: "TE-001", day: "Monday",    period: "P1", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Priya Sharma",  room: "R204" },
+  { id: "TE-002", day: "Monday",    period: "P2", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Imran Khan",    room: "R301" },
+  { id: "TE-003", day: "Monday",    period: "P3", grade: "10", section: "A", subject: "English",          teacher: "Ms. Neha Gupta",    room: "R105" },
+  { id: "TE-004", day: "Monday",    period: "P5", grade: "10", section: "A", subject: "Urdu",             teacher: "Mr. Aaqib Wani",    room: "R108" },
+  { id: "TE-005", day: "Monday",    period: "P6", grade: "10", section: "A", subject: "Chemistry",        teacher: "Dr. Sunita Rao",    room: "Lab1" },
+  { id: "TE-006", day: "Tuesday",   period: "P1", grade: "10", section: "A", subject: "Physics",          teacher: "Mr. Imran Khan",    room: "R301" },
+  { id: "TE-007", day: "Tuesday",   period: "P2", grade: "10", section: "A", subject: "Mathematics",      teacher: "Dr. Priya Sharma",  room: "R204" },
+  { id: "TE-008", day: "Tuesday",   period: "P3", grade: "10", section: "A", subject: "Chemistry",        teacher: "Dr. Sunita Rao",    room: "Lab1" },
+  { id: "TE-009", day: "Wednesday", period: "P1", grade: "10", section: "A", subject: "Urdu",             teacher: "Mr. Aaqib Wani",    room: "R108" },
+  { id: "TE-010", day: "Wednesday", period: "P2", grade: "10", section: "A", subject: "Chemistry",        teacher: "Dr. Sunita Rao",    room: "Lab1" },
+  { id: "TE-011", day: "Thursday",  period: "P1", grade: "10", section: "A", subject: "English",          teacher: "Ms. Neha Gupta",    room: "R105" },
+  { id: "TE-012", day: "Thursday",  period: "P3", grade: "10", section: "A", subject: "Urdu",             teacher: "Mr. Aaqib Wani",    room: "R108" },
+  { id: "TE-013", day: "Friday",    period: "P1", grade: "10", section: "A", subject: "Computer Science", teacher: "Mr. Ravi Sharma",   room: "Lab2" },
+  { id: "TE-014", day: "Friday",    period: "P2", grade: "10", section: "A", subject: "English",          teacher: "Ms. Neha Gupta",    room: "R105" },
+  { id: "TE-015", day: "Monday",    period: "P1", grade: "1",  section: "A", subject: "Urdu",             teacher: "Mr. Aaqib Wani",    room: "R101" },
+  { id: "TE-016", day: "Monday",    period: "P2", grade: "1",  section: "A", subject: "Mathematics",      teacher: "Ms. Neha Gupta",    room: "R102" },
+  { id: "TE-017", day: "Monday",    period: "P1", grade: "5",  section: "A", subject: "English",          teacher: "Mr. Ravi Sharma",   room: "R201" },
+  { id: "TE-018", day: "Monday",    period: "P2", grade: "5",  section: "A", subject: "Mathematics",      teacher: "Dr. Priya Sharma",  room: "R202" },
+  { id: "TE-019", day: "Monday",    period: "P1", grade: "9",  section: "A", subject: "Physics",          teacher: "Mr. Imran Khan",    room: "R305" },
+  { id: "TE-020", day: "Monday",    period: "P2", grade: "9",  section: "A", subject: "Chemistry",        teacher: "Dr. Sunita Rao",    room: "Lab1" },
+  { id: "TE-021", day: "Monday",    period: "P1", grade: "12", section: "A", subject: "Mathematics",      teacher: "Dr. Priya Sharma",  room: "R204" },
+  { id: "TE-022", day: "Monday",    period: "P2", grade: "12", section: "A", subject: "Physics",          teacher: "Mr. Imran Khan",    room: "R301" },
 ];
 
 // ─── Grade Record Type ────────────────────────────────────────────────────────

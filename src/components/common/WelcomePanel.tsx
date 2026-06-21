@@ -57,7 +57,7 @@ const WELCOME: Record<AppRole, WelcomeConfig> = {
     steps: [
       { step: 1, label: "Student Records",  href: "/students",   desc: "600 enrolled students, searchable by grade or section", icon: Users },
       { step: 2, label: "Daily Attendance", href: "/attendance", desc: "School-wide view — 94.3% rate today",                   icon: ClipboardList },
-      { step: 3, label: "Fee Collection",   href: "/fees",       desc: "87.5% collected · SAR 1.87M this term",                 icon: DollarSign },
+      { step: 3, label: "Fee Collection",   href: "/fees",       desc: "87.5% collected · ₹1.87M this term",                   icon: DollarSign },
     ],
   },
   vp1: {

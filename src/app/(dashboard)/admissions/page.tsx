@@ -180,7 +180,7 @@ export default function AdmissionsPage() {
           <div className="space-y-3 py-2">
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Student Name *</label>
-              <Input value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="e.g. Lina Al-Otaibi" />
+              <Input value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="e.g. Lina Bhat" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Applying for Grade</label>
@@ -193,11 +193,11 @@ export default function AdmissionsPage() {
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent / Guardian Name *</label>
-              <Input value={newParentName} onChange={(e) => setNewParentName(e.target.value)} placeholder="e.g. Khalid Al-Otaibi" />
+              <Input value={newParentName} onChange={(e) => setNewParentName(e.target.value)} placeholder="e.g. Ravi Bhat" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Phone</label>
-              <Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+966 5xxxxxxxx" />
+              <Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+91 9xxxxxxxxx" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1">Parent Email</label>
