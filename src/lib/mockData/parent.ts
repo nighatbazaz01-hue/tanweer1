@@ -62,3 +62,12 @@ export const feeHistoryFallback = [
   { term: "Semester 2, 2023-24", amount: 15000, paidDate: "Jan 8, 2024", method: "Bank Transfer", status: "paid", receipt: "RCP-2024-0018" },
   { term: "Semester 1, 2023-24", amount: 15000, paidDate: "Sep 5, 2023", method: "Bank Transfer", status: "paid", receipt: "RCP-2023-0147" },
 ];
+
+// Shaped alias consumed by parent/page.tsx fee history fallback render
+export const feeStatus = {
+  history: feeHistoryFallback.map((r) => ({
+    type:   r.term,
+    date:   r.paidDate,
+    amount: r.amount,
+  })),
+};

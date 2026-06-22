@@ -146,7 +146,7 @@ export default function ParentMarksPage() {
               { key: "math",    label: "Mathematics", color: "#6366f1" },
               { key: "english", label: "English",     color: "#10b981" },
               { key: "science", label: "Science",     color: "#f59e0b" },
-              { key: "arabic",  label: "Arabic",      color: "#ec4899" },
+              { key: "urdu",    label: "Urdu",         color: "#ec4899" },
             ]}
             height={220}
           />

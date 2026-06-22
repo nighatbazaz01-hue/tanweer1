@@ -8,7 +8,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { DEMO_TEACHER_GRADE, DEMO_TEACHER_SECTION } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 const PERIODS = [
   { id: 1, time: "07:30 – 08:15", label: "P1", periodKey: "P1" },
@@ -28,7 +28,7 @@ const SUBJECT_COLORS: Record<string, string> = {
   Physics:      "bg-violet-100 text-violet-700 border-violet-200",
   Chemistry:    "bg-emerald-100 text-emerald-700 border-emerald-200",
   English:      "bg-amber-100 text-amber-700 border-amber-200",
-  Arabic:       "bg-rose-100 text-rose-700 border-rose-200",
+  Urdu:         "bg-rose-100 text-rose-700 border-rose-200",
   "Computer Science": "bg-sky-100 text-sky-700 border-sky-200",
   "Islamic Studies":  "bg-teal-100 text-teal-700 border-teal-200",
   Islamic:      "bg-teal-100 text-teal-700 border-teal-200",
@@ -38,7 +38,7 @@ const SUBJECT_COLORS: Record<string, string> = {
 };
 
 const dayAbbr: Record<string, string> = {
-  Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu",
+  Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu", Friday: "Fri",
 };
 
 function getTodayName(): string | null {
@@ -49,7 +49,7 @@ function getTodayName(): string | null {
 export default function TimetablePage() {
   const { timetableEntries } = useDataStore();
   const todayName = getTodayName();
-  const [selectedDay, setSelectedDay] = useState(todayName ?? "Sunday");
+  const [selectedDay, setSelectedDay] = useState(todayName ?? "Monday");
 
   // Filter store entries to Grade 10-A — reactive to VP edits
   const classEntries = useMemo(
@@ -70,7 +70,7 @@ export default function TimetablePage() {
     return map;
   }, [classEntries]);
 
-  const daySchedule = scheduleByDay[selectedDay ?? "Sunday"] ?? {};
+  const daySchedule = scheduleByDay[selectedDay ?? "Monday"] ?? {};
   const classCount = PERIODS.filter((p) => p.periodKey && daySchedule[p.periodKey]).length;
   const uniqueSubjects = new Set(
     PERIODS.filter((p) => p.periodKey && daySchedule[p.periodKey])

@@ -298,7 +298,7 @@ const actionTemplates: ActionTemplate[] = [
       details: `${u.name} changed system settings`,
       recordType: "Settings",
       fieldsModified: ["Notification Preferences", "Language"],
-      beforeValue: { notifications: "all", lang: "Arabic" }, afterValue: { notifications: "critical_only", lang: "English" },
+      beforeValue: { notifications: "all", lang: "Urdu" }, afterValue: { notifications: "critical_only", lang: "English" },
     }),
   },
   {

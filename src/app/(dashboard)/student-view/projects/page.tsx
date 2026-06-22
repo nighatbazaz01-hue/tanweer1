@@ -17,7 +17,7 @@ const statusConfig: Record<string, { label: string; cls: string }> = {
 const subjectColor: Record<string, string> = {
   Physics:     "bg-purple-50 border-purple-200",
   Mathematics: "bg-blue-50 border-blue-200",
-  Arabic:      "bg-rose-50 border-rose-200",
+  Urdu:        "bg-rose-50 border-rose-200",
   English:     "bg-emerald-50 border-emerald-200",
 };
 

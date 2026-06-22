@@ -88,8 +88,8 @@ export const meetings: Meeting[] = [
       "Any other business",
     ],
     isRecurring: true,
-    recurringPattern: "Weekly — Every Sunday",
-    departments: ["Mathematics", "Sciences", "Arabic", "English", "Arts"],
+    recurringPattern: "Weekly — Every Monday",
+    departments: ["Mathematics", "Sciences", "Urdu", "English", "Arts"],
   },
   {
     id: "MTG003",

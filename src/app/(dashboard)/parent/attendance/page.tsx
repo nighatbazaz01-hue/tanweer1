@@ -25,17 +25,17 @@ const historicalLog = [
   { date: "Jun 12, 2026", day: "Wednesday", status: "present" as const },
   { date: "Jun 11, 2026", day: "Tuesday",   status: "present" as const },
   { date: "Jun 10, 2026", day: "Monday",    status: "late"    as const },
-  { date: "Jun 9, 2026",  day: "Sunday",    status: "present" as const },
+  { date: "Jun 9, 2026",  day: "Tuesday",   status: "present" as const },
   { date: "Jun 5, 2026",  day: "Thursday",  status: "present" as const },
   { date: "Jun 4, 2026",  day: "Wednesday", status: "present" as const },
   { date: "Jun 3, 2026",  day: "Tuesday",   status: "absent"  as const },
   { date: "Jun 2, 2026",  day: "Monday",    status: "present" as const },
-  { date: "Jun 1, 2026",  day: "Sunday",    status: "present" as const },
+  { date: "Jun 1, 2026",  day: "Monday",    status: "present" as const },
   { date: "May 29, 2026", day: "Thursday",  status: "present" as const },
   { date: "May 28, 2026", day: "Wednesday", status: "present" as const },
   { date: "May 27, 2026", day: "Tuesday",   status: "absent"  as const },
   { date: "May 26, 2026", day: "Monday",    status: "present" as const },
-  { date: "May 25, 2026", day: "Sunday",    status: "present" as const },
+  { date: "May 25, 2026", day: "Monday",    status: "present" as const },
 ];
 
 export default function ParentAttendancePage() {

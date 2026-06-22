@@ -23,7 +23,7 @@ const hwStatus: Record<string, { label: string; color: string }> = {
   in_progress: { label: "In Progress", color: "text-amber-600" },
 };
 
-const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export default function StudentDashboard() {
   const { toggleAiDrawer } = useUIStore();

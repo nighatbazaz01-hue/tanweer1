@@ -13,7 +13,7 @@ const pastExams = [
   { subject: "English", date: "Mar 17, 2024", type: "Mid-Term", score: 85, total: 100, grade: "A-", weight: "30%" },
   { subject: "Physics", date: "Mar 20, 2024", type: "Mid-Term", score: 72, total: 100, grade: "B", weight: "30%" },
   { subject: "Chemistry", date: "Mar 22, 2024", type: "Mid-Term", score: 80, total: 100, grade: "B+", weight: "30%" },
-  { subject: "Arabic", date: "Jan 10, 2024", type: "Final", score: 92, total: 100, grade: "A", weight: "40%" },
+  { subject: "Urdu",   date: "Jan 10, 2026", type: "Final", score: 92, total: 100, grade: "A", weight: "40%" },
   { subject: "Mathematics", date: "Jan 8, 2024", type: "Final", score: 76, total: 100, grade: "B+", weight: "40%" },
 ];
 

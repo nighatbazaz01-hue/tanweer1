@@ -13,7 +13,7 @@ import { useDataStore, type TimetableEntry } from "@/store/useDataStore";
 import { VP_GRADE_RANGES } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 const PERIODS = [
   { id: "P1",  time: "07:30",  label: "Period 1" },
@@ -31,7 +31,7 @@ const SUBJECT_COLORS: Record<string, string> = {
   Physics:            "bg-violet-100 text-violet-700",
   Chemistry:          "bg-emerald-100 text-emerald-700",
   English:            "bg-amber-100 text-amber-700",
-  Arabic:             "bg-rose-100 text-rose-700",
+  Urdu:               "bg-rose-100 text-rose-700",
   "Computer Science": "bg-sky-100 text-sky-700",
   Islamic:            "bg-teal-100 text-teal-700",
   Biology:            "bg-lime-100 text-lime-700",
@@ -65,7 +65,7 @@ export default function VPTimetablePage() {
     (_, i) => String(gradeRange[0] + i)
   );
 
-  const [selectedDay, setSelectedDay] = useState("Sunday");
+  const [selectedDay, setSelectedDay] = useState("Monday");
   const [selectedGrade, setSelectedGrade] = useState(grades[grades.length - 1] ?? "10");
   const [selectedSection, setSelectedSection] = useState("A");
   const [addOpen, setAddOpen] = useState(false);

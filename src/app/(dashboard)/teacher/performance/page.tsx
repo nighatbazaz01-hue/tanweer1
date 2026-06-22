@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 const gradeColor  = (s: number) => s >= 90 ? "text-emerald-600" : s >= 80 ? "text-blue-600" : s >= 70 ? "text-amber-600" : "text-red-600";
 const gradeLetter = (s: number) => s >= 90 ? "A+" : s >= 85 ? "A" : s >= 80 ? "B+" : s >= 75 ? "B" : s >= 70 ? "C+" : s >= 65 ? "C" : s >= 60 ? "D" : "F";
 
-const SUBJECTS = ["Mathematics", "English", "Physics", "Chemistry", "Arabic", "Computer Science"];
+const SUBJECTS = ["Mathematics", "English", "Physics", "Chemistry", "Urdu", "Computer Science"];
 
 const DEMO_TEACHER_SUBJECT = "Mathematics";
 

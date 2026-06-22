@@ -11,7 +11,7 @@ import { useDataStore } from "@/store/useDataStore";
 import { DEMO_TEACHER_GRADE, DEMO_TEACHER_SECTION } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"] as const;
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] as const;
 type Day = typeof DAYS[number];
 
 // Period ID → display time (matches VP timetable period definitions)
@@ -25,7 +25,7 @@ const SUBJECT_COLORS: Record<string, string> = {
   English:            "bg-emerald-100 text-emerald-800 border-emerald-200",
   Physics:            "bg-purple-100 text-purple-800 border-purple-200",
   Chemistry:          "bg-orange-100 text-orange-800 border-orange-200",
-  Arabic:             "bg-rose-100 text-rose-800 border-rose-200",
+  Urdu:               "bg-rose-100 text-rose-800 border-rose-200",
   "Computer Science": "bg-cyan-100 text-cyan-800 border-cyan-200",
   "Islamic Studies":  "bg-amber-100 text-amber-800 border-amber-200",
   PE:                 "bg-lime-100 text-lime-800 border-lime-200",
@@ -41,7 +41,7 @@ function getTodayName(): Day | null {
 export default function ParentTimetablePage() {
   const { timetableEntries } = useDataStore();
   const todayName = getTodayName();
-  const [activeDay, setActiveDay] = useState<Day>(todayName ?? "Sunday");
+  const [activeDay, setActiveDay] = useState<Day>(todayName ?? "Monday");
 
   // Filter store entries to this child's class (Grade 10-A) — reactive to VP edits
   const childEntries = useMemo(

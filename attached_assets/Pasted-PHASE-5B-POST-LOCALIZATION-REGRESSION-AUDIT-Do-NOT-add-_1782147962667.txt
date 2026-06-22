@@ -1,0 +1,134 @@
+PHASE 5B — POST-LOCALIZATION REGRESSION AUDIT
+
+Do NOT add features.
+
+Do NOT perform more localization.
+
+Do NOT improve UX.
+
+Your only goal is to verify that the massive localization refactor did not break anything.
+
+==================================================
+STEP 1 — BUILD VERIFICATION
+===========================
+
+Run and report:
+
+* TypeScript check
+* Production build
+* Route compilation
+
+Deliver:
+
+* error count
+* warning count
+* exact files if any fail
+
+==================================================
+STEP 2 — CROSS-ROLE REGRESSION TEST
+===================================
+
+Test complete workflows:
+
+Teacher → Attendance → Parent
+Teacher → Attendance → Student
+
+Teacher → Grades → Parent
+Teacher → Grades → Student
+
+Teacher → Homework → Student
+
+VP → Timetable Edit → Parent
+VP → Timetable Edit → Student
+
+Admin → Announcement → All Roles
+
+For each:
+
+PASS / FAIL
+
+Evidence:
+
+* source store slice
+* consuming page
+* data path
+
+==================================================
+STEP 3 — DATA CONSISTENCY AUDIT
+===============================
+
+Verify all counts still agree after localization.
+
+Check:
+
+Grade 10-A student count
+Teacher dashboard count
+Attendance roster count
+Students directory count
+Homework totals
+Parent child count
+
+Report every mismatch.
+
+==================================================
+STEP 4 — SEARCH FOR BROKEN IMPORTS
+==================================
+
+Because many files were edited.
+
+Check for:
+
+* unused imports
+* missing exports
+* dead imports
+* unresolved references
+* stale references to renamed people/subjects
+
+Deliver findings.
+
+==================================================
+STEP 5 — BOARD DEMO SANITY CHECK
+================================
+
+Open every major screen and identify:
+
+* placeholder text
+* lorem ipsum
+* fake names
+* broken formatting
+* overlapping UI
+* empty cards
+* impossible statistics
+
+Only report real issues.
+
+==================================================
+STEP 6 — FINAL RISK LIST
+========================
+
+Create:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+Only issues that still exist right now.
+
+No historical issues.
+
+No already-fixed issues.
+
+No speculative issues.
+
+==================================================
+OUTPUT
+======
+
+1. Regression report
+2. Cross-role validation report
+3. Count consistency report
+4. Build report
+5. Remaining risk register
+
+No code changes unless an actual regression is discovered.

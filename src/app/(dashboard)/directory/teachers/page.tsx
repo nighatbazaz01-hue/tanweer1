@@ -21,7 +21,7 @@ import { filterTeachersForRole, getRoleScopeLabel } from "@/lib/permissions";
 const PAGE_SIZE = 20;
 
 const SUBJECTS = [
-  "Mathematics", "English", "Arabic", "Physics", "Chemistry",
+  "Mathematics", "English", "Urdu", "Physics", "Chemistry",
   "Biology", "Computer Science", "Islamic Studies", "History",
   "Geography", "Physical Education", "Art", "Social Studies",
 ];

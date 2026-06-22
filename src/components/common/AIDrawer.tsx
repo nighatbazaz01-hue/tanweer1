@@ -242,7 +242,7 @@ const roleResponses: Record<string, (msg: string) => AIResponseData> = {
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 export function AIDrawer() {
-  const { isAiDrawerOpen, toggleAiDrawer } = useUIStore();
+  const { aiDrawerOpen: isAiDrawerOpen, toggleAiDrawer } = useUIStore();
   const { activeRole } = useRoleStore();
 
   const greeting   = roleGreetings[activeRole]   ?? roleGreetings.admin;

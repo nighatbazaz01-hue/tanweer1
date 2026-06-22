@@ -83,4 +83,5 @@ export interface AIMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  action?: { type: string; detail?: string };
 }

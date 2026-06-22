@@ -38,9 +38,9 @@ const SUBJECT_COLORS_TODAY: Record<string, string> = {
 };
 
 function getTodayName(): string {
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const day = new Date().toLocaleDateString("en-US", { weekday: "long" });
-  return days.includes(day) ? day : "Sunday";
+  return days.includes(day) ? day : "Monday";
 }
 
 function getScheduleStatus(time: string): "completed" | "ongoing" | "upcoming" {
@@ -215,7 +215,7 @@ export default function ParentDashboard() {
                 { key: "math",    color: "#6366f1", label: "Math"    },
                 { key: "english", color: "#f59e0b", label: "English" },
                 { key: "science", color: "#34d399", label: "Science" },
-                { key: "arabic",  color: "#f87171", label: "Arabic"  },
+                { key: "urdu",    color: "#f87171", label: "Urdu"    },
               ]}
               legend
               height={200}

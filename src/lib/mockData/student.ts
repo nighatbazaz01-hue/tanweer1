@@ -21,14 +21,14 @@ export const homeworkStatus = [
   { subject: "English", title: "Essay: Technology in Education", dueDate: "Jun 16", status: "pending", score: null, total: 25 },
   { subject: "Physics", title: "Lab Report: Motion Experiment", dueDate: "Jun 18", status: "pending", score: null, total: 30 },
   { subject: "Chemistry", title: "Problem Set: Chemical Bonds", dueDate: "Jun 14", status: "submitted", score: 22, total: 25 },
-  { subject: "Arabic", title: "Reading Comprehension #8", dueDate: "Jun 12", status: "submitted", score: 19, total: 20 },
+  { subject: "Urdu",   title: "Reading Comprehension #8", dueDate: "Jun 12", status: "submitted", score: 19, total: 20 },
   { subject: "Computer Science", title: "Python Project: Calculator", dueDate: "Jun 20", status: "in_progress", score: null, total: 50 },
 ];
 
 export const projects = [
   { id: 1, title: "Science Fair: Solar Energy Efficiency", subject: "Physics", dueDate: "Jun 25", progress: 65, members: ["Ahmed", "Fatima", "Omar"], grade: null, status: "in_progress" },
   { id: 2, title: "Math Modeling: Population Growth", subject: "Mathematics", dueDate: "Jun 30", progress: 40, members: ["Ahmed", "Nora"], grade: null, status: "in_progress" },
-  { id: 3, title: "Arabic Literature Analysis", subject: "Arabic", dueDate: "Jun 10", progress: 100, members: ["Ahmed"], grade: "A", status: "completed" },
+  { id: 3, title: "Urdu Literature Analysis",   subject: "Urdu",  dueDate: "Jun 10", progress: 100, members: ["Aarav"], grade: "A", status: "completed" },
   { id: 4, title: "English Drama Script", subject: "English", dueDate: "May 25", progress: 100, members: ["Ahmed", "Hassan", "Lina"], grade: "B+", status: "completed" },
 ];
 

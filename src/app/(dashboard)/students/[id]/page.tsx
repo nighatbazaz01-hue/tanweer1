@@ -40,7 +40,7 @@ const radarData = [
   { subject: "English", score: 87 },
   { subject: "Physics", score: 79 },
   { subject: "Chemistry", score: 84 },
-  { subject: "Arabic", score: 91 },
+  { subject: "Urdu",   score: 91 },
   { subject: "CS", score: 88 },
 ];
 
@@ -169,7 +169,7 @@ export default function Student360Page() {
                   lines={[
                     { key: "math", color: "#6366f1", label: "Math" },
                     { key: "english", color: "#f59e0b", label: "English" },
-                    { key: "arabic", color: "#f87171", label: "Arabic" },
+                    { key: "urdu",   color: "#f87171", label: "Urdu"   },
                     { key: "avg", color: "#34d399", label: "Average" },
                   ]}
                   legend
@@ -237,7 +237,7 @@ export default function Student360Page() {
                     { key: "english", color: "#f59e0b", label: "English" },
                     { key: "physics", color: "#60a5fa", label: "Physics" },
                     { key: "chemistry", color: "#34d399", label: "Chemistry" },
-                    { key: "arabic", color: "#f87171", label: "Arabic" },
+                    { key: "urdu",   color: "#f87171", label: "Urdu"   },
                   ]}
                   legend
                   height={240}

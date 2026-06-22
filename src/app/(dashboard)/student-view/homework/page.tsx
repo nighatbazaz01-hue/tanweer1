@@ -22,7 +22,7 @@ const subjectColor: Record<string, string> = {
   English:           "border-l-emerald-500",
   Physics:           "border-l-purple-500",
   Chemistry:         "border-l-orange-500",
-  Arabic:            "border-l-rose-500",
+  Urdu:              "border-l-rose-500",
   "Computer Science":"border-l-cyan-500",
 };
 
