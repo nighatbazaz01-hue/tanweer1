@@ -1,0 +1,121 @@
+PHASE 6 — BOARD DEMO REHEARSAL
+
+No new features.
+
+No localization.
+
+No refactoring.
+
+No architecture changes.
+
+Your job is to simulate a live board presentation and identify anything that would make a board member question the product.
+
+==================================================
+SCENARIO
+========
+
+Assume:
+
+School: Foundation School Humhama
+Location: Srinagar, Kashmir, India
+
+Audience:
+
+* Principal
+* Vice Principal
+* School Board
+* Finance Representative
+
+They are seeing the product for the first time.
+
+==================================================
+DEMO WALKTHROUGH
+================
+
+Walk through exactly this sequence:
+
+1. Login
+2. Admin Dashboard
+3. Students Directory
+4. Student 360 Profile
+5. Attendance
+6. Academics
+7. Fees
+8. Transport
+9. Announcements
+10. Messages
+11. AI Insights
+12. Meetings
+13. VP Dashboard
+14. Teacher Dashboard
+15. Parent Dashboard
+16. Student Dashboard
+17. Settings
+
+For every screen answer:
+
+A. What is the strongest thing a board member sees?
+
+B. What question would a skeptical board member ask?
+
+C. Can the UI answer that question immediately?
+
+D. Does any number look fake?
+
+E. Does any data look stale?
+
+F. Does anything contradict another screen?
+
+==================================================
+RED TEAM REVIEW
+===============
+
+Act like the most skeptical board member.
+
+Identify:
+
+* statistics that look invented
+* counts that look suspicious
+* dates that look stale
+* rankings that look hardcoded
+* KPIs without explanation
+* empty states
+* placeholder content
+* fake-looking AI outputs
+* unrealistic school metrics
+
+==================================================
+SCORING
+=======
+
+Rate:
+
+Credibility
+Data realism
+Operational realism
+Board confidence
+Demo readiness
+
+Score each 1–10.
+
+==================================================
+OUTPUT
+======
+
+Provide:
+
+1. Screen-by-screen board reaction
+2. Tough questions the board may ask
+3. Screens most likely to cause concern
+4. Top 10 remaining demo risks
+5. Final recommendation:
+
+   * Ready
+   * Ready with caveats
+   * Not ready
+
+Do not write code.
+
+Do not fix anything.
+
+Only evaluate the demo experience.
