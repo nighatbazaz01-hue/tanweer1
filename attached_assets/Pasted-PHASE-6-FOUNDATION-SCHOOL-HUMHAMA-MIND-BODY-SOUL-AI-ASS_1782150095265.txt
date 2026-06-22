@@ -1,0 +1,248 @@
+PHASE 6 — FOUNDATION SCHOOL HUMHAMA | MIND • BODY • SOUL AI ASSISTANT
+
+CONTEXT
+
+Foundation School Humhama follows a holistic education philosophy focused on:
+
+1. MIND — Academic Excellence, Critical Thinking, Cambridge Learning Skills, Curiosity
+2. BODY — Physical Health, Fitness, Sports, Nutrition, Lifestyle Habits
+3. SOUL — Character Development, Emotional Wellbeing, Values, Leadership, Service, Reflection
+
+The goal is NOT to create another generic AI chatbot.
+
+The goal is to create a unique AI Assistant experience that reflects the school's educational philosophy and becomes a flagship feature during board demonstrations.
+
+================================================================================
+FEATURE NAME
+================================================================================
+
+Mind • Body • Soul AI Assistant
+
+Displayed prominently within the AI Assistant section.
+
+Add a visual selector with three cards/tabs:
+
+🧠 Mind
+💪 Body
+❤️ Soul
+
+Users can switch between them at any time.
+
+================================================================================
+ROLE SUPPORT
+================================================================================
+
+Available for:
+
+- Admin
+- VP1
+- VP2
+- VP3
+- Teacher
+- Parent
+- Student
+
+The assistant should adapt responses based on the active role.
+
+================================================================================
+SECTION 1 — MIND
+================================================================================
+
+Purpose:
+Academic growth and intellectual development.
+
+Suggested questions displayed as clickable chips:
+
+Admin:
+- Which students need academic intervention?
+- Which grade is performing below expectations?
+- What are the biggest academic risks this month?
+- Summarize school-wide academic performance.
+- Which subjects require support?
+
+VP:
+- Which classes are underperforming?
+- Show academic concerns in my division.
+- Which students need additional support?
+- What trends should I focus on this month?
+
+Teacher:
+- Which students are falling behind?
+- How can I improve engagement in my class?
+- Suggest differentiated instruction strategies.
+- Which students need extra support?
+
+Parent:
+- How can I support my child academically?
+- What study habits should we improve?
+- Which subject needs the most attention?
+
+Student:
+- Create a study plan for me.
+- Which subject needs improvement?
+- How should I prepare for exams?
+- What are my academic strengths?
+
+Responses should use live platform data wherever possible.
+
+================================================================================
+SECTION 2 — BODY
+================================================================================
+
+Purpose:
+Health, fitness, energy, attendance, and student wellness.
+
+Suggested questions displayed as clickable chips:
+
+Admin:
+- Which students have concerning attendance patterns?
+- How healthy is overall student engagement?
+- What wellbeing trends should we monitor?
+
+VP:
+- Which classes have attendance concerns?
+- Which groups show reduced engagement?
+
+Teacher:
+- Which students may be struggling with attendance?
+- How can I improve classroom energy and participation?
+- Suggest healthy classroom practices.
+
+Parent:
+- How can I help my child maintain healthy routines?
+- How much sleep should students get?
+- How can I reduce screen-time dependence?
+
+Student:
+- How can I stay focused and energized?
+- What healthy habits improve learning?
+- How can I balance studies and exercise?
+
+Responses should be supportive, practical, and age-appropriate.
+
+================================================================================
+SECTION 3 — SOUL
+================================================================================
+
+Purpose:
+Character, wellbeing, emotional development, leadership, empathy, and values.
+
+Suggested questions displayed as clickable chips:
+
+Admin:
+- Which students may need wellbeing support?
+- How can we strengthen school culture?
+- Suggest a character-building initiative.
+
+VP:
+- Which groups may benefit from mentoring?
+- How can we improve student wellbeing?
+
+Teacher:
+- How can I build empathy in my classroom?
+- Suggest a wellbeing activity for students.
+- How can I support student confidence?
+
+Parent:
+- How can I strengthen my child's confidence?
+- How do I encourage resilience?
+- How can I support emotional wellbeing at home?
+
+Student:
+- How can I become more confident?
+- How can I manage stress?
+- How can I become a better leader?
+- How can I build stronger friendships?
+
+Responses should be positive, encouraging, and aligned with school values.
+
+================================================================================
+AI RESPONSE FORMAT
+================================================================================
+
+Each response should contain:
+
+1. Insight
+2. Why it matters
+3. Recommended actions
+
+Example:
+
+Insight:
+5 students in Grade 10-A show attendance below 85%.
+
+Why it matters:
+Consistent attendance strongly influences academic performance and wellbeing.
+
+Recommended Actions:
+• Schedule parent discussion
+• Monitor attendance weekly
+• Provide mentoring support
+• Review transport or health concerns
+
+================================================================================
+AI RECOMMENDED ACTIONS PANEL
+================================================================================
+
+After every AI response, display actionable recommendations.
+
+Examples:
+
+Academic:
+- Create Intervention Plan
+- Schedule Parent Meeting
+- Assign Mentor
+- Monitor Progress
+
+Wellbeing:
+- Wellbeing Check-In
+- Counsellor Referral
+- Teacher Follow-Up
+
+Leadership:
+- Student Leadership Opportunity
+- Community Service Activity
+- Peer Mentoring Program
+
+These actions may initially show informational dialogs and can later connect to workflows.
+
+================================================================================
+VISUAL DESIGN
+================================================================================
+
+Use Foundation School Humhama branding.
+
+Three clearly differentiated cards:
+
+🧠 Mind
+Academic Growth
+
+💪 Body
+Health & Wellness
+
+❤️ Soul
+Character & Wellbeing
+
+Each card should include:
+- icon
+- short description
+- quick questions
+- ability to switch instantly
+
+The feature should feel like a signature capability of the platform rather than a generic chatbot enhancement.
+
+================================================================================
+SUCCESS CRITERIA
+================================================================================
+
+The board should immediately understand that:
+
+This platform does not only manage school operations.
+
+It actively supports the development of the whole child through:
+
+• Mind (Academics)
+• Body (Health)
+• Soul (Character & Wellbeing)
+
+This should become one of the most impressive and differentiating features in the entire platform.
