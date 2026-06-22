@@ -1,0 +1,131 @@
+Upgrade the AI Assistant into a role-aware School Copilot.
+
+Create a Quick Questions panel visible above the chat input.
+
+Requirements:
+
+1. Display clickable suggestion chips.
+
+2. Clicking a chip immediately sends the prompt.
+
+3. Suggestions must be role-specific.
+
+4. Rotate suggestions dynamically.
+
+5. Show 12-15 suggestions at a time.
+
+6. Keep existing free-text chat.
+
+7. Keep voice-to-text compatible with suggestions.
+
+8. Add categorized sections:
+
+* Academics
+* Attendance
+* Wellbeing
+* Parent Engagement
+* Admissions
+* Finance
+* School Improvement
+* Mind Body Soul
+
+ADMIN QUESTIONS
+
+* Which students are currently at academic risk?
+* Show attendance trends across all grades.
+* Which classes need intervention this month?
+* Which students have declining performance?
+* What are the top parent concerns?
+* Summarize today's school activity.
+* Which teachers need support?
+* Show fee collection trends.
+* What are the biggest operational risks?
+* Generate a school health summary.
+* Which students need counselling support?
+* Recommend actions to improve attendance.
+
+VP QUESTIONS
+
+* Which students in my grades need intervention?
+* Show low-performing sections.
+* Which teachers need classroom support?
+* Compare attendance across classes.
+* Which students need parent meetings?
+* Summarize today's incidents.
+* What should I focus on this week?
+* Which classes show declining engagement?
+* Show upcoming academic risks.
+* Recommend targeted interventions.
+
+TEACHER QUESTIONS
+
+* Which students need extra support?
+* Summarize my class performance.
+* Who has missing homework?
+* Which students are at risk of falling behind?
+* Suggest a lesson improvement plan.
+* Recommend differentiated learning activities.
+* Which parents should I contact?
+* Generate revision strategies.
+* Suggest engagement techniques.
+* Create intervention plans.
+
+PARENT QUESTIONS
+
+* How is my child performing overall?
+* What are my child's strengths?
+* What areas need improvement?
+* How can I support learning at home?
+* Is my child attending regularly?
+* What homework needs attention?
+* What wellbeing concerns should I know about?
+* How can I improve study habits?
+* What activities should my child participate in?
+* Give me a weekly learning summary.
+
+STUDENT QUESTIONS
+
+* How can I improve my grades?
+* Create a study plan for me.
+* What subjects need more attention?
+* What are my strongest subjects?
+* How can I prepare for exams?
+* Help me manage my homework.
+* Give me revision tips.
+* What should I focus on this week?
+* Suggest learning resources.
+* How can I improve attendance?
+
+FOUNDATION SCHOOL HUMHAMA
+MIND • BODY • SOUL QUESTIONS
+
+* Is this student showing signs of emotional stress?
+* Which students may need wellbeing support?
+* Recommend mindfulness activities for this class.
+* Suggest social-emotional learning activities.
+* Which students may be socially isolated?
+* How can we improve student confidence?
+* Recommend leadership opportunities.
+* Suggest community service projects.
+* How can parents support emotional wellbeing?
+* Which students show exceptional character growth?
+* Generate a holistic development report.
+* Suggest physical wellbeing initiatives.
+* Recommend student wellness activities.
+* How can we strengthen school culture?
+* Create a mind-body-soul growth summary.
+
+9. Add icons to categories.
+
+10. Use the existing design system.
+
+11. Make suggestions visually impressive for board demonstrations.
+
+12. Ensure all suggestions remain functional even if AI responses are mocked.
+
+Deliver:
+
+* Modern UI
+* Responsive layout
+* Role-aware suggestions
+* Fully integrated with current AI assistant.
