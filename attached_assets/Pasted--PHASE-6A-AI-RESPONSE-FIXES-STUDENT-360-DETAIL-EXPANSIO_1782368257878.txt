@@ -1,0 +1,573 @@
+# PHASE 6A — AI RESPONSE FIXES + STUDENT 360 DETAIL EXPANSION
+
+## IMPORTANT
+
+Before changing anything:
+
+1. Read the entire Mind • Body • Soul module.
+2. Read AIDrawer.tsx completely.
+3. Read notification detail components.
+4. Read student detail page:
+
+   * /students/[id]
+5. Read all AI helper files.
+6. Read all intervention and risk-related components.
+
+Do NOT patch blindly.
+
+Identify root causes first.
+
+---
+
+# ISSUE 1 — MIND • BODY • SOUL AI BUTTONS ARE BROKEN
+
+## Current Problem
+
+Inside Mind • Body • Soul:
+
+Buttons such as:
+
+* Mind Analysis
+* Body Analysis
+* Soul Analysis
+* Holistic Analysis
+* Ask AI
+
+all appear to work.
+
+However:
+
+Every button returns the SAME RESPONSE.
+
+This completely breaks the purpose of the feature.
+
+---
+
+## Required Fix
+
+Each button must generate a completely different response.
+
+---
+
+### Mind Analysis
+
+Focus ONLY on:
+
+Academic growth
+
+Learning patterns
+
+Subject performance
+
+Study habits
+
+Concentration
+
+Homework completion
+
+Assessment performance
+
+Attendance impact on academics
+
+Teacher observations
+
+Growth opportunities
+
+Response should feel like:
+
+"Academic Performance Analyst"
+
+---
+
+### Body Analysis
+
+Focus ONLY on:
+
+Attendance
+
+Sports participation
+
+Activity participation
+
+Physical wellbeing
+
+Energy indicators
+
+Engagement levels
+
+Health-related observations
+
+Lifestyle recommendations
+
+Response should feel like:
+
+"Student Wellness Advisor"
+
+---
+
+### Soul Analysis
+
+Focus ONLY on:
+
+Character
+
+Leadership
+
+Behaviour
+
+Peer interaction
+
+Confidence
+
+Empathy
+
+School values
+
+Community involvement
+
+Emotional development
+
+Response should feel like:
+
+"Character Development Coach"
+
+---
+
+### Holistic Analysis
+
+Must combine:
+
+Mind
+
+Body
+
+Soul
+
+into a complete student profile.
+
+Response should be the most detailed.
+
+Should include:
+
+Strengths
+
+Risk Areas
+
+Recommendations
+
+Parent Actions
+
+Teacher Actions
+
+Intervention Suggestions
+
+Future Potential
+
+Response should feel like:
+
+"School Leadership Report"
+
+---
+
+# CRITICAL
+
+When I click:
+
+Mind
+
+Body
+
+Soul
+
+Holistic
+
+I should immediately see:
+
+4 completely different answers.
+
+No reused paragraphs.
+
+No reused templates.
+
+No generic filler.
+
+---
+
+# ISSUE 2 — AI SHOULD USE REAL STUDENT DATA
+
+Current responses feel disconnected.
+
+Use actual data:
+
+Mind Score
+
+Body Score
+
+Soul Score
+
+Attendance
+
+Grades
+
+Interventions
+
+Behaviour records
+
+Homework
+
+Teacher remarks
+
+Parent interactions
+
+Anything available in store.
+
+---
+
+# ISSUE 3 — STUDENT PAGE DETAILS ARE TOO SHALLOW
+
+Current flow:
+
+Notifications
+→ Critical Student
+→ View Student
+
+Shows a beautiful detailed student profile.
+
+Lots of useful information.
+
+Lots of cards.
+
+Lots of insights.
+
+Lots of context.
+
+---
+
+BUT
+
+When I go:
+
+Students
+→ Open Student
+
+I do NOT get the same level of detail.
+
+This is inconsistent.
+
+---
+
+# REQUIRED FIX
+
+The student directory should become the PRIMARY student profile experience.
+
+Meaning:
+
+Students
+→ Open Student
+
+must show ALL the same information available from:
+
+Notifications
+→ View Student
+
+and more.
+
+---
+
+# ISSUE 4 — UNIFY STUDENT DETAIL EXPERIENCE
+
+Create one shared student detail architecture.
+
+Do NOT maintain:
+
+Notification Detail View
+
+Student Detail View
+
+as separate experiences.
+
+---
+
+Instead:
+
+Both should use the same underlying component.
+
+Same data.
+
+Same cards.
+
+Same insights.
+
+Same layout.
+
+Same analytics.
+
+---
+
+# ISSUE 5 — EXPAND STUDENT PROFILE MASSIVELY
+
+When opening any student profile:
+
+I want a true Student 360.
+
+---
+
+## Section A — Identity
+
+Photo
+
+Student ID
+
+Grade
+
+Section
+
+Parent
+
+Contact
+
+Address
+
+Transport Route
+
+House
+
+Admission Date
+
+---
+
+## Section B — Academic Summary
+
+Overall %
+
+Subject Breakdown
+
+Exam Trend
+
+Assessment History
+
+Teacher Comments
+
+Strengths
+
+Improvement Areas
+
+AI Academic Summary
+
+---
+
+## Section C — Attendance
+
+Attendance %
+
+Monthly Trend
+
+Late Arrivals
+
+Absences
+
+Attendance Risk
+
+AI Attendance Analysis
+
+---
+
+## Section D — Mind Body Soul
+
+Mind Score
+
+Body Score
+
+Soul Score
+
+Holistic Score
+
+Trend
+
+Strengths
+
+Risk Areas
+
+AI Summary
+
+---
+
+## Section E — Behaviour & Character
+
+Behaviour Notes
+
+Achievements
+
+Leadership Roles
+
+Community Participation
+
+Recognition
+
+Character Growth Timeline
+
+---
+
+## Section F — Parent Engagement
+
+Meetings
+
+Calls
+
+Messages
+
+Interventions
+
+Parent Responses
+
+Parent Participation Score
+
+---
+
+## Section G — Interventions
+
+Open
+
+Completed
+
+Pending
+
+Escalated
+
+Timeline
+
+Owner
+
+Notes
+
+Progress
+
+Status
+
+---
+
+## Section H — AI Insights
+
+Academic Risk
+
+Attendance Risk
+
+Wellbeing Risk
+
+Behaviour Risk
+
+Holistic Risk
+
+Recommendations
+
+Suggested Actions
+
+---
+
+# ISSUE 6 — CLICKABLE AI ACTIONS
+
+Inside Student 360:
+
+When AI recommends:
+
+Schedule Parent Meeting
+
+Assign Mentor
+
+Attendance Intervention
+
+Academic Support
+
+Behaviour Support
+
+those buttons must actually do something.
+
+---
+
+Open proper workflow.
+
+Pre-fill student.
+
+Create intervention.
+
+Create task.
+
+Create follow-up.
+
+---
+
+# ISSUE 7 — HIGH ALERT STUDENTS
+
+For:
+
+High Alert
+
+Critical
+
+At Risk
+
+students:
+
+Student 360 should automatically show:
+
+Risk Banner
+
+Reasons
+
+Contributing Factors
+
+Active Interventions
+
+Recommended Next Steps
+
+Owner
+
+Last Follow Up
+
+---
+
+# ISSUE 8 — PERFORMANCE REQUIREMENT
+
+Do NOT duplicate data.
+
+Do NOT create new mock datasets.
+
+Reuse existing store records.
+
+Use memoization where appropriate.
+
+Avoid unnecessary renders.
+
+---
+
+# FINAL VALIDATION
+
+Before completion:
+
+Verify:
+
+1. Mind button returns Mind analysis.
+2. Body button returns Body analysis.
+3. Soul button returns Soul analysis.
+4. Holistic button returns Holistic analysis.
+
+All 4 responses must visibly differ.
+
+Then verify:
+
+Notifications → View Student
+
+and
+
+Students → View Student
+
+show the same depth of information.
+
+The Student Directory profile should be the richest student view in the entire platform.
+
+Provide completion report listing:
+
+* files modified
+* AI fixes made
+* new Student 360 sections added
+* validation results
