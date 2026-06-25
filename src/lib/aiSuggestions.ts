@@ -25,7 +25,7 @@ export interface RoleSuggestionConfig {
 }
 
 // ─── Mind • Body • Soul ─────────────────────────────────────────────────────────
-export type MbsMode = "mind" | "body" | "soul";
+export type MbsMode = "mind" | "body" | "soul" | "holistic";
 
 export interface MbsChips {
   mind: string[];
@@ -333,6 +333,12 @@ export const MBS_ACTIONS: Record<MbsMode, MbsQuickAction[]> = {
     { label: "Community Service",         iconName: "Users",          color: "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100" },
     { label: "Peer Mentoring Program",    iconName: "UserPlus",       color: "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"     },
     { label: "Schedule Counselling",      iconName: "Calendar",       color: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" },
+  ],
+  holistic: [
+    { label: "Create Full Intervention",  iconName: "ClipboardList", color: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"  },
+    { label: "Schedule Parent Meeting",   iconName: "Calendar",       color: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100" },
+    { label: "Assign Support Mentor",     iconName: "UserPlus",       color: "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100" },
+    { label: "Monitor All Dimensions",    iconName: "Activity",       color: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" },
   ],
 };
 

@@ -205,6 +205,30 @@ function getMbsResponse(role: string, mode: MbsMode, msg: string): string {
     }
   }
 
+  // ── Holistic (combined Mind · Body · Soul) ─────────────────────────────────
+  if (mode === "holistic") {
+    if (role === "admin") {
+      return `🧠💪🌟 **Holistic School Leadership Report**\n\n**🧠 Mind (Academic Health)**\nSchool-wide academic average: 83.1%. Grade 12 leads at 87.4%; Grade 8 needs urgent support (78.2%). 5 students are at immediate academic risk. Physics (76%) and Urdu (79%) require targeted curriculum support.\n\n**💪 Body (Wellness & Attendance)**\nSchool attendance: 94.3%, with a declining trend in Grades 9–12 (92.4% this month vs 95.1% in September). 23 students are below the 85% threshold. Extracurricular participation is down 12% in Grades 8–10.\n\n**🌟 Soul (Character & Culture)**\nBelonging score: 72% (target: 82%). 8 counsellor referrals this month. 3 students showing social isolation patterns. 12 students nominated for leadership recognition.\n\n**⚠️ Priority Risk Students**\n• 5 students: combined academic + wellbeing risk (immediate action required)\n• 12 students: attendance + social concern (monitor weekly)\n• 3 students: fee default + academic pressure (parent outreach needed)\n\n**✅ Board-Level Recommendations**\n• Launch formal Mind·Body·Soul intervention programme this term\n• Prioritise parent meetings for all 23 flagged students within 7 days\n• Introduce weekly wellbeing check-ins across all divisions\n• Schedule cross-divisional VP alignment meeting\n• Establish a Student Leadership Council to address the belonging score gap\n• Celebrate whole-child achievement alongside academic results in next school assembly`;
+    }
+    if (["vp1", "vp2", "vp3"].includes(role)) {
+      const div = role === "vp1" ? "Grades 1–4" : role === "vp2" ? "Grades 5–8" : "Grades 9–12";
+      const att = role === "vp1" ? "96.2%" : role === "vp2" ? "93.6%" : "92.4%";
+      const avg = role === "vp1" ? "81.4%" : role === "vp2" ? "79.6%" : "84.2%";
+      const riskCount = role === "vp3" ? "4 students below 85% threshold" : "2 students require attendance meetings";
+      return `🧠💪🌟 **Holistic Division Report — ${div}**\n\n**🧠 Mind (Academic)**\nDivision average: ${avg}. 3 classes are below the 75% threshold. Key at-risk students are flagged on your dashboard. ${role === "vp3" ? "Exam preparation is progressing in Grade 12 but Grade 9–10 needs support." : "Core literacy and numeracy gaps need addressing before year-end."}\n\n**💪 Body (Attendance & Wellness)**\nDivision attendance: ${att}. ${role === "vp3" ? "Exam season is contributing to absences in Grade 12." : "Overall engagement is healthy."} ${riskCount}.\n\n**🌟 Soul (Character & Wellbeing)**\n3 students show signs of social isolation in ${div}. Peer mentoring programme recommended. ${role === "vp3" ? "Exam stress is elevated — counsellor check-ins scheduled for Grade 12." : "Class morale is generally positive."}\n\n**⚠️ Division Risk Summary**\n• Academic: 3 students require immediate intervention\n• Attendance: ${role === "vp1" ? "1 student" : role === "vp2" ? "2 students" : "4 students"} below 85% threshold\n• Wellbeing: 3 students flagged for social support\n\n**✅ Your Action Plan**\n• Meet personally with the 3 most at-risk students this week\n• Contact parents of all attendance-flagged students\n• ${role === "vp3" ? "Introduce exam-season wellness check-ins for Grade 12" : "Launch a peer mentoring pilot in your division"}\n• Report at the next leadership meeting\n• Schedule a divisional teacher briefing on student support strategies`;
+    }
+    if (role === "teacher") {
+      return `🧠💪🌟 **Holistic Class Report — Grade 10-A**\n\n**🧠 Mind (Academic)**\nClass average: 83.1%. Top performer: Fatima Sheikh (96%). 2 students in academic decline — Rohan Sheikh (58%) and Sara Wani (62%). Class average is 3.1% above last term — great momentum.\n\n**💪 Body (Attendance & Energy)**\nClass attendance: 92.3% — above school average. 1 critical absence concern: Rohan Sheikh (71% this month, 3rd absence this week). Classroom energy is strongest in early-morning sessions.\n\n**🌟 Soul (Wellbeing & Character)**\n2 students show reduced social engagement this month. Overall class morale is strong, with positive peer relationships among the majority. 3 students show leadership potential worth nurturing.\n\n**⚠️ Students Requiring Attention**\n🔴 Rohan Sheikh — academic decline + attendance (urgent parent contact)\n🟡 Sara Wani — academic decline in Physics (62%, declining trend)\n🟡 2 students — reduced social engagement (monitor)\n\n**✅ Your Action Plan This Week**\n• Contact Rohan Sheikh's parents today regarding absences\n• Schedule 1-on-1 catch-up sessions with Rohan and Sara\n• Introduce a peer support pairing for socially withdrawn students\n• Celebrate top performers publicly to boost class morale\n• Submit support plan for Rohan to VP3 by Friday`;
+    }
+    if (role === "parent") {
+      return `🧠💪🌟 **Aarav's Holistic Development Report**\n\n**🧠 Mind (Academic)**\nAarav is performing at B+ level (82% overall), ranked 7th in class. Strongest subject: Urdu (91%). Most improved: Chemistry (+6 points this term). Needs attention: Physics (79%, declining −1 point). 1 overdue assignment (English essay — 25 marks at stake).\n\n**💪 Body (Attendance & Wellness)**\nAttendance: 94.3% — excellent, with a current 12-day streak. No health concerns on file. During exam season, ensure consistent sleep (8 hours minimum) and daily exercise.\n\n**🌟 Soul (Character & Wellbeing)**\nAarav is socially well-integrated at school. Good peer relationships and positive participation in group activities. His confidence is growing — especially in subjects where he is succeeding.\n\n**🏡 What You Can Do At Home**\n• Protect Aarav's sleep: 8 hours minimum, screens off by 9:30 PM\n• Review the homework planner together each evening\n• Spend 20 minutes on Physics problems with him weekly\n• Praise his Chemistry improvement — it builds momentum for harder subjects\n• Have one meaningful conversation daily about school life (not just grades)\n• Schedule a parent-teacher meeting with Dr. Priya before end-of-term exams`;
+    }
+    if (role === "student") {
+      return `🧠💪🌟 **Your Holistic Development Summary — Aarav**\n\n**🧠 Mind (Your Academics)**\nOverall: 85.2% (B+) · Rank 7/32 in class\n🌟 Strongest: Urdu (91), CS (88), English (87)\n⚠️ Needs work: Physics (79, declining) — start revision today\n🔴 Urgent: English essay is overdue — 25 marks at stake\n\n**💪 Body (Your Health & Presence)**\nAttendance: 94.3% — excellent! You have a 12-day streak.\nProtect these habits before exams:\n• 8 hours of sleep — every night, no exceptions\n• 30 minutes of movement every day\n• Breakfast before school — always\n\n**🌟 Soul (Your Growth & Character)**\nYou are growing in confidence, especially in Chemistry (+6 this term). Your Urdu achievement shows what focused effort produces. Keep building on these wins.\n\n**🎯 Your Focus This Week**\n1. 🔴 Start the English essay TODAY — 25 marks at stake\n2. 📖 Physics revision: 30 min/day (start with Newton's Laws)\n3. 💪 Exercise 30 min daily — your brain needs movement\n4. 😴 Sleep 8 hours — non-negotiable before exams\n5. 🌟 Write one thing you did well each evening`;
+    }
+    return `🧠💪🌟 **Holistic School Analysis**\n\nThis report combines Mind (academic), Body (wellness & attendance), and Soul (character & wellbeing) insights.\n\n✅ **Recommended Actions**\n• Review your dashboard for student-specific insights\n• Use the Mind, Body, and Soul tabs for targeted questions\n• Contact the school counsellor for individual student support`;
+  }
+
   // Generic fallback
   const modeLabel = mode === "mind" ? "Academic Growth" : mode === "body" ? "Health & Wellness" : "Character & Wellbeing";
   return `💡 **Insight**\nFoundation School Humhama is committed to developing every student across Mind, Body, and Soul. ${modeLabel} is central to this vision.\n\n📌 **Why It Matters**\nA whole-child approach produces not just academic success, but confident, resilient, compassionate graduates — ready for life beyond school.\n\n✅ **Recommended Actions**\n• Use the quick question chips above for specific insights\n• Navigate to your dashboard for live data\n• Contact the school counsellor for individual student support\n• Ask me anything about your students, class, or school`;
@@ -298,7 +322,7 @@ interface ToastItem { id: number; msg: string; type: "success" | "error" | "info
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 export function AIDrawer() {
-  const { aiDrawerOpen, toggleAiDrawer, pendingPrompt, clearPendingPrompt } = useUIStore();
+  const { aiDrawerOpen, toggleAiDrawer, pendingPrompt, pendingMbsMode, clearPendingPrompt } = useUIStore();
   const { activeRole } = useRoleStore();
 
   const greeting   = roleGreetings[activeRole]   ?? roleGreetings.admin;
@@ -343,8 +367,9 @@ export function AIDrawer() {
   useEffect(() => {
     if (aiDrawerOpen && pendingPrompt) {
       const prompt = pendingPrompt;
+      const mode = pendingMbsMode;
       clearPendingPrompt();
-      setTimeout(() => handleSend(prompt, null), 300);
+      setTimeout(() => handleSend(prompt, mode), 300);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiDrawerOpen, pendingPrompt]);

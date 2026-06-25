@@ -82,7 +82,7 @@ function StudentDetailPanel({
   student: Student | null;
   open: boolean;
   onClose: () => void;
-  onAskAI: (prompt: string) => void;
+  onAskAI: (prompt: string, mode: MbsMode) => void;
 }) {
   if (!student) return null;
   const risk = riskCategory(student.holisticScore);
@@ -115,11 +115,11 @@ function StudentDetailPanel({
         {/* MBS Score Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Mind",     score: student.mindScore,     icon: Brain,  color: "text-blue-600",    bg: "bg-blue-50",    prompt: `Analyze this student's Mind Score of ${student.mindScore}/100 for ${student.name} (Grade ${student.grade}-${student.section}). Cover academic patterns, strengths, weaknesses, and recommended interventions.` },
-            { label: "Body",     score: student.bodyScore,     icon: Heart,  color: "text-rose-600",    bg: "bg-rose-50",    prompt: `Analyze ${student.name}'s Body Score of ${student.bodyScore}/100. Cover wellness indicators, participation trends, attendance rate of ${student.attendanceRate}%, and wellbeing recommendations.` },
-            { label: "Soul",     score: student.soulScore,     icon: Star,   color: "text-violet-600",  bg: "bg-violet-50",  prompt: `Analyze ${student.name}'s Soul Score of ${student.soulScore}/100. Cover character development, leadership potential, behaviour patterns, and recommended growth activities.` },
-            { label: "Holistic", score: student.holisticScore, icon: Zap,    color: "text-amber-600",   bg: "bg-amber-50",   prompt: `Provide a complete Mind•Body•Soul analysis for ${student.name} (Mind: ${student.mindScore}, Body: ${student.bodyScore}, Soul: ${student.soulScore}, Holistic: ${student.holisticScore}/100). Include intervention recommendations and parent engagement suggestions.` },
-          ].map(({ label, score, icon: Icon, color, bg, prompt }) => (
+            { label: "Mind",     score: student.mindScore,     icon: Brain,  color: "text-blue-600",    bg: "bg-blue-50",    mode: "mind"     as MbsMode, prompt: `Analyze this student's Mind Score of ${student.mindScore}/100 for ${student.name} (Grade ${student.grade}-${student.section}). Cover academic patterns, strengths, weaknesses, and recommended interventions.` },
+            { label: "Body",     score: student.bodyScore,     icon: Heart,  color: "text-rose-600",    bg: "bg-rose-50",    mode: "body"     as MbsMode, prompt: `Analyze ${student.name}'s Body Score of ${student.bodyScore}/100. Cover wellness indicators, participation trends, attendance rate of ${student.attendanceRate}%, and wellbeing recommendations.` },
+            { label: "Soul",     score: student.soulScore,     icon: Star,   color: "text-violet-600",  bg: "bg-violet-50",  mode: "soul"     as MbsMode, prompt: `Analyze ${student.name}'s Soul Score of ${student.soulScore}/100. Cover character development, leadership potential, behaviour patterns, and recommended growth activities.` },
+            { label: "Holistic", score: student.holisticScore, icon: Zap,    color: "text-amber-600",   bg: "bg-amber-50",   mode: "holistic" as MbsMode, prompt: `Provide a complete Mind•Body•Soul analysis for ${student.name} (Mind: ${student.mindScore}, Body: ${student.bodyScore}, Soul: ${student.soulScore}, Holistic: ${student.holisticScore}/100). Include intervention recommendations and parent engagement suggestions.` },
+          ].map(({ label, score, icon: Icon, color, bg, mode, prompt }) => (
             <div key={label} className={`rounded-xl p-3 ${bg} border flex flex-col items-center gap-1`}>
               <Icon className={`h-5 w-5 ${color}`} />
               <p className="text-xs font-semibold text-muted-foreground">{label}</p>
@@ -129,7 +129,7 @@ function StudentDetailPanel({
                 size="sm"
                 variant="ghost"
                 className={`h-6 text-[10px] px-2 gap-1 mt-1 ${color} hover:bg-white/60`}
-                onClick={() => { onAskAI(prompt); onClose(); }}
+                onClick={() => { onAskAI(prompt, mode); onClose(); }}
               >
                 <Sparkles className="h-2.5 w-2.5" />
                 Ask AI
@@ -206,7 +206,7 @@ function StudentDetailPanel({
 export default function MindBodySoulPage() {
   const { activeRole } = useRoleStore();
   const { students } = useDataStore();
-  const { openAIDrawer, setAIPrompt } = useUIStore();
+  const { setAIPromptWithMode } = useUIStore();
 
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState<string>("all");
@@ -272,9 +272,8 @@ export default function MindBodySoulPage() {
     return buildDistribution(scopedStudents.map((s) => s[scoreKey]));
   }, [scopedStudents, activeChart]);
 
-  const handleAskAI = (prompt: string) => {
-    setAIPrompt?.(prompt);
-    openAIDrawer();
+  const handleAskAI = (prompt: string, mode: MbsMode = "holistic") => {
+    setAIPromptWithMode(prompt, mode);
   };
 
   const handleStudentClick = (student: Student) => {
@@ -305,7 +304,7 @@ export default function MindBodySoulPage() {
           </p>
         </div>
         <Button
-          onClick={() => handleAskAI(`Provide a comprehensive Mind•Body•Soul overview for ${roleLabel}. Average scores — Mind: ${stats.mind}, Body: ${stats.body}, Soul: ${stats.soul}, Holistic: ${stats.holistic}. ${stats.atRisk} students are at risk. Recommend priority interventions and areas of strength.`)}
+          onClick={() => handleAskAI(`Provide a comprehensive Mind•Body•Soul overview for ${roleLabel}. Average scores — Mind: ${stats.mind}, Body: ${stats.body}, Soul: ${stats.soul}, Holistic: ${stats.holistic}. ${stats.atRisk} students are at risk. Recommend priority interventions and areas of strength.`, "holistic")}
           className="gap-2 bg-violet-600 hover:bg-violet-700"
         >
           <Sparkles className="h-4 w-4" />
@@ -316,11 +315,11 @@ export default function MindBodySoulPage() {
       {/* Score Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Mind Score",     score: stats.mind,     icon: Brain,  color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-200",  prompt: `Analyze the overall Mind Score of ${stats.mind}/100 across ${roleLabel}. Identify academic risk patterns, top-performing groups, and prioritise intervention opportunities.` },
-          { label: "Body Score",     score: stats.body,     icon: Heart,  color: "text-rose-600",   bg: "bg-rose-50",   border: "border-rose-200",   prompt: `Analyze the overall Body Score of ${stats.body}/100 across ${roleLabel}. Review wellness indicators, participation trends, attendance patterns, and provide wellbeing recommendations.` },
-          { label: "Soul Score",     score: stats.soul,     icon: Star,   color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200",  prompt: `Analyze the overall Soul Score of ${stats.soul}/100 across ${roleLabel}. Review character development indicators, leadership potential, behaviour patterns, and suggest growth activities.` },
-          { label: "Holistic Score", score: stats.holistic, icon: Zap,    color: "text-amber-600",  bg: "bg-amber-50",  border: "border-amber-200",   prompt: `Provide a complete holistic Mind•Body•Soul analysis for ${roleLabel} (Mind: ${stats.mind}, Body: ${stats.body}, Soul: ${stats.soul}, Holistic: ${stats.holistic}). Include ${stats.atRisk} at-risk students. Recommend interventions and parent engagement strategies.` },
-        ].map(({ label, score, icon: Icon, color, bg, border, prompt }) => (
+          { label: "Mind Score",     score: stats.mind,     icon: Brain,  color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-200",  mode: "mind"     as MbsMode, prompt: `Analyze the overall Mind Score of ${stats.mind}/100 across ${roleLabel}. Identify academic risk patterns, top-performing groups, and prioritise intervention opportunities.` },
+          { label: "Body Score",     score: stats.body,     icon: Heart,  color: "text-rose-600",   bg: "bg-rose-50",   border: "border-rose-200",   mode: "body"     as MbsMode, prompt: `Analyze the overall Body Score of ${stats.body}/100 across ${roleLabel}. Review wellness indicators, participation trends, attendance patterns, and provide wellbeing recommendations.` },
+          { label: "Soul Score",     score: stats.soul,     icon: Star,   color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200",  mode: "soul"     as MbsMode, prompt: `Analyze the overall Soul Score of ${stats.soul}/100 across ${roleLabel}. Review character development indicators, leadership potential, behaviour patterns, and suggest growth activities.` },
+          { label: "Holistic Score", score: stats.holistic, icon: Zap,    color: "text-amber-600",  bg: "bg-amber-50",  border: "border-amber-200",   mode: "holistic" as MbsMode, prompt: `Provide a complete holistic Mind•Body•Soul analysis for ${roleLabel} (Mind: ${stats.mind}, Body: ${stats.body}, Soul: ${stats.soul}, Holistic: ${stats.holistic}). Include ${stats.atRisk} at-risk students. Recommend interventions and parent engagement strategies.` },
+        ].map(({ label, score, icon: Icon, color, bg, border, mode, prompt }) => (
           <Card key={label} className={`${bg} border ${border}`}>
             <CardContent className="pt-4 pb-3 px-4">
               <div className="flex justify-between items-start">
@@ -335,7 +334,7 @@ export default function MindBodySoulPage() {
                 size="sm"
                 variant="ghost"
                 className={`h-7 text-xs gap-1 mt-3 w-full ${color} hover:bg-white/60`}
-                onClick={() => handleAskAI(prompt)}
+                onClick={() => handleAskAI(prompt, mode)}
               >
                 <Sparkles className="h-3 w-3" />
                 Ask AI about {label.split(" ")[0]}
