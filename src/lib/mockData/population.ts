@@ -52,6 +52,14 @@ function seededPick<T>(arr: T[], seed: number): T {
   return arr[Math.floor(seededRandom(seed) * arr.length)];
 }
 
+/** Generate a single MBS dimension score (50–100) with realistic distribution */
+function mbsScore(seed: number): number {
+  const r = seededRandom(seed);
+  if (r < 0.08) return 50 + Math.floor(seededRandom(seed + 0.5) * 11);   // 50–60 (8%)
+  if (r > 0.92) return 95 + Math.floor(seededRandom(seed + 0.5) * 6);    // 95–100 (8%)
+  return 70 + Math.floor(seededRandom(seed + 0.5) * 21);                  // 70–90 (84%)
+}
+
 export interface Student {
   id: string;
   name: string;
@@ -77,6 +85,11 @@ export interface Student {
   interests: string[];
   emergencyContact: { name: string; phone: string; relation: string };
   previousSchool?: string;
+  // Mind • Body • Soul scores (50–100, seeded deterministic)
+  mindScore: number;
+  bodyScore: number;
+  soulScore: number;
+  holisticScore: number;
 }
 
 export interface Teacher {
@@ -170,6 +183,11 @@ export function getAllStudents(): Student[] {
       const emergencyPhone = `+91 9${String(Math.floor(400000000 + seededRandom(seed + 37) * 500000000)).slice(0, 9)}`;
       const previousSchool = grade > 1 ? seededPick(PREV_SCHOOLS, seed + 38) : undefined;
 
+      const mind = mbsScore(seed + 40);
+      const body = mbsScore(seed + 41);
+      const soul = mbsScore(seed + 42);
+      const holistic = Math.round(mind * 0.4 + body * 0.3 + soul * 0.3);
+
       result.push({
         id: `STU-${String(idx + 1).padStart(4, "0")}`,
         name: fullName,
@@ -198,6 +216,10 @@ export function getAllStudents(): Student[] {
           relation: emergencyRelation,
         },
         previousSchool,
+        mindScore: mind,
+        bodyScore: body,
+        soulScore: soul,
+        holisticScore: holistic,
       });
       idx++;
     }

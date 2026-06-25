@@ -27,6 +27,12 @@ import {
   initialTransportRequests, type TransportRequest, type TransportRequestType, type TransportRequestStatus,
 } from "@/lib/mockData/transport";
 import type { AdmissionLead } from "@/types";
+import {
+  initialInterventions,
+  type Intervention, type InterventionType, type InterventionStatus, type InterventionPriority, type InterventionNote,
+} from "@/lib/mockData/interventions";
+
+export type { Intervention, InterventionType, InterventionStatus, InterventionPriority, InterventionNote };
 
 // ─── Event System ─────────────────────────────────────────────────────────────
 
@@ -66,7 +72,11 @@ export type AppEventType =
   | "leaveRejected"
   | "gradesUpdated"
   | "feePaymentRecorded"
-  | "unauthorizedAccess";
+  | "unauthorizedAccess"
+  | "interventionCreated"
+  | "interventionUpdated"
+  | "interventionNoteAdded"
+  | "interventionStatusChanged";
 
 export interface AppEvent {
   id: string;
@@ -332,6 +342,17 @@ interface DataStore {
 
   // ── Fee Actions ──
   recordFeePayment: (recordId: string, amount: number, actor: string) => void;
+
+  // ── Intervention Actions ──
+  interventions: Intervention[];
+  createIntervention: (
+    intervention: Omit<Intervention, "id" | "notes" | "createdAt" | "updatedAt" | "parentAcknowledged" | "meetingRequested">,
+    actor: string
+  ) => void;
+  updateInterventionStatus: (id: string, status: InterventionStatus, actor: string) => void;
+  addInterventionNote: (id: string, author: string, authorRole: string, body: string, actor: string) => void;
+  acknowledgeIntervention: (id: string, comment: string, actor: string) => void;
+  requestMeeting: (id: string, actor: string) => void;
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
@@ -367,6 +388,7 @@ export const useDataStore = create<DataStore>((set) => ({
     updatedAt:   "Jun 13, 2026",
   })),
   feeRecords:       generateFeeRecords(),
+  interventions:    JSON.parse(JSON.stringify(initialInterventions)),
   schoolConfig: {
     name:    "Tanweer Academy",
     address: "",
@@ -404,6 +426,10 @@ export const useDataStore = create<DataStore>((set) => ({
         email: "",
         interests: [],
         emergencyContact: { name: parentName, phone: parentPhone, relation: "Parent" },
+        mindScore: 75,
+        bodyScore: 75,
+        soulScore: 75,
+        holisticScore: 75,
       };
       const event = makeEvent("studentAdded", actor, { studentId: id, name, grade, section });
       return {
@@ -1114,6 +1140,85 @@ export const useDataStore = create<DataStore>((set) => ({
             newPaid >= r.amount ? "paid" : newPaid > 0 ? "partial" : r.status;
           return { ...r, paidAmount: newPaid, status: newStatus };
         }),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  // ── Intervention Actions ──────────────────────────────────────────────────
+
+  createIntervention: (intervention, actor) =>
+    set((state) => {
+      const id = `INT-${String(state.interventions.length + 1).padStart(3, "0")}-${Date.now().toString(36)}`;
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const newIntervention: Intervention = {
+        ...intervention,
+        id,
+        notes: [],
+        createdAt: now,
+        updatedAt: now,
+        parentAcknowledged: false,
+        meetingRequested: false,
+      };
+      const event = makeEvent("interventionCreated", actor, {
+        id,
+        studentId: intervention.studentId,
+        type: intervention.type,
+        priority: intervention.priority,
+      });
+      return {
+        interventions: [newIntervention, ...state.interventions],
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  updateInterventionStatus: (id, status, actor) =>
+    set((state) => {
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const event = makeEvent("interventionStatusChanged", actor, { id, status });
+      return {
+        interventions: state.interventions.map((i) =>
+          i.id === id ? { ...i, status, updatedAt: now } : i
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  addInterventionNote: (id, author, authorRole, body, actor) =>
+    set((state) => {
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const noteId = `NOTE-${Date.now().toString(36)}`;
+      const note: InterventionNote = { id: noteId, author, authorRole, body, timestamp: now };
+      const event = makeEvent("interventionNoteAdded", actor, { interventionId: id, author });
+      return {
+        interventions: state.interventions.map((i) =>
+          i.id === id ? { ...i, notes: [...i.notes, note], updatedAt: now } : i
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  acknowledgeIntervention: (id, comment, actor) =>
+    set((state) => {
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const event = makeEvent("interventionUpdated", actor, { interventionId: id, action: "acknowledged" });
+      return {
+        interventions: state.interventions.map((i) =>
+          i.id === id
+            ? { ...i, parentAcknowledged: true, parentComment: comment, updatedAt: now }
+            : i
+        ),
+        eventLog: [event, ...state.eventLog].slice(0, 100),
+      };
+    }),
+
+  requestMeeting: (id, actor) =>
+    set((state) => {
+      const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const event = makeEvent("interventionUpdated", actor, { interventionId: id, action: "meetingRequested" });
+      return {
+        interventions: state.interventions.map((i) =>
+          i.id === id ? { ...i, meetingRequested: true, updatedAt: now } : i
+        ),
         eventLog: [event, ...state.eventLog].slice(0, 100),
       };
     }),

@@ -298,7 +298,7 @@ interface ToastItem { id: number; msg: string; type: "success" | "error" | "info
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 export function AIDrawer() {
-  const { aiDrawerOpen, toggleAiDrawer } = useUIStore();
+  const { aiDrawerOpen, toggleAiDrawer, pendingPrompt, clearPendingPrompt } = useUIStore();
   const { activeRole } = useRoleStore();
 
   const greeting   = roleGreetings[activeRole]   ?? roleGreetings.admin;
@@ -338,6 +338,16 @@ export function AIDrawer() {
   useEffect(() => {
     if (aiDrawerOpen) setTimeout(() => inputRef.current?.focus(), 150);
   }, [aiDrawerOpen]);
+
+  // Auto-send pending prompt injected from MBS/Interventions pages
+  useEffect(() => {
+    if (aiDrawerOpen && pendingPrompt) {
+      const prompt = pendingPrompt;
+      clearPendingPrompt();
+      setTimeout(() => handleSend(prompt, null), 300);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiDrawerOpen, pendingPrompt]);
 
   const addToast = useCallback((msg: string, type: ToastItem["type"] = "info") => {
     const id = ++toastId.current;

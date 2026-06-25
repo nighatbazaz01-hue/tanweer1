@@ -1,0 +1,788 @@
+# FOUNDATION SCHOOL HUMHAMA — PHASE 6 MASTER IMPLEMENTATION
+
+## IMPORTANT
+
+Before making ANY code changes:
+
+1. Read PROJECT_STATE.md completely.
+2. Read useDataStore.ts completely.
+3. Read all role dashboards:
+
+   * admin
+   * vp
+   * teacher
+   * parent
+   * student
+4. Read AI Drawer implementation completely.
+5. Read sidebar/navigation implementation.
+6. Read all attendance, grades, homework, intervention, student360, wellbeing, and analytics pages.
+7. Build a dependency map before changing anything.
+
+Do NOT do quick fixes.
+
+Implement this as a cohesive system.
+
+All new functionality must use:
+
+* existing store architecture
+* existing role permissions
+* existing filtering model
+* existing student IDs
+* existing grade/section structure
+
+No hardcoded mock-only solutions.
+
+---
+
+# PART 1 — CREATE MIND • BODY • SOUL MODULE
+
+## New Sidebar Position
+
+Move:
+
+Mind • Body • Soul
+
+from lower navigation area.
+
+Place it directly below:
+
+Academics
+Admissions
+
+and above:
+
+Transport
+
+Reason:
+
+This is a flagship school program and should be treated as a core academic module.
+
+---
+
+# PART 2 — CREATE COMPLETE MIND • BODY • SOUL DASHBOARD
+
+Create full module:
+
+/mind-body-soul
+
+with role-based views.
+
+The page should feel like a major product feature.
+
+---
+
+## Overall Score Card
+
+Show:
+
+Holistic Score
+
+calculated from:
+
+Mind Score
+Body Score
+Soul Score
+
+Example:
+
+Mind = 84
+Body = 78
+Soul = 89
+
+Holistic = weighted average
+
+Every student must have:
+
+mindScore
+bodyScore
+soulScore
+holisticScore
+
+stored in store.
+
+NO random generation during render.
+
+Scores must persist.
+
+---
+
+# PART 3 — GENERATE SCORES FOR ALL 600 STUDENTS
+
+Population already contains 600 students.
+
+Create score records for every student.
+
+Requirements:
+
+Every student gets:
+
+mindScore
+bodyScore
+soulScore
+
+Range:
+
+50-100
+
+Distribution:
+
+Mostly 70-90
+
+Small percentage:
+50-60
+
+Small percentage:
+95-100
+
+Must look realistic.
+
+No duplicates everywhere.
+
+No obvious patterns.
+
+---
+
+# PART 4 — ROLE VISIBILITY
+
+## Admin
+
+Can see:
+
+all students
+all grades
+all sections
+
+---
+
+## VP
+
+Can see only:
+
+their assigned grades
+
+same logic used elsewhere.
+
+---
+
+## Teacher
+
+Can see:
+
+their assigned students only.
+
+Grade 10-A demo teacher should see only Grade 10-A.
+
+---
+
+## Parent
+
+Can see:
+
+only their child.
+
+---
+
+## Student
+
+Can see:
+
+only themselves.
+
+---
+
+# PART 5 — WELLBEING RISK INDICATORS
+
+Current indicators are mostly visual.
+
+Make them interactive.
+
+When clicking:
+
+At Risk
+Monitor
+Healthy
+
+or any risk card
+
+open student detail panel.
+
+Panel shows:
+
+student
+grade
+section
+
+Mind score
+Body score
+Soul score
+
+Attendance
+
+Academic performance
+
+Recent interventions
+
+Teacher notes
+
+Parent communication history
+
+Recent recommendations
+
+---
+
+# PART 6 — REAL STUDENT DATA ONLY
+
+Currently many areas use random names.
+
+Remove ALL random names.
+
+Use only students that exist in population/store.
+
+Every list must reference:
+
+student.id
+
+from store.
+
+No mock student names.
+
+No disconnected records.
+
+---
+
+# PART 7 — AI INTEGRATION INSIDE MIND BODY SOUL
+
+This is critical.
+
+Currently AI buttons produce identical responses.
+
+This must be replaced.
+
+---
+
+## AI BUTTONS
+
+Every card:
+
+Mind Score
+Body Score
+Soul Score
+Holistic Score
+
+gets:
+
+Ask AI
+
+button.
+
+---
+
+### Mind AI Prompt
+
+Should automatically send:
+
+Analyze this student's Mind Score, academic patterns, attendance trends, strengths, weaknesses, and recommended interventions.
+
+---
+
+### Body AI Prompt
+
+Should automatically send:
+
+Analyze this student's Body Score, wellness indicators, participation trends, attendance, and wellbeing recommendations.
+
+---
+
+### Soul AI Prompt
+
+Should automatically send:
+
+Analyze this student's Soul Score, character development, leadership potential, behaviour patterns, and recommended growth activities.
+
+---
+
+### Holistic AI Prompt
+
+Should automatically send:
+
+Provide a complete Mind Body Soul analysis for this student with intervention recommendations and parent engagement suggestions.
+
+---
+
+# CRITICAL
+
+Each prompt must produce:
+
+DIFFERENT RESPONSE.
+
+Not same response.
+
+Not same template.
+
+Not same paragraphs.
+
+Context-aware.
+
+Student-specific.
+
+---
+
+# PART 8 — INTERVENTION CENTER REBUILD
+
+Current intervention center is too basic.
+
+Rebuild completely.
+
+---
+
+## Intervention Creation
+
+Fields:
+
+Intervention Type
+
+Dropdown:
+
+Academic Support
+Attendance Concern
+Wellbeing Support
+Behaviour Support
+Parent Meeting
+Leadership Development
+Health Follow-Up
+Counselling
+
+---
+
+## Student Selector
+
+Add:
+
+Grade filter
+
+Section filter
+
+Search box
+
+Student dropdown
+
+Flow:
+
+Grade
+→ Section
+→ Student
+
+---
+
+## Intervention Details
+
+Fields:
+
+Title
+
+Description
+
+Priority
+
+Responsible Staff
+
+Due Date
+
+Notes
+
+---
+
+# PART 9 — INTERVENTION WORKFLOW
+
+After clicking:
+
+Log Intervention
+
+DO NOT simply save note.
+
+Create real workflow.
+
+---
+
+Intervention Status:
+
+Open
+
+In Progress
+
+Pending Parent
+
+Completed
+
+Escalated
+
+---
+
+Store everything.
+
+Persist everything.
+
+---
+
+# PART 10 — INTERVENTION TRACKING
+
+Create full intervention timeline.
+
+Every intervention should track:
+
+Created By
+
+Created Date
+
+Notes
+
+Updates
+
+Status Changes
+
+Comments
+
+Parent Responses
+
+Teacher Responses
+
+VP Responses
+
+---
+
+# PART 11 — PARENT PORTAL INTEGRATION
+
+Parents need visibility.
+
+Create:
+
+Parent → Interventions
+
+page.
+
+Parent sees:
+
+Student
+
+Intervention Title
+
+Status
+
+Teacher Notes
+
+School Recommendations
+
+Meeting Requests
+
+Follow-up Tasks
+
+---
+
+Parent can:
+
+Acknowledge
+
+Add Comment
+
+Request Meeting
+
+Mark Completed
+
+where permissions allow.
+
+---
+
+# PART 12 — TEACHER INTERVENTION DASHBOARD
+
+Create:
+
+Teacher → Interventions
+
+Teacher sees:
+
+Assigned interventions.
+
+Can:
+
+Update progress
+
+Add notes
+
+Upload observations
+
+Mark completed
+
+Request escalation
+
+---
+
+# PART 13 — VP INTERVENTION DASHBOARD
+
+VP sees:
+
+all interventions for their grades.
+
+Can:
+
+approve
+
+escalate
+
+review
+
+reassign
+
+close
+
+---
+
+# PART 14 — ADMIN INTERVENTION DASHBOARD
+
+Admin sees:
+
+everything.
+
+Analytics:
+
+Open interventions
+
+Completed
+
+Average closure time
+
+By grade
+
+By type
+
+By teacher
+
+By risk level
+
+---
+
+# PART 15 — EXAM RESULTS MANAGEMENT
+
+Current grade workflow is unclear.
+
+Create explicit workflow.
+
+---
+
+Teacher:
+
+Create Assessment
+
+Assessment Types:
+
+Unit Test
+Mid Term
+Final Exam
+Quiz
+Assignment
+Project
+
+---
+
+Teacher can:
+
+enter marks
+
+bulk upload marks
+
+edit marks
+
+publish marks
+
+---
+
+Store records properly.
+
+---
+
+# PART 16 — PARENT EXAM VIEW
+
+Parent sees:
+
+Assessment
+
+Marks
+
+Percentage
+
+Grade
+
+Teacher Comments
+
+Recommendations
+
+Trend graph
+
+---
+
+# PART 17 — STUDENT EXAM VIEW
+
+Student sees:
+
+same information
+
+plus
+
+AI Study Recommendations
+
+---
+
+# PART 18 — AI QUICK QUESTIONS EXPANSION
+
+Expand AI suggestions significantly.
+
+Current AI feels limited.
+
+---
+
+Admin:
+
+30+ questions
+
+Examples:
+
+Which grades need attention?
+
+Who is at risk academically?
+
+Which teachers need support?
+
+Attendance trends?
+
+Fee collection concerns?
+
+Top performing groups?
+
+Mind Body Soul concerns?
+
+Intervention effectiveness?
+
+Parent engagement patterns?
+
+---
+
+VP:
+
+25+ questions
+
+Teacher:
+
+25+ questions
+
+Parent:
+
+20+ questions
+
+Student:
+
+20+ questions
+
+---
+
+Display as clickable chips.
+
+Grouped by category.
+
+---
+
+# PART 19 — AI RESPONSE QUALITY
+
+Responses must feel premium.
+
+Structure:
+
+Insight
+
+Risk Areas
+
+Strengths
+
+Recommendations
+
+Next Actions
+
+---
+
+Not short.
+
+Not generic.
+
+Context aware.
+
+---
+
+# PART 20 — MIND BODY SOUL ANALYTICS
+
+Create analytics section.
+
+Charts:
+
+Mind distribution
+
+Body distribution
+
+Soul distribution
+
+Holistic distribution
+
+Risk categories
+
+Interventions by type
+
+Grade comparison
+
+Trend analysis
+
+---
+
+# PART 21 — CROSS ROLE SYNCHRONIZATION
+
+Verify:
+
+Teacher updates score
+→ Parent sees
+
+Teacher updates intervention
+→ Parent sees
+
+VP updates intervention
+→ Teacher sees
+
+Admin updates intervention
+→ All relevant roles see
+
+No refresh required.
+
+Store driven.
+
+---
+
+# PART 22 — FINAL VALIDATION
+
+Before completion:
+
+Run TypeScript.
+
+Run architecture validation.
+
+Verify:
+
+0 TypeScript errors
+
+0 broken imports
+
+0 stale mock references
+
+0 random student names
+
+0 hardcoded intervention records
+
+0 role permission leaks
+
+All new functionality connected to existing store architecture.
+
+Deliver implementation report after completion.
